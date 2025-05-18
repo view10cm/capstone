@@ -1,1 +1,0 @@
-<!-- INITIAL WELCOME PAGE -->
