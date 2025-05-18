@@ -7,6 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
+    <style>
+        .fade-out {
+            transition: opacity 3s ease-in;
+            opacity: 0;
+        }
+    </style>
 </head>
 
 <body class="relative min-h-screen bg-cover bg-center flex items-center justify-center"
@@ -30,13 +36,25 @@
     </div>
 
     <!-- 📍 Full-width 'Touch to start' at bottom -->
-    <a href="{{ route('customer.viewReminder') }}">
-        <div
-            class="absolute bottom-0 left-0 w-full bg-black bg-opacity-80 py-6 px-4 text-white text-center z-10 cursor-pointer">
-            <p class="text-2xl font-semibold mb-2">Touch to start</p>
-            <p class="text-sm">Ready to order? Tap to begin.</p>
-        </div>
-    </a>
+    <div
+        id="touchToStart"
+        class="absolute bottom-0 left-0 w-full bg-black bg-opacity-80 py-6 px-4 text-white text-center z-10 cursor-pointer transition-opacity duration-1000"
+        style="opacity: 1;"
+    >
+        <p class="text-2xl font-semibold mb-2">Touch to start</p>
+        <p class="text-sm">Ready to order? Tap to begin.</p>
+    </div>
+
+    <script>
+        document.getElementById('touchToStart').addEventListener('click', function () {
+            // Fade out all elements by adding fade-out to body
+            document.body.classList.add('fade-out');
+            // Redirect after 3 seconds
+            setTimeout(function () {
+                window.location.href = "{{ route('customer.viewReminder') }}";
+            }, 3000);
+        });
+    </script>
 
 </body>
 
