@@ -53,3 +53,4 @@ Route::get('/admin/orders', function () {
 // Logout (if using Laravel Breeze/Fortify/Jetstream, this is usually already defined)
 Route::post('/logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
 // Password Reset Routes
+
