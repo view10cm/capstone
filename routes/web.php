@@ -21,36 +21,35 @@ Route::get('forgot-password', function () {
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::get('/dashboard', function () {
-    return view('adminDashboard');
-})->name('dashboard')->middleware('auth');
-
 // Admin Dashboard
 Route::get('/admin/dashboard', function () {
-    return view('adminDashboard');
-})->name('admin.dashboard');
+    return view('admin.adminDashboard');
+})->name('admin.adminDashboard');
 
 // Admin Inventory
 Route::get('/admin/inventory', function () {
-    return view('admin.inventory');
-})->name('admin.inventory');
+    return view('admin.adminInventory');
+})->name('admin.adminInventory');
 
 // Admin Menu
 Route::get('/admin/menu', function () {
-    return view('admin.menu');
-})->name('admin.menu');
+    return view('admin.adminMenu');
+})->name('admin.adminMenu');
 
 // Admin Users
 Route::get('/admin/users', function () {
-    return view('admin.users');
-})->name('admin.users');
+    return view('admin.adminUsers');
+})->name('admin.adminUsers');
 
 // Admin Order History
 Route::get('/admin/orders', function () {
-    return view('admin.orders');
-})->name('admin.orders');
+    return view('admin.adminOrderHistory');
+})->name('admin.adminOrderHistory');
 
-// Logout (if using Laravel Breeze/Fortify/Jetstream, this is usually already defined)
-Route::post('/logout', [\App\Http\Controllers\Auth\AuthenticatedSessionController::class, 'destroy'])->name('logout');
-// Password Reset Routes
+Route::get('/logout', function () {
+    // Optionally, you can add Auth::logout(); if using authentication
+    return redirect('/');
+})->name('logout');
+
+
 
