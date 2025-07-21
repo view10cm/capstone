@@ -1,26 +1,37 @@
 @extends('base')
 
 @section('content')
+<div class="flex min-h-screen">
     @include('admin.adminSidebar')
-    <div class="container" style="margin-left:260px; padding: 40px 0;">
-        <div style="max-width:1100px; margin:auto;">
+    <div class="flex-1 px-10 py-10">
+        <div class="max-w-5xl mx-auto">
             <!-- Inventory Header -->
-            <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h2 style="margin:0; font-weight:600;">Inventory</h2>
-                    <span style="color:#888;">Manage your inventory items</span>
+                    <h2 class="m-0 font-semibold text-2xl">Inventory</h2>
+                    <span class="text-gray-500">Manage your inventory items</span>
                 </div>
-                <div style="flex:1; display:flex; justify-content:center;">
-                    <input type="text" placeholder="Search..."
-                        style="width:350px; padding:10px 40px 10px 40px; border-radius:25px; border:1px solid #ddd; background:#f7f7f7 url('data:image/svg+xml;utf8,<svg fill=\'%23999\' xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' width=\'20\' height=\'20\'><path d=\'M21 20l-5.197-5.197A7.92 7.92 0 0018 10a8 8 0 10-8 8 7.92 7.92 0 004.803-1.803L20 21zM4 10a6 6 0 1112 0 6 6 0 01-12 0z\'/></svg>') no-repeat 12px center;">
+                <div class="flex-1 flex justify-center">
+                    <div class="relative w-[350px]">
+                        <input type="text" placeholder="Search..."
+                            class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-200 bg-gray-100 focus:outline-none"
+                        >
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <!-- Search Icon -->
+                            <svg fill="none" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 20l-5.197-5.197A7.92 7.92 0 0018 10a8 8 0 10-8 8 7.92 7.92 0 004.803-1.803L20 21zM4 10a6 6 0 1112 0 6 6 0 01-12 0z"/>
+                            </svg>
+                        </span>
+                    </div>
                 </div>
             </div>
 
             <!-- Products Table Card -->
-            <div style="background:#fff; border-radius:16px; box-shadow:0 2px 8px #0001; margin-top:32px; padding:32px;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:1.5rem; color:#ff9100;">
+            <div class="bg-white rounded-2xl shadow-md mt-8 p-8">
+                <div class="flex items-center justify-between mb-5">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-2xl text-orange-400">
                             <svg width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect x="4" y="7" width="20" height="14" rx="3" stroke="#ff9100"
                                     stroke-width="2" fill="none" />
@@ -28,144 +39,141 @@
                                     stroke-width="2" fill="none" />
                             </svg>
                         </span>
-                        <h3 style="margin:0; font-weight:600;">Products</h3>
+                        <h3 class="m-0 font-semibold text-lg">Products</h3>
                     </div>
-                    <div style="display:flex; gap:10px;">
+                    <div class="flex gap-2.5">
                         <input type="text" placeholder="Search"
-                            style="padding:7px 14px; border-radius:8px; border:1px solid #ddd;">
+                            class="px-3 py-2 rounded-lg border border-gray-200"
+                        >
                         <button
-                            style="background:#fff; border:1px solid #ff9100; color:#ff9100; border-radius:8px; padding:7px 18px; font-weight:500;">Export
-                            ▼</button>
+                            class="bg-white border border-orange-400 text-orange-400 rounded-lg px-4 py-2 font-medium">Export ▼</button>
                         <button
-                            style="background:#ff9100; color:#fff; border:none; border-radius:8px; padding:7px 18px; font-weight:500; display:flex; align-items:center; gap:6px;">
-                            <span style="font-size:1.2em;">+</span> Add Product
+                            class="bg-orange-400 text-white border-none rounded-lg px-4 py-2 font-medium flex items-center gap-1.5">
+                            <span class="text-xl">+</span> Add Product
                         </button>
                     </div>
                 </div>
-                <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:separate; border-spacing:0 8px;">
+                <div class="overflow-x-auto">
+                    <table class="w-full border-separate border-spacing-y-2">
                         <thead>
-                            <tr style="background:#f7f7f7;">
-                                <th style="padding:10px 8px;"><input type="checkbox"></th>
-                                <th style="padding:10px 8px; text-align:left;">Item ID</th>
-                                <th style="padding:10px 8px; text-align:left;">Product Name <span
-                                        style="font-size:0.9em; color:#bbb;">⇅</span></th>
-                                <th style="padding:10px 8px; text-align:left;">Category <span
-                                        style="font-size:0.9em; color:#bbb;">⇅</span></th>
-                                <th style="padding:10px 8px; text-align:left;">Quantity</th>
-                                <th style="padding:10px 8px; text-align:left;">Availability</th>
-                                <th style="padding:10px 8px; text-align:left;">Actions</th>
+                            <tr class="bg-gray-100">
+                                <th class="py-2 px-2"><input type="checkbox"></th>
+                                <th class="py-2 px-2 text-left">Item ID</th>
+                                <th class="py-2 px-2 text-left">Product Name <span class="text-xs text-gray-400">⇅</span></th>
+                                <th class="py-2 px-2 text-left">Category <span class="text-xs text-gray-400">⇅</span></th>
+                                <th class="py-2 px-2 text-left">Quantity</th>
+                                <th class="py-2 px-2 text-left">Availability</th>
+                                <th class="py-2 px-2 text-left">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr style="background:#fff;">
-                                <td style="padding:10px 8px;"><input type="checkbox"></td>
-                                <td style="padding:10px 8px;">CA00001</td>
-                                <td style="padding:10px 8px;">Beef</td>
-                                <td style="padding:10px 8px;">Meat</td>
-                                <td style="padding:10px 8px;">15 kg</td>
-                                <td style="padding:10px 8px; color:green;">In Stock</td>
-                                <td style="padding:10px 8px;">
-                                    <a href="#"><span style="font-size:1.1em;">✏️</span></a>
-                                    <a href="#"><span style="font-size:1.1em; margin-left:10px;">🗑️</span></a>
+                            <tr class="bg-white">
+                                <td class="py-2 px-2"><input type="checkbox"></td>
+                                <td class="py-2 px-2">CA00001</td>
+                                <td class="py-2 px-2">Beef</td>
+                                <td class="py-2 px-2">Meat</td>
+                                <td class="py-2 px-2">15 kg</td>
+                                <td class="py-2 px-2 text-green-600">In Stock</td>
+                                <td class="py-2 px-2">
+                                    <a href="#"><span class="text-lg">✏️</span></a>
+                                    <a href="#"><span class="text-lg ml-2.5">🗑️</span></a>
                                 </td>
                             </tr>
-                            <tr style="background:#fff;">
-                                <td style="padding:10px 8px;"><input type="checkbox"></td>
-                                <td style="padding:10px 8px;">CA00002</td>
-                                <td style="padding:10px 8px;">Garlic</td>
-                                <td style="padding:10px 8px;">Vegetables</td>
-                                <td style="padding:10px 8px;">5 pcs</td>
-                                <td style="padding:10px 8px; color:#ff9100;">Low Stock</td>
-                                <td style="padding:10px 8px;">
-                                    <a href="#"><span style="font-size:1.1em;">✏️</span></a>
-                                    <a href="#"><span style="font-size:1.1em; margin-left:10px;">🗑️</span></a>
+                            <tr class="bg-white">
+                                <td class="py-2 px-2"><input type="checkbox"></td>
+                                <td class="py-2 px-2">CA00002</td>
+                                <td class="py-2 px-2">Garlic</td>
+                                <td class="py-2 px-2">Vegetables</td>
+                                <td class="py-2 px-2">5 pcs</td>
+                                <td class="py-2 px-2 text-orange-400">Low Stock</td>
+                                <td class="py-2 px-2">
+                                    <a href="#"><span class="text-lg">✏️</span></a>
+                                    <a href="#"><span class="text-lg ml-2.5">🗑️</span></a>
                                 </td>
                             </tr>
-                            <tr style="background:#fff;">
-                                <td style="padding:10px 8px;"><input type="checkbox"></td>
-                                <td style="padding:10px 8px;">CA00003</td>
-                                <td style="padding:10px 8px;">Onion</td>
-                                <td style="padding:10px 8px;">Vegetables</td>
-                                <td style="padding:10px 8px;">15 pcs</td>
-                                <td style="padding:10px 8px; color:green;">In Stock</td>
-                                <td style="padding:10px 8px;">
-                                    <a href="#"><span style="font-size:1.1em;">✏️</span></a>
-                                    <a href="#"><span style="font-size:1.1em; margin-left:10px;">🗑️</span></a>
+                            <tr class="bg-white">
+                                <td class="py-2 px-2"><input type="checkbox"></td>
+                                <td class="py-2 px-2">CA00003</td>
+                                <td class="py-2 px-2">Onion</td>
+                                <td class="py-2 px-2">Vegetables</td>
+                                <td class="py-2 px-2">15 pcs</td>
+                                <td class="py-2 px-2 text-green-600">In Stock</td>
+                                <td class="py-2 px-2">
+                                    <a href="#"><span class="text-lg">✏️</span></a>
+                                    <a href="#"><span class="text-lg ml-2.5">🗑️</span></a>
                                 </td>
                             </tr>
-                            <tr style="background:#fff;">
-                                <td style="padding:10px 8px;"><input type="checkbox"></td>
-                                <td style="padding:10px 8px;">CA00004</td>
-                                <td style="padding:10px 8px;">Okra</td>
-                                <td style="padding:10px 8px;">Vegetables</td>
-                                <td style="padding:10px 8px;">0 pcs</td>
-                                <td style="padding:10px 8px; color:#e53935;">Out of Stock</td>
-                                <td style="padding:10px 8px;">
-                                    <a href="#"><span style="font-size:1.1em;">✏️</span></a>
-                                    <a href="#"><span style="font-size:1.1em; margin-left:10px;">🗑️</span></a>
+                            <tr class="bg-white">
+                                <td class="py-2 px-2"><input type="checkbox"></td>
+                                <td class="py-2 px-2">CA00004</td>
+                                <td class="py-2 px-2">Okra</td>
+                                <td class="py-2 px-2">Vegetables</td>
+                                <td class="py-2 px-2">0 pcs</td>
+                                <td class="py-2 px-2 text-red-600">Out of Stock</td>
+                                <td class="py-2 px-2">
+                                    <a href="#"><span class="text-lg">✏️</span></a>
+                                    <a href="#"><span class="text-lg ml-2.5">🗑️</span></a>
                                 </td>
                             </tr>
-                            <tr style="background:#fff;">
-                                <td style="padding:10px 8px;"><input type="checkbox"></td>
-                                <td style="padding:10px 8px;">CA00005</td>
-                                <td style="padding:10px 8px;">Oxtail</td>
-                                <td style="padding:10px 8px;">Meat</td>
-                                <td style="padding:10px 8px;">1 kg</td>
-                                <td style="padding:10px 8px; color:#ff9100;">Low Stock</td>
-                                <td style="padding:10px 8px;">
-                                    <a href="#"><span style="font-size:1.1em;">✏️</span></a>
-                                    <a href="#"><span style="font-size:1.1em; margin-left:10px;">🗑️</span></a>
+                            <tr class="bg-white">
+                                <td class="py-2 px-2"><input type="checkbox"></td>
+                                <td class="py-2 px-2">CA00005</td>
+                                <td class="py-2 px-2">Oxtail</td>
+                                <td class="py-2 px-2">Meat</td>
+                                <td class="py-2 px-2">1 kg</td>
+                                <td class="py-2 px-2 text-orange-400">Low Stock</td>
+                                <td class="py-2 px-2">
+                                    <a href="#"><span class="text-lg">✏️</span></a>
+                                    <a href="#"><span class="text-lg ml-2.5">🗑️</span></a>
                                 </td>
                             </tr>
-                            <tr style="background:#fff;">
-                                <td style="padding:10px 8px;"><input type="checkbox"></td>
-                                <td style="padding:10px 8px;">CA00006</td>
-                                <td style="padding:10px 8px;">Eggplant</td>
-                                <td style="padding:10px 8px;">Vegetables</td>
-                                <td style="padding:10px 8px;">5 pcs</td>
-                                <td style="padding:10px 8px; color:#ff9100;">Low Stock</td>
-                                <td style="padding:10px 8px;">
-                                    <a href="#"><span style="font-size:1.1em;">✏️</span></a>
-                                    <a href="#"><span style="font-size:1.1em; margin-left:10px;">🗑️</span></a>
+                            <tr class="bg-white">
+                                <td class="py-2 px-2"><input type="checkbox"></td>
+                                <td class="py-2 px-2">CA00006</td>
+                                <td class="py-2 px-2">Eggplant</td>
+                                <td class="py-2 px-2">Vegetables</td>
+                                <td class="py-2 px-2">5 pcs</td>
+                                <td class="py-2 px-2 text-orange-400">Low Stock</td>
+                                <td class="py-2 px-2">
+                                    <a href="#"><span class="text-lg">✏️</span></a>
+                                    <a href="#"><span class="text-lg ml-2.5">🗑️</span></a>
                                 </td>
                             </tr>
-                            <tr style="background:#fff;">
-                                <td style="padding:10px 8px;"><input type="checkbox"></td>
-                                <td style="padding:10px 8px;">CA00007</td>
-                                <td style="padding:10px 8px;">Espresso Shot</td>
-                                <td style="padding:10px 8px;">Coffee Base</td>
-                                <td style="padding:10px 8px;">30 shots</td>
-                                <td style="padding:10px 8px; color:green;">In Stock</td>
-                                <td style="padding:10px 8px;">
-                                    <a href="#"><span style="font-size:1.1em;">✏️</span></a>
-                                    <a href="#"><span style="font-size:1.1em; margin-left:10px;">🗑️</span></a>
+                            <tr class="bg-white">
+                                <td class="py-2 px-2"><input type="checkbox"></td>
+                                <td class="py-2 px-2">CA00007</td>
+                                <td class="py-2 px-2">Espresso Shot</td>
+                                <td class="py-2 px-2">Coffee Base</td>
+                                <td class="py-2 px-2">30 shots</td>
+                                <td class="py-2 px-2 text-green-600">In Stock</td>
+                                <td class="py-2 px-2">
+                                    <a href="#"><span class="text-lg">✏️</span></a>
+                                    <a href="#"><span class="text-lg ml-2.5">🗑️</span></a>
                                 </td>
                             </tr>
-                            <tr style="background:#fff;">
-                                <td style="padding:10px 8px;"><input type="checkbox"></td>
-                                <td style="padding:10px 8px;">CA00008</td>
-                                <td style="padding:10px 8px;">Vanilla Syrup</td>
-                                <td style="padding:10px 8px;">Syrup/Flavoring</td>
-                                <td style="padding:10px 8px;">5-10 pumps</td>
-                                <td style="padding:10px 8px; color:#ff9100;">Low Stock</td>
-                                <td style="padding:10px 8px;">
-                                    <a href="#"><span style="font-size:1.1em;">✏️</span></a>
-                                    <a href="#"><span style="font-size:1.1em; margin-left:10px;">🗑️</span></a>
+                            <tr class="bg-white">
+                                <td class="py-2 px-2"><input type="checkbox"></td>
+                                <td class="py-2 px-2">CA00008</td>
+                                <td class="py-2 px-2">Vanilla Syrup</td>
+                                <td class="py-2 px-2">Syrup/Flavoring</td>
+                                <td class="py-2 px-2">5-10 pumps</td>
+                                <td class="py-2 px-2 text-orange-400">Low Stock</td>
+                                <td class="py-2 px-2">
+                                    <a href="#"><span class="text-lg">✏️</span></a>
+                                    <a href="#"><span class="text-lg ml-2.5">🗑️</span></a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <!-- Pagination -->
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:24px;">
-                    <button
-                        style="background:#fff; border:1px solid #ccc; border-radius:6px; padding:7px 18px;">Previous</button>
-                    <span style="color:#888;">Page 1 of <b>10</b></span>
-                    <button
-                        style="background:#fff; border:1px solid #ccc; border-radius:6px; padding:7px 18px;">Next</button>
+                <div class="flex items-center justify-between mt-6">
+                    <button class="bg-white border border-gray-300 rounded-md px-4 py-2">Previous</button>
+                    <span class="text-gray-500">Page 1 of <b>10</b></span>
+                    <button class="bg-white border border-gray-300 rounded-md px-4 py-2">Next</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @endsection
