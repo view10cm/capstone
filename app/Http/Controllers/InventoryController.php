@@ -11,8 +11,9 @@ class InventoryController extends Controller
     public function index()
     {
         // Fetch all categories from the database
+        // Fix: Use 'id' instead of 'categoryID' since that's what the migration creates
         $categories = DB::table('ingredient_categories')
-            ->select('categoryID', 'categoryName')
+            ->select('id as categoryID', 'categoryName') // Alias 'id' as 'categoryID' for consistency
             ->orderBy('categoryName', 'asc')
             ->get();
 
@@ -27,30 +28,23 @@ class InventoryController extends Controller
                 'categoryName' => 'required|string|max:255|unique:ingredient_categories,categoryName'
             ]);
 
-            // Create the category - using categoryID as primary key
+            // Create the category
             $categoryId = DB::table('ingredient_categories')->insertGetId([
                 'categoryName' => $request->categoryName,
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
 
-            // Get the created category data
+            // Get the created category data using the correct column name 'id'
             $categoryData = DB::table('ingredient_categories')
-                ->where('categoryID', $categoryId) // Use categoryID instead of id
+                ->where('id', $categoryId)
                 ->first();
-
-            // If categoryData is null, try with 'id' column
-            if (!$categoryData) {
-                $categoryData = DB::table('ingredient_categories')
-                    ->where('id', $categoryId)
-                    ->first();
-            }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Category created successfully!',
                 'category' => [
-                    'categoryID' => $categoryData->categoryID ?? $categoryData->id ?? $categoryId,
+                    'categoryID' => $categoryData->id, // Use 'id' from database
                     'categoryName' => $categoryData->categoryName
                 ]
             ]);

@@ -145,8 +145,8 @@
                     </div>
                     <select id="categorySelect" class="w-full border border-gray-300 rounded px-3 py-2 mb-4">
                         <option value="">Select a category</option>
-                        @if(isset($categories) && count($categories) > 0)
-                            @foreach($categories as $category)
+                        @if (isset($categories) && count($categories) > 0)
+                            @foreach ($categories as $category)
                                 <option value="{{ $category->categoryID }}">{{ $category->categoryName }}</option>
                             @endforeach
                         @endif
