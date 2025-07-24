@@ -1,5 +1,7 @@
 @extends('base')
 
+@section('title', 'Caffe Arabica - Inventory')
+
 @section('content')
     <div class="flex min-h-screen">
         @include('admin.adminSidebar')
