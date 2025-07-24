@@ -90,7 +90,7 @@
                             </div>
 
                             <!-- Add Ingredient Button -->
-                            <button
+                            <button onclick="openModal()"
                                 class="flex items-center px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors cursor-pointer">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -103,22 +103,109 @@
 
                     <!-- Empty State Content -->
                     <div class="flex flex-col items-center justify-center mt-33 py-16 px-16">
-                        <!-- Kitchen Illustration -->
                         <div class="mb-8">
                             <img src="{{ asset('images/emptyInventory.svg') }}" alt="Empty Kitchen Illustration"
                                 class="w-80 h-50">
                         </div>
-
-                        <!-- Empty State Text -->
                         <p class="text-gray-600 text-center max-w-md">
                             Looks like your storage room's on a diet - no ingredients in sight! Add an Ingredient.
                         </p>
                     </div>
                 </div>
             </main>
-
         </div>
     </div>
+
+    <!-- Add Ingredient Modal -->
+    <div id="addIngredientModal"
+        class="fixed inset-0 z-50 hidden bg-transparent bg-opacity-50 backdrop-blur-sm overflow-y-auto flex items-center justify-center">
+        <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg">
+            <div class="flex items-center justify-between px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold">Add an Ingredient</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-800 text-xl">&times;</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6 px-6 py-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Product Name <span class="text-red-500">*</span></label>
+                    <input type="text" class="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+                        placeholder="Enter product name">
+
+                    <label class="block text-sm font-medium mb-1">Quantity (Each) <span
+                            class="text-red-500">*</span></label>
+                    <input type="number" id="quantityInput" class="w-full border border-gray-300 rounded px-3 py-2"
+                        placeholder="Enter quantity" oninput="updateAvailability()">
+                </div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-sm font-medium">Category <span class="text-red-500">*</span></label>
+                        <button onclick="openCategoryModal()" class="text-orange-600 text-sm hover:underline">+ Add
+                            Category</button>
+                    </div>
+                    <select id="categorySelect" class="w-full border border-gray-300 rounded px-3 py-2 mb-4">
+                        <option value="">Select a category</option>
+                        @if(isset($categories) && count($categories) > 0)
+                            @foreach($categories as $category)
+                                <option value="{{ $category->categoryID }}">{{ $category->categoryName }}</option>
+                            @endforeach
+                        @endif
+                    </select>
+
+                    <label class="block text-sm font-medium mb-1">Availability</label>
+                    <input type="text" id="availabilityInput"
+                        class="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100"
+                        placeholder="Availability status" disabled>
+                </div>
+            </div>
+
+            <div class="flex justify-end px-6 py-4 border-t space-x-4">
+                <button onclick="closeModal()" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
+                <button class="px-4 py-2 rounded bg-orange-500 text-white hover:bg-orange-600">+ Add Product</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Ingredient Category Modal -->
+    <div id="createCategoryModal"
+        class="fixed inset-0 z-60 hidden bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto flex items-center justify-center">
+        <div class="bg-white w-full max-w-md rounded-lg shadow-lg">
+            <div class="flex items-center justify-between px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold">Create Ingredient Category</h3>
+                <button onclick="closeCategoryModal()" class="text-gray-500 hover:text-gray-800 text-xl">&times;</button>
+            </div>
+
+            <div class="px-6 py-4">
+                <label class="block text-sm font-medium mb-2">Category Name <span class="text-red-500">*</span></label>
+                <input type="text" id="categoryNameInput" class="w-full border border-gray-300 rounded px-3 py-2"
+                    placeholder="Enter category name">
+            </div>
+
+            <div class="flex justify-end px-6 py-4 border-t space-x-4">
+                <button onclick="closeCategoryModal()"
+                    class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
+                <button onclick="addCategory()" class="px-4 py-2 rounded bg-orange-500 text-white hover:bg-orange-600">Add
+                    Category</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal"
+        class="fixed inset-0 z-70 hidden bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center">
+        <div class="bg-white w-full max-w-sm rounded-lg shadow-lg p-6 text-center">
+            <div class="mb-4">
+                <svg class="w-16 h-16 mx-auto text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Category Created</h3>
+            <p class="text-gray-600">Your category has been successfully created!</p>
+        </div>
+    </div>
+
+    <!-- Add CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Include the external JavaScript file -->
     <script src="{{ asset('js/inventory.js') }}"></script>
