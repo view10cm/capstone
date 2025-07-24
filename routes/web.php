@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController; // Add this line
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\IngredientsController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -53,3 +54,15 @@ Route::get('/inventory', [InventoryController::class, 'index']);
 
 // Add this route for creating ingredient categories
 Route::post('/admin/ingredient-categories', [InventoryController::class, 'storeCategory'])->name('admin.ingredient-categories.store');
+
+// Admin Ingredients Routes
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    // Display inventory page
+    Route::get('/inventory', [IngredientsController::class, 'index'])->name('admin.adminInventory');
+    
+    // Store new ingredient
+    Route::post('/ingredients', [IngredientsController::class, 'store'])->name('admin.ingredients.store');
+    
+    // Store new ingredient category
+    Route::post('/ingredients/categories', [IngredientsController::class, 'storeCategory'])->name('admin.ingredients.categories.store');
+});

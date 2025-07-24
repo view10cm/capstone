@@ -147,7 +147,7 @@
                         <option value="">Select a category</option>
                         @if (isset($categories) && count($categories) > 0)
                             @foreach ($categories as $category)
-                                <option value="{{ $category->categoryID }}">{{ $category->categoryName }}</option>
+                                <option value="{{ $category->id }}">{{ $category->categoryName }}</option>
                             @endforeach
                         @endif
                     </select>
@@ -161,7 +161,7 @@
 
             <div class="flex justify-end px-6 py-4 border-t space-x-4">
                 <button onclick="closeModal()" class="px-4 py-2 rounded bg-gray-200 hover:bg-gray-300">Cancel</button>
-                <button class="px-4 py-2 rounded bg-orange-500 text-white hover:bg-orange-600">+ Add Product</button>
+                <button onclick="addIngredient()" class="px-4 py-2 rounded bg-orange-500 text-white hover:bg-orange-600">+ Add Product</button>
             </div>
         </div>
     </div>
@@ -199,8 +199,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">Category Created</h3>
-            <p class="text-gray-600">Your category has been successfully created!</p>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Ingredient Added to the Kitchen</h3>
+            <p class="text-gray-600">Your ingredient has been successfully added!</p>
         </div>
     </div>
 
@@ -208,5 +208,5 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Include the external JavaScript file -->
-    <script src="{{ asset('js/inventory.js') }}"></script>
+    <script src="{{ asset('js/ingredients.js') }}"></script>
 @endsection
