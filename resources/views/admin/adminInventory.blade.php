@@ -101,16 +101,126 @@
                         </div>
                     </div>
 
-                    <!-- Empty State Content -->
-                    <div class="flex flex-col items-center justify-center mt-33 py-16 px-16">
-                        <div class="mb-8">
-                            <img src="{{ asset('images/emptyInventory.svg') }}" alt="Empty Kitchen Illustration"
-                                class="w-80 h-50">
+                    @if($ingredients->count() > 0)
+                        <!-- Ingredients Table -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left">
+                                            <input type="checkbox" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Name</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Availability</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach($ingredients as $index => $ingredient)
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <input type="checkbox" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                CA{{ str_pad($ingredient->ingredient_id, 5, '0', STR_PAD_LEFT) }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {{ $ingredient->ingredient_name }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {{ $ingredient->ingredient_category }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {{ $ingredient->ingredient_quantity }} 
+                                                @php
+                                                    $name = strtolower($ingredient->ingredient_name);
+                                                    if (str_contains($name, 'beef') || str_contains($name, 'oxtail')) {
+                                                        echo 'kg';
+                                                    } elseif (str_contains($name, 'shot')) {
+                                                        echo 'shots';
+                                                    } elseif (str_contains($name, 'syrup') || str_contains($name, 'pump')) {
+                                                        echo 'pumps';
+                                                    } else {
+                                                        echo 'pcs';
+                                                    }
+                                                @endphp
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if($ingredient->ingredient_availability == 'In Stock')
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                                        In Stock
+                                                    </span>
+                                                @elseif($ingredient->ingredient_availability == 'Low Stock')
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                                        Low Stock
+                                                    </span>
+                                                @else
+                                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                                        Out of Stock
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div class="flex space-x-2">
+                                                    <!-- Edit Button -->
+                                                    <button class="text-orange-600 hover:text-orange-900">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                        </svg>
+                                                    </button>
+                                                    <!-- Delete Button -->
+                                                    <button onclick="deleteIngredient({{ $ingredient->ingredient_id }})" class="text-red-600 hover:text-red-900">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                        <p class="text-gray-600 text-center max-w-md">
-                            Looks like your storage room's on a diet - no ingredients in sight! Add an Ingredient.
-                        </p>
-                    </div>
+
+                        <!-- Pagination -->
+                        <div class="flex items-center justify-between px-6 py-4 border-t border-gray-200">
+                            <div class="flex items-center">
+                                <button {{ $ingredients->onFirstPage() ? 'disabled' : '' }} 
+                                    onclick="window.location='{{ $ingredients->previousPageUrl() }}'"
+                                    class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 {{ $ingredients->onFirstPage() ? 'opacity-50 cursor-not-allowed' : '' }}">
+                                    Previous
+                                </button>
+                            </div>
+                            
+                            <div class="text-sm text-gray-700">
+                                Page {{ $ingredients->currentPage() }} of {{ $ingredients->lastPage() }}
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <button {{ $ingredients->hasMorePages() ? '' : 'disabled' }}
+                                    onclick="window.location='{{ $ingredients->nextPageUrl() }}'"
+                                    class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 {{ !$ingredients->hasMorePages() ? 'opacity-50 cursor-not-allowed' : '' }}">
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    @else
+                        <!-- Empty State Content -->
+                        <div class="flex flex-col items-center justify-center mt-33 py-16 px-16">
+                            <div class="mb-8">
+                                <img src="{{ asset('images/emptyInventory.svg') }}" alt="Empty Kitchen Illustration"
+                                    class="w-80 h-50">
+                            </div>
+                            <p class="text-gray-600 text-center max-w-md">
+                                Looks like your storage room's on a diet - no ingredients in sight! Add an Ingredient.
+                            </p>
+                        </div>
+                    @endif
                 </div>
             </main>
         </div>

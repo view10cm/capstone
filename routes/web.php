@@ -1,10 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController; // Add this line
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\IngredientsController;
 
+// Public Routes
 Route::get('/', function () {
     return view('welcome');
 });
@@ -14,55 +15,53 @@ Route::get('/system-description', function () {
 })->name('systemDescription');
 
 Route::get('/login', function () {
-    return view('login'); // Make sure you have a resources/views/login.blade.php file
+    return view('login');
 })->name('login');
 
-Route::get('forgot-password', function () {
+Route::get('/forgot-password', function () {
     return view('auth.forgot-password');
 })->name('password.request');
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-// Admin Dashboard
+Route::get('/logout', function () {
+    return redirect('/');
+})->name('logout');
+
+// Admin Dashboard Pages
 Route::get('/admin/dashboard', function () {
     return view('admin.adminDashboard');
 })->name('admin.adminDashboard');
 
-// To this:
-Route::get('/admin/inventory', [InventoryController::class, 'index'])->name('admin.adminInventory');
-// Admin Menu
 Route::get('/admin/menu', function () {
     return view('admin.adminMenu');
 })->name('admin.adminMenu');
 
-// Admin Users
 Route::get('/admin/users', function () {
     return view('admin.adminUsers');
 })->name('admin.adminUsers');
 
-// Admin Order History
 Route::get('/admin/orders', function () {
     return view('admin.adminOrderHistory');
 })->name('admin.adminOrderHistory');
 
-Route::get('/logout', function () {
-    // Optionally, you can add Auth::logout(); if using authentication
-    return redirect('/');
-})->name('logout');
-
+// Temporary Inventory Route (might conflict with middleware one)
 Route::get('/inventory', [InventoryController::class, 'index']);
 
-// Add this route for creating ingredient categories
+// Ingredient Category Route (outside middleware)
 Route::post('/admin/ingredient-categories', [InventoryController::class, 'storeCategory'])->name('admin.ingredient-categories.store');
 
-// Admin Ingredients Routes
+// Protected Admin Routes
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     // Display inventory page
     Route::get('/inventory', [IngredientsController::class, 'index'])->name('admin.adminInventory');
-    
+
     // Store new ingredient
     Route::post('/ingredients', [IngredientsController::class, 'store'])->name('admin.ingredients.store');
-    
+
+    // Delete ingredient
+    Route::delete('/ingredients/{id}', [IngredientsController::class, 'destroy'])->name('admin.ingredients.destroy');
+
     // Store new ingredient category
     Route::post('/ingredients/categories', [IngredientsController::class, 'storeCategory'])->name('admin.ingredients.categories.store');
 });

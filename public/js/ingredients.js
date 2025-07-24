@@ -217,6 +217,36 @@ function showSuccessModal(title, message) {
     }, 2000);
 }
 
+// Delete ingredient function
+function deleteIngredient(ingredientId) {
+    if (confirm('Are you sure you want to delete this ingredient? This action cannot be undone.')) {
+        fetch(`/admin/ingredients/${ingredientId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showSuccessModal('Ingredient Deleted', 'The ingredient has been successfully deleted!');
+                
+                // Reload page after 2 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            } else {
+                alert(data.message || 'Error deleting ingredient');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the ingredient');
+        });
+    }
+}
+
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
     // Remove any existing event listeners first

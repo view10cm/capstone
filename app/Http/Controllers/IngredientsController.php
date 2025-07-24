@@ -16,7 +16,12 @@ class IngredientsController extends Controller
         // Get all ingredient categories for the dropdown
         $categories = DB::table('ingredient_categories')->get();
         
-        return view('admin.adminInventory', compact('categories'));
+        // Get all ingredients with pagination
+        $ingredients = DB::table('ingredients')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        
+        return view('admin.adminInventory', compact('categories', 'ingredients'));
     }
 
     /**
@@ -122,6 +127,36 @@ class IngredientsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error creating category: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete an ingredient
+     */
+    public function destroy($id)
+    {
+        try {
+            $deleted = DB::table('ingredients')
+                ->where('ingredient_id', $id)
+                ->delete();
+
+            if ($deleted) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Ingredient deleted successfully!'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ingredient not found!'
+                ], 404);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting ingredient: ' . $e->getMessage()
             ], 500);
         }
     }
