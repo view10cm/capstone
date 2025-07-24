@@ -2,7 +2,7 @@
 <div class="flex flex-col h-screen w-64 bg-white px-6 py-8">
     <!-- Logo Section -->
     <div class="flex flex-col items-center mb-10">
-        <img src="{{ asset('images/NavBarLogo.svg') }}" alt="Caffé Arabica Logo" class="w-32 h-32 mb-2">
+        <img src="{{ asset('images/caffeArabicaSidebarLogo.svg') }}" alt="Caffé Arabica Logo" class="w-60 h-22 mb-2 mr-2">
     </div>
     <!-- Navigation -->
     <nav class="flex-1">
