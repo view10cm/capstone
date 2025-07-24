@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController; // Add this line
+use App\Http\Controllers\InventoryController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,11 +27,8 @@ Route::get('/admin/dashboard', function () {
     return view('admin.adminDashboard');
 })->name('admin.adminDashboard');
 
-// Admin Inventory
-Route::get('/admin/inventory', function () {
-    return view('admin.adminInventory');
-})->name('admin.adminInventory');
-
+// To this:
+Route::get('/admin/inventory', [InventoryController::class, 'index'])->name('admin.adminInventory');
 // Admin Menu
 Route::get('/admin/menu', function () {
     return view('admin.adminMenu');
@@ -51,5 +49,7 @@ Route::get('/logout', function () {
     return redirect('/');
 })->name('logout');
 
+Route::get('/inventory', [InventoryController::class, 'index']);
 
-
+// Add this route for creating ingredient categories
+Route::post('/admin/ingredient-categories', [InventoryController::class, 'storeCategory'])->name('admin.ingredient-categories.store');
