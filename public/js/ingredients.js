@@ -4,19 +4,32 @@ const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute
 // Date and time functionality
 function updateDateTime() {
     const now = new Date();
-    const options = { 
+    const dateOptions = { 
+        weekday: 'long',
         year: 'numeric', 
         month: 'long', 
         day: 'numeric' 
     };
-    const dateString = now.toLocaleDateString('en-US', options);
-    const timeString = now.toLocaleTimeString('en-US', { 
+    const timeOptions = { 
         hour: '2-digit', 
-        minute: '2-digit' 
-    });
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    };
     
-    document.getElementById('currentDate').textContent = dateString;
-    document.getElementById('currentTime').textContent = timeString;
+    const dateString = now.toLocaleDateString('en-US', dateOptions);
+    const timeString = now.toLocaleTimeString('en-US', timeOptions);
+    
+    const currentDateEl = document.getElementById('currentDate');
+    const currentTimeEl = document.getElementById('currentTime');
+    
+    if (currentDateEl) {
+        currentDateEl.textContent = dateString;
+    }
+    
+    if (currentTimeEl) {
+        currentTimeEl.textContent = timeString;
+    }
 }
 
 // Update date and time every second
@@ -107,29 +120,45 @@ function addCategory() {
 
 // Add new ingredient
 function addIngredient() {
+    // Prevent multiple submissions
+    const button = event.target;
+    if (button.disabled) return;
+    button.disabled = true;
+    button.textContent = 'Adding...';
+    
     const productName = document.querySelector('#addIngredientModal input[placeholder="Enter product name"]').value.trim();
     const quantity = document.getElementById('quantityInput').value;
     const category = document.getElementById('categorySelect').value;
     const availability = document.getElementById('availabilityInput').value;
     
+    // Reset button function
+    const resetButton = () => {
+        button.disabled = false;
+        button.textContent = '+ Add Product';
+    };
+    
     // Validation
     if (!productName) {
         alert('Please enter a product name');
+        resetButton();
         return;
     }
     
     if (!quantity || quantity < 0) {
         alert('Please enter a valid quantity');
+        resetButton();
         return;
     }
     
     if (!category) {
         alert('Please select a category');
+        resetButton();
         return;
     }
     
     if (!availability) {
         alert('Please ensure availability is set');
+        resetButton();
         return;
     }
     
@@ -161,11 +190,13 @@ function addIngredient() {
             }, 2000);
         } else {
             alert(data.message || 'Error adding ingredient');
+            resetButton();
         }
     })
     .catch(error => {
         console.error('Error:', error);
         alert('An error occurred while adding the ingredient');
+        resetButton();
     });
 }
 
@@ -188,9 +219,11 @@ function showSuccessModal(title, message) {
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    // Add ingredient button click event
-    const addProductButton = document.querySelector('#addIngredientModal button[class*="bg-orange-500"]');
+    // Remove any existing event listeners first
+    const addProductButton = document.querySelector('#addIngredientModal button[onclick="addIngredient()"]');
     if (addProductButton) {
+        // Remove onclick attribute to prevent double execution
+        addProductButton.removeAttribute('onclick');
         addProductButton.addEventListener('click', addIngredient);
     }
     

@@ -41,6 +41,18 @@ class IngredientsController extends Controller
         }
 
         try {
+            // Check if ingredient already exists
+            $existingIngredient = DB::table('ingredients')
+                ->where('ingredient_name', $request->product_name)
+                ->first();
+
+            if ($existingIngredient) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'An ingredient with this name already exists!'
+                ], 409);
+            }
+
             // Get category name from category ID
             $category = DB::table('ingredient_categories')
                 ->where('id', $request->category)
