@@ -126,7 +126,7 @@
 
     <!-- Create Menu Product Modal -->
     <div id="createMenuModal"
-        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 opacity-0 invisible transition-all duration-300 ease-in-out">
+        class="fixed inset-0 bg-transparent bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 opacity-0 invisible transition-all duration-300 ease-in-out">
         <div
             class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 transform scale-95 transition-all duration-300 ease-in-out">
             <!-- Modal Header -->
@@ -257,7 +257,7 @@
 
                         <!-- Add Category Modal -->
                         <div id="addCategoryModal"
-                            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] opacity-0 invisible transition-all duration-300 ease-in-out">
+                            class="fixed inset-0 bg-transparent backdrop-blur-sm bg-opacity-50 flex items-center justify-center z-[60] opacity-0 invisible transition-all duration-300 ease-in-out">
                             <div
                                 class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform scale-95 transition-all duration-300 ease-in-out">
                                 <!-- Modal Header -->
@@ -309,7 +309,7 @@
 
                         <!-- Add Subcategory Modal -->
                         <div id="addSubcategoryModal"
-                            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] opacity-0 invisible transition-all duration-300 ease-in-out">
+                            class="fixed inset-0 bg-transparent backdrop-blur-lg bg-opacity-50 flex items-center justify-center z-[60] opacity-0 invisible transition-all duration-300 ease-in-out">
                             <div
                                 class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform scale-95 transition-all duration-300 ease-in-out">
                                 <!-- Modal Header -->
