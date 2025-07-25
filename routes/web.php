@@ -6,6 +6,8 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\IngredientsController;
 use App\Http\Controllers\MenuCategoryController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\CustomerController;
 
 // Public Routes
 Route::get('/', function () {
@@ -90,3 +92,13 @@ Route::get('/admin/menu', function () {
     $products = \App\Models\ProductsData::paginate(10);
     return view('admin.adminMenu', ['products' => $products]);
 })->name('admin.adminMenu');
+
+// Authentication routes
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Customer routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/customer/landing', [CustomerController::class, 'landing'])->name('customer.landing');
+});

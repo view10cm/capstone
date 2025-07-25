@@ -15,11 +15,23 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // Admin account
         User::create([
             'name' => 'CaffeArabica Admin',
             'email' => 'caffearabicaexample@gmail.com',
             'password' => Hash::make('@Admin001'),
             'role' => 'Admin',
+            'email_verified_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Customer account
+        User::create([
+            'name' => 'CaffeArabica Customer',
+            'email' => 'customer@caffearabica.com',
+            'password' => Hash::make('Customer123!'),
+            'role' => 'Customer',
             'email_verified_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),

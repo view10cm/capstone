@@ -15,7 +15,7 @@
     <div class="bg-white p-8 rounded-[12px] shadow-md w-[400px] h-[400px]">
         <h2 class="mb-6 text-center font-bold" style="font-family: 'Cinzel', serif; font-size: 32px;">Caffe Arabica</h2>
 
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST" action="/login">
             @csrf
             <div class="mb-4">
                 <label class="block mb-1 font-medium" for="email"
