@@ -228,7 +228,7 @@
 
     <!-- Add Ingredient Modal -->
     <div id="addIngredientModal"
-        class="fixed inset-0 z-50 hidden bg-transparent bg-opacity-50 backdrop-blur-sm overflow-y-auto flex items-center justify-center">
+        class="fixed inset-0 z-50 hidden bg-transparent bg-opacity-20 backdrop-blur-sm overflow-y-auto flex items-center justify-center">
         <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg">
             <div class="flex items-center justify-between px-6 py-4 border-b">
                 <h3 class="text-lg font-semibold">Add an Ingredient</h3>
@@ -278,7 +278,7 @@
 
     <!-- Create Ingredient Category Modal -->
     <div id="createCategoryModal"
-        class="fixed inset-0 z-60 hidden bg-black bg-opacity-50 backdrop-blur-sm overflow-y-auto flex items-center justify-center">
+        class="fixed inset-0 z-60 hidden bg-transparent bg-opacity-50 backdrop-blur-sm overflow-y-auto flex items-center justify-center">
         <div class="bg-white w-full max-w-md rounded-lg shadow-lg">
             <div class="flex items-center justify-between px-6 py-4 border-b">
                 <h3 class="text-lg font-semibold">Create Ingredient Category</h3>
