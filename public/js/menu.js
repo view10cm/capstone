@@ -508,19 +508,25 @@ function resetImageUploadArea() {
     `;
 }
 
-// Create menu product
-function createMenuProduct() {
-    const formData = {
-        name: document.getElementById('productName').value.trim(),
-        description: document.getElementById('productDescription').value.trim(),
-        category: categorySelect.value,
-        subcategory: subcategorySelect.value,
-        price: document.getElementById('productPrice').value,
-        image: imageInput.files[0]
-    };
+// Create menu product - Database version
+async function createMenuProduct() {
+    const formData = new FormData();
+    formData.append('name', document.getElementById('productName').value.trim());
+    formData.append('description', document.getElementById('productDescription').value.trim());
+    formData.append('category', categorySelect.value);
+    formData.append('subcategory', subcategorySelect.value);
+    formData.append('price', document.getElementById('productPrice').value);
+    
+    // Append the image file if it exists
+    if (imageInput.files[0]) {
+        formData.append('image', imageInput.files[0]);
+    }
 
     // Validate required fields
-    if (!validateForm(formData)) {
+    if (!formData.get('name') || !formData.get('category') || 
+        !formData.get('subcategory') || !formData.get('price') || 
+        parseFloat(formData.get('price')) <= 0) {
+        showNotification('Please fill all required fields with valid values', 'error');
         return;
     }
 
@@ -536,20 +542,37 @@ function createMenuProduct() {
     `;
     submitButton.disabled = true;
 
-    // Simulate API call (replace with actual API call)
-    setTimeout(() => {
-        console.log('Creating menu product:', formData);
-        
+    try {
+        const response = await fetch('/admin/products', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to create product');
+        }
+
+        if (data.success) {
+            showNotification('Product created successfully!', 'success');
+            closeModal();
+            // Optionally refresh the product list or redirect
+        } else {
+            showNotification(data.message || 'Error creating product', 'error');
+        }
+    } catch (error) {
+        console.error('Error creating product:', error);
+        showNotification(`Error creating product: ${error.message}`, 'error');
+    } finally {
         // Reset button
         submitButton.innerHTML = originalText;
         submitButton.disabled = false;
-        
-        // Show success message
-        showNotification('Menu item created successfully!', 'success');
-        
-        // Close modal
-        closeModal();
-    }, 1500);
+    }
 }
 
 // Validate form
