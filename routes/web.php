@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\IngredientsController;
 use App\Http\Controllers\MenuCategoryController;
+use App\Http\Controllers\Admin\ProductController;
 
 // Public Routes
 Route::get('/', function () {
@@ -70,4 +71,12 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 Route::prefix('admin/categories')->group(function () {
     Route::get('/', [MenuCategoryController::class, 'index'])->name('categories.index');
     Route::post('/', [MenuCategoryController::class, 'store'])->name('categories.store');
+});
+
+Route::prefix('admin')->group(function () {
+    // ... other admin routes
+    
+    // Product routes
+    Route::post('/products', [\App\Http\Controllers\Admin\ProductController::class, 'store'])
+        ->name('admin.products.store');
 });
