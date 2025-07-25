@@ -101,23 +101,110 @@
                         </div>
                     </div>
 
-                    <!-- Empty State Section -->
-                    <div class="flex flex-col items-center justify-center py-20 px-6">
-                        <!-- Empty State Image -->
-                        <div class="mb-8">
-                            <img src="{{ asset('images/emptyMenu.svg') }}" alt="No menu items"
-                                class="w-80 h-80 object-contain">
-                        </div>
+                    <!-- Products Table -->
+                    <div class="overflow-x-auto p-6">
+                        @if ($products->count() > 0)
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Image
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Name
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Category
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Subcategory
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Price
+                                        </th>
+                                        <th scope="col"
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    @foreach ($products as $product)
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                @if ($product->productImage)
+                                                    <img src="{{ asset('storage/' . $product->productImage) }}"
+                                                        alt="{{ $product->productName }}"
+                                                        class="h-10 w-10 rounded-full object-cover">
+                                                @else
+                                                    <div
+                                                        class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                        <svg class="w-5 h-5 text-gray-400" fill="none"
+                                                            stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                            </path>
+                                                        </svg>
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm font-medium text-gray-900">{{ $product->productName }}
+                                                </div>
+                                                @if ($product->productDescription)
+                                                    <div class="text-sm text-gray-500 truncate max-w-xs">
+                                                        {{ $product->productDescription }}</div>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">{{ $product->productCategory }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">{{ $product->productSubcategory }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <div class="text-sm text-gray-900">
+                                                    ₱{{ number_format($product->productPrice, 2) }}</div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <button class="text-orange-600 hover:text-orange-900 mr-4">Edit</button>
+                                                <button class="text-red-600 hover:text-red-900">Delete</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            @if ($products->count() > 0)
+                                <div class="px-6 py-4">
+                                    {{ $products->links() }}
+                                </div>
+                            @endif
+                        @else
+                            <!-- Empty State Section -->
+                            <div class="flex flex-col items-center justify-center py-20 px-6">
+                                <!-- Empty State Image -->
+                                <div class="mb-8">
+                                    <img src="{{ asset('images/emptyMenu.svg') }}" alt="No menu items"
+                                        class="w-80 h-80 object-contain">
+                                </div>
 
-                        <!-- Empty State Text -->
-                        <div class="text-center mb-8">
-                            <h3 class="text-xl font-semibold text-gray-900 mb-2">No menu items yet</h3>
-                            <p class="text-gray-600 text-sm max-w-md">
-                                Start building your menu by adding your first product. You can add drinks, food items, and
-                                more to showcase your offerings.
-                            </p>
-                        </div>
-
+                                <!-- Empty State Text -->
+                                <div class="text-center mb-8">
+                                    <h3 class="text-xl font-semibold text-gray-900 mb-2">No menu items yet</h3>
+                                    <p class="text-gray-600 text-sm max-w-md">
+                                        Start building your menu by adding your first product. You can add drinks, food
+                                        items, and
+                                        more to showcase your offerings.
+                                    </p>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </main>
@@ -134,7 +221,8 @@
                 <div class="flex items-center">
                     <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
                         <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                            </path>
                         </svg>
                     </div>
                     <h2 class="text-lg font-semibold text-gray-900">Create Menu Items</h2>

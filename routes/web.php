@@ -80,3 +80,13 @@ Route::prefix('admin')->group(function () {
     Route::post('/products', [\App\Http\Controllers\Admin\ProductController::class, 'store'])
         ->name('admin.products.store');
 });
+
+Route::get('/admin/menu', function () {
+    $products = \App\Models\ProductsData::all();
+    return view('admin.adminMenu', ['products' => $products]);
+})->name('admin.adminMenu');
+
+Route::get('/admin/menu', function () {
+    $products = \App\Models\ProductsData::paginate(10);
+    return view('admin.adminMenu', ['products' => $products]);
+})->name('admin.adminMenu');
