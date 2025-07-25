@@ -105,22 +105,308 @@
                     <div class="flex flex-col items-center justify-center py-20 px-6">
                         <!-- Empty State Image -->
                         <div class="mb-8">
-                            <img src="{{ asset('images/emptyMenu.svg') }}" alt="No menu items" class="w-80 h-80 object-contain">
+                            <img src="{{ asset('images/emptyMenu.svg') }}" alt="No menu items"
+                                class="w-80 h-80 object-contain">
                         </div>
-                        
+
                         <!-- Empty State Text -->
                         <div class="text-center mb-8">
                             <h3 class="text-xl font-semibold text-gray-900 mb-2">No menu items yet</h3>
                             <p class="text-gray-600 text-sm max-w-md">
-                                No tasty treats yet! Let's cook up some products. You can add drinks, food items, and more to showcase your offerings.
+                                Start building your menu by adding your first product. You can add drinks, food items, and
+                                more to showcase your offerings.
                             </p>
                         </div>
+
                     </div>
                 </div>
             </main>
         </div>
     </div>
 
-    <!-- Include the external JavaScript file -->
+    <!-- Create Menu Product Modal -->
+    <div id="createMenuModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 opacity-0 invisible transition-all duration-300 ease-in-out">
+        <div
+            class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 transform scale-95 transition-all duration-300 ease-in-out">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                        <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-lg font-semibold text-gray-900">Create Menu Items</h2>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-6">
+                <form id="createMenuForm" class="grid grid-cols-2 gap-6">
+                    <!-- Left Column - Product Image -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                                id="imageUploadArea">
+                                <div class="flex flex-col items-center">
+                                    <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    <p class="text-sm text-gray-500 mb-2">Upload your product image here</p>
+                                    <button type="button"
+                                        class="px-4 py-2 bg-orange-500 text-white text-sm rounded-lg hover:bg-orange-600 transition-colors">
+                                        Choose File
+                                    </button>
+                                </div>
+                                <input type="file" id="productImage" class="hidden" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Form Fields -->
+                    <div class="space-y-4">
+                        <!-- Product Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Product Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="productName" placeholder="Enter product name"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm">
+                        </div>
+
+                        <!-- Product Description -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Product Description</label>
+                            <textarea id="productDescription" placeholder="Enter product description" rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm resize-none"></textarea>
+                        </div>
+
+                        <!-- Updated Category Section in the Modal -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Category <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <select id="productCategory"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm appearance-none bg-white">
+                                    <option value="">Select a category</option>
+                                    <!-- Categories will be populated dynamically -->
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <a href="#" onclick="openAddCategoryModal()"
+                                    class="text-orange-500 text-sm hover:text-orange-600 transition-colors flex items-center">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Add Category
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Updated Subcategory Section in the Modal -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Subcategory <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <select id="productSubcategory"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm appearance-none bg-white"
+                                    disabled>
+                                    <option value="">Select a subcategory</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <a href="#" onclick="openAddSubcategoryModal()"
+                                    class="text-orange-500 text-sm hover:text-orange-600 transition-colors flex items-center"
+                                    id="addSubcategoryLink" style="display: none;">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                    Add Subcategory
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Add Category Modal -->
+                        <div id="addCategoryModal"
+                            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] opacity-0 invisible transition-all duration-300 ease-in-out">
+                            <div
+                                class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform scale-95 transition-all duration-300 ease-in-out">
+                                <!-- Modal Header -->
+                                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4"></path>
+                                            </svg>
+                                        </div>
+                                        <h2 class="text-lg font-semibold text-gray-900">Add New Category</h2>
+                                    </div>
+                                    <button onclick="closeAddCategoryModal()"
+                                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Modal Content -->
+                                <div class="p-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            Category Name <span class="text-red-500">*</span>
+                                        </label>
+                                        <input type="text" id="newCategoryName" placeholder="Enter category name"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm">
+                                    </div>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+                                    <button onclick="closeAddCategoryModal()"
+                                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                                        Cancel
+                                    </button>
+                                    <button onclick="createNewCategory()"
+                                        class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium">
+                                        Add Category
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add Subcategory Modal -->
+                        <div id="addSubcategoryModal"
+                            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] opacity-0 invisible transition-all duration-300 ease-in-out">
+                            <div
+                                class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 transform scale-95 transition-all duration-300 ease-in-out">
+                                <!-- Modal Header -->
+                                <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                                    <div class="flex items-center">
+                                        <div
+                                            class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4"></path>
+                                            </svg>
+                                        </div>
+                                        <h2 class="text-lg font-semibold text-gray-900">Add New Subcategory</h2>
+                                    </div>
+                                    <button onclick="closeAddSubcategoryModal()"
+                                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Modal Content -->
+                                <div class="p-6">
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Parent
+                                                Category</label>
+                                            <div class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-700"
+                                                id="parentCategoryDisplay">
+                                                <!-- Will be populated dynamically -->
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                Subcategory Name <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" id="newSubcategoryName"
+                                                placeholder="Enter subcategory name"
+                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+                                    <button onclick="closeAddSubcategoryModal()"
+                                        class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                                        Cancel
+                                    </button>
+                                    <button onclick="createNewSubcategory()"
+                                        class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium">
+                                        Add Subcategory
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Price -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Price <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span
+                                    class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">₱</span>
+                                <input type="number" id="productPrice" placeholder="0.00" step="0.01"
+                                    min="0"
+                                    class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+                <button onclick="closeModal()"
+                    class="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                    Cancel
+                </button>
+                <button onclick="createMenuProduct()"
+                    class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm font-medium flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Add New Item
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- Include the external JavaScript files -->
     <script src="{{ asset('js/inventory.js') }}"></script>
+    <script src="{{ asset('js/menu.js') }}"></script>
 @endsection

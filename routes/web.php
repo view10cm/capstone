@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\IngredientsController;
+use App\Http\Controllers\MenuCategoryController;
 
 // Public Routes
 Route::get('/', function () {
@@ -64,4 +65,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 
     // Store new ingredient category
     Route::post('/ingredients/categories', [IngredientsController::class, 'storeCategory'])->name('admin.ingredients.categories.store');
+});
+
+Route::prefix('admin/categories')->group(function () {
+    Route::get('/', [MenuCategoryController::class, 'index'])->name('categories.index');
+    Route::post('/', [MenuCategoryController::class, 'store'])->name('categories.store');
 });
