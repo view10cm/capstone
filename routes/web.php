@@ -106,3 +106,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/customer/system-description', function () {
     return view('customer.systemDescription');
 })->name('customer.systemDescription');
+
+Route::get('/customer/order-area', function () {
+    return view('customer.customerOrderArea');
+})->name('customer.orderArea');
