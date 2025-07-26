@@ -10,7 +10,7 @@ class ProductsData extends Model
     use HasFactory;
 
     protected $table = 'products';
-    protected $primaryKey = 'productID';
+    protected $primaryKey = 'id'; // Changed to 'id' to match your migration
 
     protected $fillable = [
         'productName',
@@ -20,4 +20,10 @@ class ProductsData extends Model
         'productPrice',
         'productImage',
     ];
+
+    // Relationship to menuCategory
+    public function category()
+    {
+        return $this->belongsTo(MenuCategory::class, 'productCategory', 'menuCategoryID');
+    }
 }
