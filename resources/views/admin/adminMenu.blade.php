@@ -108,27 +108,33 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                            style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
                                             Image
                                         </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                            style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
                                             Name
                                         </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                            style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
                                             Category
                                         </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                            style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
                                             Subcategory
                                         </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                            style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
                                             Price
                                         </th>
                                         <th scope="col"
-                                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                            style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
                                             Actions
                                         </th>
                                     </tr>
@@ -136,47 +142,59 @@
                                 <tbody class="bg-white divide-y divide-gray-200">
                                     @foreach ($products as $product)
                                         <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                @if ($product->productImage)
-                                                    <img src="{{ asset('storage/' . $product->productImage) }}"
-                                                        alt="{{ $product->productName }}"
-                                                        class="h-10 w-10 rounded-full object-cover">
-                                                @else
-                                                    <div
-                                                        class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                                        <svg class="w-5 h-5 text-gray-400" fill="none"
-                                                            stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                                            </path>
-                                                        </svg>
-                                                    </div>
-                                                @endif
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-gray-900">{{ $product->productName }}
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                <div class="flex justify-center">
+                                                    @if ($product->productImage)
+                                                        <img src="{{ asset('storage/' . $product->productImage) }}"
+                                                            alt="{{ $product->productName }}"
+                                                            class="h-10 w-10 object-cover" style="border-radius: 10px;">
+                                                    @else
+                                                        <div class="h-10 w-10 bg-gray-200 flex items-center justify-center"
+                                                            style="border-radius: 10px;">
+                                                            <svg class="w-5 h-5 text-gray-400" fill="none"
+                                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                    stroke-width="2"
+                                                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                                                </path>
+                                                            </svg>
+                                                        </div>
+                                                    @endif
                                                 </div>
-                                                @if ($product->productDescription)
-                                                    <div class="text-sm text-gray-500 truncate max-w-xs">
-                                                        {{ $product->productDescription }}</div>
-                                                @endif
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm text-gray-900">
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                <div class="font-medium text-gray-900"
+                                                    style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
+                                                    {{ $product->productName }}
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                <div class="text-gray-900"
+                                                    style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
                                                     {{ $product->category->menuCategoryName ?? 'N/A' }}
                                                 </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm text-gray-900">{{ $product->productSubcategory }}</div>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                <div class="text-gray-900"
+                                                    style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
+                                                    {{ $product->productSubcategory }}
+                                                </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm text-gray-900">
-                                                    ₱{{ number_format($product->productPrice, 2) }}</div>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                                                <div class="text-gray-900"
+                                                    style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
+                                                    ₱{{ number_format($product->productPrice, 2) }}
+                                                </div>
                                             </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <button class="text-orange-600 hover:text-orange-900 mr-4">Edit</button>
-                                                <button class="text-red-600 hover:text-red-900">Delete</button>
+                                            <td class="px-6 py-4 whitespace-nowrap text-center font-medium">
+                                                <button class="text-orange-600 hover:text-orange-900 mr-4"
+                                                    style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
+                                                    Edit
+                                                </button>
+                                                <button class="text-red-600 hover:text-red-900"
+                                                    style="font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600;">
+                                                    Delete
+                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach
