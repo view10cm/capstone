@@ -164,41 +164,30 @@ async function createNewCategory() {
 // Initialize subcategories (temporary - replace with database call)
 function initializeSubcategories() {
     subcategories = {
-        1: [ // Beverages ID
-            { id: 'hot_coffee', name: 'Hot Coffee' },
-            { id: 'iced_coffee', name: 'Iced Coffee' },
-            { id: 'espresso', name: 'Espresso' },
-            { id: 'tea', name: 'Tea' },
-            { id: 'cold_brew', name: 'Cold Brew' },
-            { id: 'smoothies', name: 'Smoothies' },
-            { id: 'juices', name: 'Juices' },
-            { id: 'soft_drinks', name: 'Soft Drinks' }
+        1: [ // Main Course ID
+            { id: 'Noodles', name: 'Pork' },
+            { id: 'Chicken', name: 'Chicken' },
+            { id: 'Beef', name: 'Beef' },
+            { id: 'Fish and Seafood', name: 'Fish and Seafood' },
+            { id: 'Pasta', name: 'Pasta' },
+            { id: 'Specials', name: 'Specials' }
         ],
-        2: [ // Food ID
-            { id: 'breakfast', name: 'Breakfast' },
-            { id: 'sandwiches', name: 'Sandwiches' },
-            { id: 'salads', name: 'Salads' },
-            { id: 'pasta', name: 'Pasta' },
-            { id: 'rice_meals', name: 'Rice Meals' },
-            { id: 'appetizers', name: 'Appetizers' },
-            { id: 'main_course', name: 'Main Course' }
+        2: [ // Drinks ID
+            { id: 'Hot', name: 'Hot' },
+            { id: 'Iced', name: 'Iced' },
+            { id: 'Frappe', name: 'Frappe' },
+            { id: 'Milktea', name: 'Milktea' },
+            { id: 'Specials', name: 'Specials' }
         ],
-        3: [ // Desserts ID
-            { id: 'ice_cream', name: 'Ice Cream' },
-            { id: 'cakes', name: 'Cakes' },
-            { id: 'cookies', name: 'Cookies' },
-            { id: 'puddings', name: 'Puddings' },
-            { id: 'frozen_desserts', name: 'Frozen Desserts' },
-            { id: 'seasonal_specials', name: 'Seasonal Specials' }
+        3: [ // Appetizers ID
+            { id: 'Sandwiches', name: 'Sandwiches' },
+            { id: 'Knick/Knacks', name: 'Knick/Knacks' },
+            { id: 'Salads', name: 'Salads' },
+            { id: 'Specials', name: 'Specials' }
         ],
-        4: [ // Pastries ID
-            { id: 'croissants', name: 'Croissants' },
-            { id: 'muffins', name: 'Muffins' },
-            { id: 'danish', name: 'Danish' },
-            { id: 'bread', name: 'Bread' },
-            { id: 'scones', name: 'Scones' },
-            { id: 'tarts', name: 'Tarts' },
-            { id: 'pies', name: 'Pies' }
+        4: [ // Others ID
+            { id: 'Others', name: 'Others' },
+            { id: 'Specials', name: 'Specials' }
         ]
     };
 }

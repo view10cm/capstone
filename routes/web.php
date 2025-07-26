@@ -79,7 +79,7 @@ Route::prefix('admin')->group(function () {
     // ... other admin routes
     
     // Product routes
-    Route::post('/products', [\App\Http\Controllers\Admin\ProductController::class, 'store'])
+    Route::post('/products', [ProductController::class, 'store'])
         ->name('admin.products.store');
 });
 
