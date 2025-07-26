@@ -102,3 +102,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/customer/landing', [CustomerController::class, 'landing'])->name('customer.landing');
 });
+
+Route::get('/customer/system-description', function () {
+    return view('customer.systemDescription');
+})->name('customer.systemDescription');
