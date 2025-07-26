@@ -20,22 +20,22 @@ return new class extends Migration
         // Insert default categories
         DB::table('menuCategory')->insert([
             [
-                'menuCategoryName' => 'Beverages',
+                'menuCategoryName' => 'Main Course',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'menuCategoryName' => 'Food',
+                'menuCategoryName' => 'Drinks',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'menuCategoryName' => 'Desserts',
+                'menuCategoryName' => 'Appetizers',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'menuCategoryName' => 'Pastries',
+                'menuCategoryName' => 'Others',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
