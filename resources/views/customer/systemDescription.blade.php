@@ -23,6 +23,13 @@
             object-fit: cover;
             z-index: -1;
         }
+        .fade-out {
+            animation: fadeOut 1.5s ease-in-out forwards;
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center relative bg-gray-900">
@@ -53,6 +60,7 @@
             if (!('speechSynthesis' in window)) {
                 console.warn("Speech synthesis not supported");
                 isSpeaking = false;
+                redirectToOrderArea();
                 return;
             }
 
@@ -73,6 +81,7 @@
                 if (voices.length === 0) {
                     console.warn("No voices available");
                     isSpeaking = false;
+                    redirectToOrderArea();
                     return;
                 }
 
@@ -114,22 +123,26 @@
                         } catch (e) {
                             console.error("Error speaking part 2:", e);
                             isSpeaking = false;
+                            redirectToOrderArea();
                         }
                     }, 500); // Increased pause between parts
                 };
                 
                 utterance2.onend = function() {
                     isSpeaking = false;
+                    redirectToOrderArea();
                 };
                 
                 utterance1.onerror = function(event) {
                     console.error("Speech error:", event.error);
                     isSpeaking = false;
+                    redirectToOrderArea();
                 };
                 
                 utterance2.onerror = function(event) {
                     console.error("Speech error:", event.error);
                     isSpeaking = false;
+                    redirectToOrderArea();
                 };
                 
                 // Start speaking
@@ -138,8 +151,20 @@
                 } catch (e) {
                     console.error("Error speaking part 1:", e);
                     isSpeaking = false;
+                    redirectToOrderArea();
                 }
             }
+        }
+
+        // Redirect to order area with fade effect
+        function redirectToOrderArea() {
+            // Add fade-out effect to the body
+            document.body.classList.add('fade-out');
+            
+            // Wait for the fade-out animation to complete (1.5s) plus 0.5s delay
+            setTimeout(() => {
+                window.location.href = "{{ route('customer.orderArea') }}";
+            }, 2000); // Total 2 seconds (1.5s animation + 0.5s delay)
         }
 
         // Start voice when page loads
@@ -151,23 +176,15 @@
         });
 
         // Redirect functionality
-        function goToLogin() {
-            window.location.href = "#";
-        }
-
-        let redirected = false;
         function handleRedirect() {
-            if (!redirected) {
-                redirected = true;
-                if (window.speechSynthesis) {
-                    window.speechSynthesis.cancel();
-                }
-                goToLogin();
+            if (window.speechSynthesis) {
+                window.speechSynthesis.cancel();
             }
+            redirectToOrderArea();
         }
 
         // Auto-redirect after 15 seconds (longer to hear full message)
-        setTimeout(handleRedirect, 15000);
+        setTimeout(redirectToOrderArea, 15000);
         
         // Redirect on any user interaction
         document.body.addEventListener('click', handleRedirect);
