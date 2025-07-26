@@ -89,7 +89,7 @@ Route::get('/admin/menu', function () {
 })->name('admin.adminMenu');
 
 Route::get('/admin/menu', function () {
-    $products = \App\Models\ProductsData::paginate(10);
+    $products = \App\Models\ProductsData::with('category')->paginate(10);
     return view('admin.adminMenu', ['products' => $products]);
 })->name('admin.adminMenu');
 
@@ -110,3 +110,4 @@ Route::get('/customer/system-description', function () {
 Route::get('/customer/order-area', function () {
     return view('customer.customerOrderArea');
 })->name('customer.orderArea');
+
