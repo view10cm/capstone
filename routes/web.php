@@ -77,7 +77,7 @@ Route::prefix('admin/categories')->group(function () {
 
 Route::prefix('admin')->group(function () {
     // ... other admin routes
-    
+
     // Product routes
     Route::post('/products', [ProductController::class, 'store'])
         ->name('admin.products.store');
@@ -111,3 +111,14 @@ Route::get('/customer/order-area', function () {
     return view('customer.customerOrderArea');
 })->name('customer.orderArea');
 
+Route::prefix('admin')->group(function () {
+    // ... other admin routes
+
+    // Product routes
+    Route::post('/products', [ProductController::class, 'store'])
+        ->name('admin.products.store');
+
+    // Add this new route
+    Route::put('/products/{product}/availability', [ProductController::class, 'updateAvailability'])
+        ->name('admin.products.availability');
+});

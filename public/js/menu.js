@@ -5,36 +5,50 @@ let categories = [];
 let subcategories = {};
 
 // DOM Elements
-let modal, modalContent, categorySelect, subcategorySelect, imageUploadArea, imageInput;
+let modal,
+    modalContent,
+    categorySelect,
+    subcategorySelect,
+    imageUploadArea,
+    imageInput;
 let addCategoryModal, addSubcategoryModal, addSubcategoryLink;
 
 // CSRF Token for Laravel
-const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
-                  document.querySelector('input[name="_token"]')?.value || '';
+const csrfToken =
+    document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content") ||
+    document.querySelector('input[name="_token"]')?.value ||
+    "";
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
     // Check if CSRF token exists
     if (!csrfToken) {
-        console.error('CSRF token not found. Make sure to add <meta name="csrf-token" content="{{ csrf_token() }}"> to your HTML head.');
-        showNotification('CSRF token not found. Please refresh the page.', 'error');
+        console.error(
+            'CSRF token not found. Make sure to add <meta name="csrf-token" content="{{ csrf_token() }}"> to your HTML head.'
+        );
+        showNotification(
+            "CSRF token not found. Please refresh the page.",
+            "error"
+        );
         return;
     }
 
     // Get DOM elements
-    modal = document.getElementById('createMenuModal');
-    modalContent = modal?.querySelector('.bg-white');
-    categorySelect = document.getElementById('productCategory');
-    subcategorySelect = document.getElementById('productSubcategory');
-    imageUploadArea = document.getElementById('imageUploadArea');
-    imageInput = document.getElementById('productImage');
-    addCategoryModal = document.getElementById('addCategoryModal');
-    addSubcategoryModal = document.getElementById('addSubcategoryModal');
-    addSubcategoryLink = document.getElementById('addSubcategoryLink');
+    modal = document.getElementById("createMenuModal");
+    modalContent = modal?.querySelector(".bg-white");
+    categorySelect = document.getElementById("productCategory");
+    subcategorySelect = document.getElementById("productSubcategory");
+    imageUploadArea = document.getElementById("imageUploadArea");
+    imageInput = document.getElementById("productImage");
+    addCategoryModal = document.getElementById("addCategoryModal");
+    addSubcategoryModal = document.getElementById("addSubcategoryModal");
+    addSubcategoryLink = document.getElementById("addSubcategoryLink");
 
     // Load categories from database
     loadCategoriesFromDatabase();
-    
+
     // Set up event listeners
     setupEventListeners();
 });
@@ -42,54 +56,59 @@ document.addEventListener('DOMContentLoaded', function() {
 // Load categories from database
 async function loadCategoriesFromDatabase() {
     try {
-        console.log('Loading categories from database...');
-        const response = await fetch('/admin/categories', {
-            method: 'GET',
+        console.log("Loading categories from database...");
+        const response = await fetch("/admin/categories", {
+            method: "GET",
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
-            }
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+                Accept: "application/json",
+            },
         });
 
-        console.log('Response status:', response.status);
-        
+        console.log("Response status:", response.status);
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log('Categories data:', data);
+        console.log("Categories data:", data);
 
         if (data.success) {
             categories = data.categories;
-            
+
             // Initialize subcategories (you'll need to create similar API for subcategories)
             initializeSubcategories();
-            
+
             // Populate the category dropdown
             populateCategories();
         } else {
-            console.error('Failed to load categories:', data.message);
-            showNotification(data.message || 'Failed to load categories', 'error');
+            console.error("Failed to load categories:", data.message);
+            showNotification(
+                data.message || "Failed to load categories",
+                "error"
+            );
         }
     } catch (error) {
-        console.error('Error loading categories:', error);
-        showNotification(`Error loading categories: ${error.message}`, 'error');
+        console.error("Error loading categories:", error);
+        showNotification(`Error loading categories: ${error.message}`, "error");
     }
 }
 
 // Create new category - Database version
 async function createNewCategory() {
-    const name = document.getElementById('newCategoryName').value.trim();
+    const name = document.getElementById("newCategoryName").value.trim();
 
     if (!name) {
-        showNotification('Category name is required', 'error');
+        showNotification("Category name is required", "error");
         return;
     }
 
     // Show loading state
-    const submitButton = document.querySelector('button[onclick="createNewCategory()"]');
+    const submitButton = document.querySelector(
+        'button[onclick="createNewCategory()"]'
+    );
     const originalText = submitButton.innerHTML;
     submitButton.innerHTML = `
         <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -101,41 +120,41 @@ async function createNewCategory() {
     submitButton.disabled = true;
 
     try {
-        console.log('Creating category:', name);
-        console.log('CSRF Token:', csrfToken);
-        
-        const response = await fetch('/admin/categories', {
-            method: 'POST',
+        console.log("Creating category:", name);
+        console.log("CSRF Token:", csrfToken);
+
+        const response = await fetch("/admin/categories", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json'
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+                Accept: "application/json",
             },
             body: JSON.stringify({
-                menuCategoryName: name
-            })
+                menuCategoryName: name,
+            }),
         });
 
-        console.log('Create response status:', response.status);
-        
+        console.log("Create response status:", response.status);
+
         // Log the raw response text for debugging
         const responseText = await response.text();
-        console.log('Raw response:', responseText);
-        
+        console.log("Raw response:", responseText);
+
         let data;
         try {
             data = JSON.parse(responseText);
         } catch (parseError) {
-            console.error('Failed to parse JSON response:', parseError);
-            throw new Error('Invalid JSON response from server');
+            console.error("Failed to parse JSON response:", parseError);
+            throw new Error("Invalid JSON response from server");
         }
 
-        console.log('Parsed response data:', data);
+        console.log("Parsed response data:", data);
 
         if (data.success) {
             // Add the new category to the local array
             categories.push(data.category);
-            
+
             // Initialize empty subcategories array for the new category
             subcategories[data.category.id] = [];
 
@@ -146,14 +165,17 @@ async function createNewCategory() {
             categorySelect.value = data.category.id;
             handleCategoryChange();
 
-            showNotification('Category added successfully!', 'success');
+            showNotification("Category added successfully!", "success");
             closeAddCategoryModal();
         } else {
-            showNotification(data.message || 'Error creating category', 'error');
+            showNotification(
+                data.message || "Error creating category",
+                "error"
+            );
         }
     } catch (error) {
-        console.error('Error creating category:', error);
-        showNotification(`Error creating category: ${error.message}`, 'error');
+        console.error("Error creating category:", error);
+        showNotification(`Error creating category: ${error.message}`, "error");
     } finally {
         // Reset button
         submitButton.innerHTML = originalText;
@@ -164,44 +186,48 @@ async function createNewCategory() {
 // Initialize subcategories (temporary - replace with database call)
 function initializeSubcategories() {
     subcategories = {
-        1: [ // Main Course ID
-            { id: 'Noodles', name: 'Pork' },
-            { id: 'Chicken', name: 'Chicken' },
-            { id: 'Beef', name: 'Beef' },
-            { id: 'Fish and Seafood', name: 'Fish and Seafood' },
-            { id: 'Pasta', name: 'Pasta' },
-            { id: 'Specials', name: 'Specials' }
+        1: [
+            // Main Course ID
+            { id: "Noodles", name: "Pork" },
+            { id: "Chicken", name: "Chicken" },
+            { id: "Beef", name: "Beef" },
+            { id: "Fish and Seafood", name: "Fish and Seafood" },
+            { id: "Pasta", name: "Pasta" },
+            { id: "Specials", name: "Specials" },
         ],
-        2: [ // Drinks ID
-            { id: 'Hot', name: 'Hot' },
-            { id: 'Iced', name: 'Iced' },
-            { id: 'Frappe', name: 'Frappe' },
-            { id: 'Milktea', name: 'Milktea' },
-            { id: 'Specials', name: 'Specials' }
+        2: [
+            // Drinks ID
+            { id: "Hot", name: "Hot" },
+            { id: "Iced", name: "Iced" },
+            { id: "Frappe", name: "Frappe" },
+            { id: "Milktea", name: "Milktea" },
+            { id: "Specials", name: "Specials" },
         ],
-        3: [ // Appetizers ID
-            { id: 'Sandwiches', name: 'Sandwiches' },
-            { id: 'Knick/Knacks', name: 'Knick/Knacks' },
-            { id: 'Salads', name: 'Salads' },
-            { id: 'Specials', name: 'Specials' }
+        3: [
+            // Appetizers ID
+            { id: "Sandwiches", name: "Sandwiches" },
+            { id: "Knick/Knacks", name: "Knick/Knacks" },
+            { id: "Salads", name: "Salads" },
+            { id: "Specials", name: "Specials" },
         ],
-        4: [ // Others ID
-            { id: 'Others', name: 'Others' },
-            { id: 'Specials', name: 'Specials' }
-        ]
+        4: [
+            // Others ID
+            { id: "Others", name: "Others" },
+            { id: "Specials", name: "Specials" },
+        ],
     };
 }
 
 // Populate categories in select dropdown
 function populateCategories() {
     if (!categorySelect) return;
-    
+
     // Clear existing options except the first one
     categorySelect.innerHTML = '<option value="">Select a category</option>';
-    
+
     // Add categories from database
-    categories.forEach(category => {
-        const option = document.createElement('option');
+    categories.forEach((category) => {
+        const option = document.createElement("option");
         option.value = category.id;
         option.textContent = category.name;
         categorySelect.appendChild(option);
@@ -212,41 +238,49 @@ function populateCategories() {
 function setupEventListeners() {
     // Category change listener
     if (categorySelect) {
-        categorySelect.addEventListener('change', handleCategoryChange);
+        categorySelect.addEventListener("change", handleCategoryChange);
     }
 
     // Image upload listeners
     if (imageUploadArea && imageInput) {
-        imageUploadArea.addEventListener('click', () => imageInput.click());
-        imageInput.addEventListener('change', handleImageUpload);
-        
+        imageUploadArea.addEventListener("click", () => imageInput.click());
+        imageInput.addEventListener("change", handleImageUpload);
+
         // Drag and drop functionality
-        imageUploadArea.addEventListener('dragover', handleDragOver);
-        imageUploadArea.addEventListener('drop', handleImageDrop);
-        imageUploadArea.addEventListener('dragleave', handleDragLeave);
+        imageUploadArea.addEventListener("dragover", handleDragOver);
+        imageUploadArea.addEventListener("drop", handleImageDrop);
+        imageUploadArea.addEventListener("dragleave", handleDragLeave);
     }
 
     // Close modals when clicking outside
-    [modal, addCategoryModal, addSubcategoryModal].forEach(modalEl => {
+    [modal, addCategoryModal, addSubcategoryModal].forEach((modalEl) => {
         if (modalEl) {
-            modalEl.addEventListener('click', function(e) {
+            modalEl.addEventListener("click", function (e) {
                 if (e.target === modalEl) {
                     if (modalEl === modal) closeModal();
-                    else if (modalEl === addCategoryModal) closeAddCategoryModal();
-                    else if (modalEl === addSubcategoryModal) closeAddSubcategoryModal();
+                    else if (modalEl === addCategoryModal)
+                        closeAddCategoryModal();
+                    else if (modalEl === addSubcategoryModal)
+                        closeAddSubcategoryModal();
                 }
             });
         }
     });
 
     // Close modals with Escape key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            if (addSubcategoryModal && !addSubcategoryModal.classList.contains('invisible')) {
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            if (
+                addSubcategoryModal &&
+                !addSubcategoryModal.classList.contains("invisible")
+            ) {
                 closeAddSubcategoryModal();
-            } else if (addCategoryModal && !addCategoryModal.classList.contains('invisible')) {
+            } else if (
+                addCategoryModal &&
+                !addCategoryModal.classList.contains("invisible")
+            ) {
                 closeAddCategoryModal();
-            } else if (modal && !modal.classList.contains('invisible')) {
+            } else if (modal && !modal.classList.contains("invisible")) {
                 closeModal();
             }
         }
@@ -258,7 +292,7 @@ function openModal() {
     if (modal) {
         resetForm();
         showModal(modal, modalContent);
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
     }
 }
 
@@ -266,22 +300,28 @@ function openModal() {
 function closeModal() {
     if (modal) {
         hideModal(modal, modalContent, resetForm);
-        document.body.style.overflow = '';
+        document.body.style.overflow = "";
     }
 }
 
 // Open add category modal
 function openAddCategoryModal() {
     if (addCategoryModal) {
-        document.getElementById('newCategoryName').value = '';
-        showModal(addCategoryModal, addCategoryModal.querySelector('.bg-white'));
+        document.getElementById("newCategoryName").value = "";
+        showModal(
+            addCategoryModal,
+            addCategoryModal.querySelector(".bg-white")
+        );
     }
 }
 
 // Close add category modal
 function closeAddCategoryModal() {
     if (addCategoryModal) {
-        hideModal(addCategoryModal, addCategoryModal.querySelector('.bg-white'));
+        hideModal(
+            addCategoryModal,
+            addCategoryModal.querySelector(".bg-white")
+        );
     }
 }
 
@@ -289,45 +329,53 @@ function closeAddCategoryModal() {
 function openAddSubcategoryModal() {
     const selectedCategory = categorySelect.value;
     if (!selectedCategory) {
-        showNotification('Please select a category first', 'error');
+        showNotification("Please select a category first", "error");
         return;
     }
 
     if (addSubcategoryModal) {
-        const selectedCategoryName = categories.find(cat => cat.id == selectedCategory)?.name || '';
-        document.getElementById('parentCategoryDisplay').textContent = selectedCategoryName;
-        document.getElementById('newSubcategoryName').value = '';
-        showModal(addSubcategoryModal, addSubcategoryModal.querySelector('.bg-white'));
+        const selectedCategoryName =
+            categories.find((cat) => cat.id == selectedCategory)?.name || "";
+        document.getElementById("parentCategoryDisplay").textContent =
+            selectedCategoryName;
+        document.getElementById("newSubcategoryName").value = "";
+        showModal(
+            addSubcategoryModal,
+            addSubcategoryModal.querySelector(".bg-white")
+        );
     }
 }
 
 // Close add subcategory modal
 function closeAddSubcategoryModal() {
     if (addSubcategoryModal) {
-        hideModal(addSubcategoryModal, addSubcategoryModal.querySelector('.bg-white'));
+        hideModal(
+            addSubcategoryModal,
+            addSubcategoryModal.querySelector(".bg-white")
+        );
     }
 }
 
 // Generic show modal function
 function showModal(modalEl, contentEl) {
-    modalEl.classList.remove('invisible', 'opacity-0');
-    contentEl.classList.remove('scale-95');
-    
+    modalEl.classList.remove("invisible", "opacity-0");
+    contentEl.classList.remove("scale-95");
+
     setTimeout(() => {
-        modalEl.classList.add('opacity-100');
-        contentEl.classList.add('scale-100');
+        modalEl.classList.add("opacity-100");
+        contentEl.classList.add("scale-100");
     }, 10);
 }
 
 // Generic hide modal function
 function hideModal(modalEl, contentEl, callback) {
-    modalEl.classList.remove('opacity-100');
-    contentEl.classList.remove('scale-100');
-    modalEl.classList.add('opacity-0');
-    contentEl.classList.add('scale-95');
-    
+    modalEl.classList.remove("opacity-100");
+    contentEl.classList.remove("scale-100");
+    modalEl.classList.add("opacity-0");
+    contentEl.classList.add("scale-95");
+
     setTimeout(() => {
-        modalEl.classList.add('invisible');
+        modalEl.classList.add("invisible");
         if (callback) callback();
     }, 300);
 }
@@ -335,29 +383,36 @@ function hideModal(modalEl, contentEl, callback) {
 // Create new subcategory (you'll need to implement database version)
 function createNewSubcategory() {
     const selectedCategory = categorySelect.value;
-    const name = document.getElementById('newSubcategoryName').value.trim();
+    const name = document.getElementById("newSubcategoryName").value.trim();
 
     if (!selectedCategory) {
-        showNotification('No category selected', 'error');
+        showNotification("No category selected", "error");
         return;
     }
 
     if (!name) {
-        showNotification('Subcategory name is required', 'error');
+        showNotification("Subcategory name is required", "error");
         return;
     }
 
     // Check if subcategory already exists in this category
-    if (subcategories[selectedCategory] && 
-        subcategories[selectedCategory].some(sub => sub.name.toLowerCase() === name.toLowerCase())) {
-        showNotification('Subcategory already exists in this category', 'error');
+    if (
+        subcategories[selectedCategory] &&
+        subcategories[selectedCategory].some(
+            (sub) => sub.name.toLowerCase() === name.toLowerCase()
+        )
+    ) {
+        showNotification(
+            "Subcategory already exists in this category",
+            "error"
+        );
         return;
     }
 
     // Create new subcategory (temporary - replace with database call)
     const newSubcategory = {
-        id: name.toLowerCase().replace(/\s+/g, '_'),
-        name: name
+        id: name.toLowerCase().replace(/\s+/g, "_"),
+        name: name,
     };
 
     if (!subcategories[selectedCategory]) {
@@ -372,7 +427,7 @@ function createNewSubcategory() {
     // Select the new subcategory
     subcategorySelect.value = newSubcategory.id;
 
-    showNotification('Subcategory added successfully!', 'success');
+    showNotification("Subcategory added successfully!", "success");
     closeAddSubcategoryModal();
 }
 
@@ -380,35 +435,36 @@ function createNewSubcategory() {
 function handleCategoryChange() {
     const selectedCategory = categorySelect.value;
     const subcategoryOptions = subcategories[selectedCategory] || [];
-    
+
     // Clear subcategory options
-    subcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
-    
+    subcategorySelect.innerHTML =
+        '<option value="">Select a subcategory</option>';
+
     if (subcategoryOptions.length > 0) {
         // Add existing subcategories
-        subcategoryOptions.forEach(option => {
-            const optionElement = document.createElement('option');
+        subcategoryOptions.forEach((option) => {
+            const optionElement = document.createElement("option");
             optionElement.value = option.id;
             optionElement.textContent = option.name;
             subcategorySelect.appendChild(optionElement);
         });
-        
+
         // Enable subcategory select
         subcategorySelect.disabled = false;
-        subcategorySelect.classList.remove('bg-gray-100', 'cursor-not-allowed');
-        subcategorySelect.classList.add('bg-white');
+        subcategorySelect.classList.remove("bg-gray-100", "cursor-not-allowed");
+        subcategorySelect.classList.add("bg-white");
     } else {
         // Disable subcategory select
         subcategorySelect.disabled = true;
-        subcategorySelect.classList.add('bg-gray-100', 'cursor-not-allowed');
-        subcategorySelect.classList.remove('bg-white');
+        subcategorySelect.classList.add("bg-gray-100", "cursor-not-allowed");
+        subcategorySelect.classList.remove("bg-white");
     }
 
     // Show/hide add subcategory link
     if (selectedCategory && addSubcategoryLink) {
-        addSubcategoryLink.style.display = 'flex';
+        addSubcategoryLink.style.display = "flex";
     } else if (addSubcategoryLink) {
-        addSubcategoryLink.style.display = 'none';
+        addSubcategoryLink.style.display = "none";
     }
 }
 
@@ -423,24 +479,24 @@ function handleImageUpload(e) {
 // Handle drag over
 function handleDragOver(e) {
     e.preventDefault();
-    imageUploadArea.classList.add('border-orange-500', 'bg-orange-50');
+    imageUploadArea.classList.add("border-orange-500", "bg-orange-50");
 }
 
 // Handle drag leave
 function handleDragLeave(e) {
     e.preventDefault();
-    imageUploadArea.classList.remove('border-orange-500', 'bg-orange-50');
+    imageUploadArea.classList.remove("border-orange-500", "bg-orange-50");
 }
 
 // Handle image drop
 function handleImageDrop(e) {
     e.preventDefault();
-    imageUploadArea.classList.remove('border-orange-500', 'bg-orange-50');
-    
+    imageUploadArea.classList.remove("border-orange-500", "bg-orange-50");
+
     const files = e.dataTransfer.files;
     if (files.length > 0) {
         const file = files[0];
-        if (file.type.startsWith('image/')) {
+        if (file.type.startsWith("image/")) {
             imageInput.files = files;
             displayImagePreview(file);
         }
@@ -450,7 +506,7 @@ function handleImageDrop(e) {
 // Display image preview
 function displayImagePreview(file) {
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         imageUploadArea.innerHTML = `
             <div class="relative">
                 <img src="${e.target.result}" alt="Preview" class="w-full h-40 object-cover rounded-lg">
@@ -473,7 +529,7 @@ function displayImagePreview(file) {
 
 // Remove image
 function removeImage() {
-    imageInput.value = '';
+    imageInput.value = "";
     resetImageUploadArea();
 }
 
@@ -500,27 +556,43 @@ function resetImageUploadArea() {
 // Create menu product - Database version
 async function createMenuProduct() {
     const formData = new FormData();
-    formData.append('name', document.getElementById('productName').value.trim());
-    formData.append('description', document.getElementById('productDescription').value.trim());
-    formData.append('category', categorySelect.value);
-    formData.append('subcategory', subcategorySelect.value);
-    formData.append('price', document.getElementById('productPrice').value);
-    
+    formData.append(
+        "name",
+        document.getElementById("productName").value.trim()
+    );
+    formData.append(
+        "description",
+        document.getElementById("productDescription").value.trim()
+    );
+    formData.append("category", categorySelect.value);
+    formData.append("subcategory", subcategorySelect.value);
+    formData.append("price", document.getElementById("productPrice").value);
+    formData.append('availability', document.getElementById('productAvailability').value);
+
     // Append the image file if it exists
     if (imageInput.files[0]) {
-        formData.append('image', imageInput.files[0]);
+        formData.append("image", imageInput.files[0]);
     }
 
     // Validate required fields
-    if (!formData.get('name') || !formData.get('category') || 
-        !formData.get('subcategory') || !formData.get('price') || 
-        parseFloat(formData.get('price')) <= 0) {
-        showNotification('Please fill all required fields with valid values', 'error');
+    if (
+        !formData.get("name") ||
+        !formData.get("category") ||
+        !formData.get("subcategory") ||
+        !formData.get("price") ||
+        parseFloat(formData.get("price")) <= 0
+    ) {
+        showNotification(
+            "Please fill all required fields with valid values",
+            "error"
+        );
         return;
     }
 
     // Show loading state
-    const submitButton = document.querySelector('button[onclick="createMenuProduct()"]');
+    const submitButton = document.querySelector(
+        'button[onclick="createMenuProduct()"]'
+    );
     const originalText = submitButton.innerHTML;
     submitButton.innerHTML = `
         <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -532,31 +604,31 @@ async function createMenuProduct() {
     submitButton.disabled = true;
 
     try {
-        const response = await fetch('/admin/products', {
-            method: 'POST',
+        const response = await fetch("/admin/products", {
+            method: "POST",
             headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
+                "X-CSRF-TOKEN": csrfToken,
+                Accept: "application/json",
             },
-            body: formData
+            body: formData,
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Failed to create product');
+            throw new Error(data.message || "Failed to create product");
         }
 
         if (data.success) {
-            showNotification('Product created successfully!', 'success');
+            showNotification("Product created successfully!", "success");
             closeModal();
             // Optionally refresh the product list or redirect
         } else {
-            showNotification(data.message || 'Error creating product', 'error');
+            showNotification(data.message || "Error creating product", "error");
         }
     } catch (error) {
-        console.error('Error creating product:', error);
-        showNotification(`Error creating product: ${error.message}`, 'error');
+        console.error("Error creating product:", error);
+        showNotification(`Error creating product: ${error.message}`, "error");
     } finally {
         // Reset button
         submitButton.innerHTML = originalText;
@@ -568,13 +640,14 @@ async function createMenuProduct() {
 function validateForm(data) {
     const errors = [];
 
-    if (!data.name) errors.push('Product name is required');
-    if (!data.category) errors.push('Category is required');
-    if (!data.subcategory) errors.push('Subcategory is required');
-    if (!data.price || parseFloat(data.price) <= 0) errors.push('Valid price is required');
+    if (!data.name) errors.push("Product name is required");
+    if (!data.category) errors.push("Category is required");
+    if (!data.subcategory) errors.push("Subcategory is required");
+    if (!data.price || parseFloat(data.price) <= 0)
+        errors.push("Valid price is required");
 
     if (errors.length > 0) {
-        showNotification(errors.join('\n'), 'error');
+        showNotification(errors.join("\n"), "error");
         return false;
     }
 
@@ -582,14 +655,16 @@ function validateForm(data) {
 }
 
 // Show notification
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
+function showNotification(message, type = "info") {
+    const notification = document.createElement("div");
     notification.className = `fixed top-4 right-4 z-[70] p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full ${
-        type === 'success' ? 'bg-green-500 text-white' :
-        type === 'error' ? 'bg-red-500 text-white' :
-        'bg-blue-500 text-white'
+        type === "success"
+            ? "bg-green-500 text-white"
+            : type === "error"
+            ? "bg-red-500 text-white"
+            : "bg-blue-500 text-white"
     }`;
-    
+
     notification.innerHTML = `
         <div class="flex items-center">
             <span class="mr-2">${message}</span>
@@ -605,12 +680,12 @@ function showNotification(message, type = 'info') {
 
     // Animate in
     setTimeout(() => {
-        notification.classList.remove('translate-x-full');
+        notification.classList.remove("translate-x-full");
     }, 100);
 
     // Auto remove after 5 seconds
     setTimeout(() => {
-        notification.classList.add('translate-x-full');
+        notification.classList.add("translate-x-full");
         setTimeout(() => {
             if (notification.parentElement) {
                 notification.remove();
@@ -621,16 +696,69 @@ function showNotification(message, type = 'info') {
 
 // Reset form
 function resetForm() {
-    document.getElementById('createMenuForm').reset();
-    subcategorySelect.innerHTML = '<option value="">Select a subcategory</option>';
+    document.getElementById("createMenuForm").reset();
+    subcategorySelect.innerHTML =
+        '<option value="">Select a subcategory</option>';
     subcategorySelect.disabled = true;
-    subcategorySelect.classList.add('bg-gray-100', 'cursor-not-allowed');
-    subcategorySelect.classList.remove('bg-white');
-    
+    subcategorySelect.classList.add("bg-gray-100", "cursor-not-allowed");
+    subcategorySelect.classList.remove("bg-white");
+
     // Hide add subcategory link
     if (addSubcategoryLink) {
-        addSubcategoryLink.style.display = 'none';
+        addSubcategoryLink.style.display = "none";
     }
-    
+
     resetImageUploadArea();
+}
+
+// Add this function to handle availability updates
+async function updateAvailability(selectElement) {
+    const productId = selectElement.dataset.productId;
+    const newStatus = selectElement.value;
+
+    try {
+        const response = await fetch(
+            `/admin/products/${productId}/availability`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken,
+                    Accept: "application/json",
+                },
+                body: JSON.stringify({
+                    availability: newStatus,
+                }),
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Failed to update availability");
+        }
+
+        if (data.success) {
+            showNotification("Availability updated successfully!", "success");
+        } else {
+            showNotification(
+                data.message || "Error updating availability",
+                "error"
+            );
+            // Revert the selection if there was an error
+            selectElement.value =
+                selectElement.value === "Available"
+                    ? "Unavailable"
+                    : "Available";
+        }
+    } catch (error) {
+        console.error("Error updating availability:", error);
+        showNotification(
+            `Error updating availability: ${error.message}`,
+            "error"
+        );
+        // Revert the selection if there was an error
+        selectElement.value =
+            selectElement.value === "Available" ? "Unavailable" : "Available";
+    }
 }
