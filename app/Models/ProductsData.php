@@ -19,6 +19,7 @@ class ProductsData extends Model
         'productSubcategory',
         'productPrice',
         'productImage',
+        'productAvailability', // Add this
     ];
 
     // Relationship to menuCategory

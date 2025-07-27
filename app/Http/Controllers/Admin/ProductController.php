@@ -18,6 +18,7 @@ class ProductController extends Controller
             'subcategory' => 'required|string|max:100',
             'price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'availability' => 'required|in:Available,Unavailable', // Add this
         ]);
 
         // Handle image upload
@@ -26,7 +27,6 @@ class ProductController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
         }
 
-        // Create the product
         $product = ProductsData::create([
             'productName' => $validated['name'],
             'productDescription' => $validated['description'],
@@ -34,6 +34,7 @@ class ProductController extends Controller
             'productSubcategory' => $validated['subcategory'],
             'productPrice' => $validated['price'],
             'productImage' => $imagePath,
+            'productAvailability' => $validated['availability'], // Add this
         ]);
 
         return response()->json([
@@ -42,4 +43,21 @@ class ProductController extends Controller
             'product' => $product
         ]);
     }
+
+    public function updateAvailability(Request $request, ProductsData $product)
+    {
+        $validated = $request->validate([
+            'availability' => 'required|in:Available,Unavailable'
+        ]);
+
+        $product->update([
+            'productAvailability' => $validated['availability']
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Availability updated successfully'
+        ]);
+    }
+
 }
