@@ -4,6 +4,16 @@
 
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    .active-category {
+        background-color: #f97316; /* orange-500 */
+        color: white;
+    }
+    .active-subcategory {
+        border-bottom: 2px solid #f97316; /* orange-500 */
+        color: #f97316;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -13,6 +23,85 @@
         <!-- Brand Header -->
         <div class="mb-6">
             <img src="{{ asset('images/Brand Header.svg') }}" alt="Caffe Arabica" class="w-full object-cover" style="height: 120px; max-height: 120px;">
+        </div>
+
+        <!-- Double Navbar System -->
+        <div class="bg-white shadow-sm">
+            <!-- Primary Navbar - Categories -->
+            <div class="flex justify-center space-x-4 px-4 py-3">
+                <button onclick="changeCategory('drinks')" id="drinks-btn" class="px-6 py-2 rounded-full font-medium text-gray-800 hover:bg-orange-100 transition-colors active-category">
+                    Drinks
+                </button>
+                <button onclick="changeCategory('main-course')" id="main-course-btn" class="px-6 py-2 rounded-full font-medium text-gray-800 hover:bg-orange-100 transition-colors">
+                    Main Course
+                </button>
+                <button onclick="changeCategory('appetizers')" id="appetizers-btn" class="px-6 py-2 rounded-full font-medium text-gray-800 hover:bg-orange-100 transition-colors">
+                    Appetizers
+                </button>
+            </div>
+
+            <!-- Secondary Navbar - Subcategories -->
+            <div class="flex justify-center space-x-6 px-4 py-3 bg-gray-50 border-t border-gray-200 overflow-x-auto">
+                <!-- Drinks Subcategories (default visible) -->
+                <div id="drinks-subcategories" class="flex space-x-6">
+                    <button onclick="changeSubcategory('hot')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors active-subcategory">
+                        Hot
+                    </button>
+                    <button onclick="changeSubcategory('iced')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Iced
+                    </button>
+                    <button onclick="changeSubcategory('frappe')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Frappe
+                    </button>
+                    <button onclick="changeSubcategory('milktea')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Milktea
+                    </button>
+                    <button onclick="changeSubcategory('specials')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Specials
+                    </button>
+                </div>
+
+                <!-- Main Course Subcategories (hidden by default) -->
+                <div id="main-course-subcategories" class="flex space-x-6 hidden">
+                    <button onclick="changeSubcategory('pork')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Pork
+                    </button>
+                    <button onclick="changeSubcategory('chicken')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Chicken
+                    </button>
+                    <button onclick="changeSubcategory('beef')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Beef
+                    </button>
+                    <button onclick="changeSubcategory('fish-seafood')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Fish & Seafood
+                    </button>
+                    <button onclick="changeSubcategory('pasta')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Pasta
+                    </button>
+                    <button onclick="changeSubcategory('noodles')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Noodles
+                    </button>
+                    <button onclick="changeSubcategory('specials')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Specials
+                    </button>
+                </div>
+
+                <!-- Appetizers Subcategories (hidden by default) -->
+                <div id="appetizers-subcategories" class="flex space-x-6 hidden">
+                    <button onclick="changeSubcategory('sandwiches')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Sandwiches
+                    </button>
+                    <button onclick="changeSubcategory('knick-knacks')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Knick/Knacks
+                    </button>
+                    <button onclick="changeSubcategory('salads')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Salads
+                    </button>
+                    <button onclick="changeSubcategory('specials')" class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
+                        Specials
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Spacer to push the conversation panel and bottom image down -->
@@ -91,4 +180,58 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Set default category to Drinks
+    let currentCategory = 'drinks';
+    let currentSubcategory = 'hot';
+
+    function changeCategory(category) {
+        currentCategory = category;
+        
+        // Update active category button
+        document.getElementById('drinks-btn').classList.remove('active-category');
+        document.getElementById('main-course-btn').classList.remove('active-category');
+        document.getElementById('appetizers-btn').classList.remove('active-category');
+        document.getElementById(`${category}-btn`).classList.add('active-category');
+        
+        // Hide all subcategory menus
+        document.getElementById('drinks-subcategories').classList.add('hidden');
+        document.getElementById('main-course-subcategories').classList.add('hidden');
+        document.getElementById('appetizers-subcategories').classList.add('hidden');
+        
+        // Show the selected subcategory menu
+        document.getElementById(`${category}-subcategories`).classList.remove('hidden');
+        
+        // Reset subcategory to first option
+        const subcategoryButtons = document.getElementById(`${category}-subcategories`).querySelectorAll('button');
+        if (subcategoryButtons.length > 0) {
+            changeSubcategory(subcategoryButtons[0].getAttribute('onclick').match(/'([^']+)'/)[1]);
+        }
+    }
+
+    function changeSubcategory(subcategory) {
+        currentSubcategory = subcategory;
+        
+        // Remove active class from all subcategory buttons in current category
+        const buttons = document.getElementById(`${currentCategory}-subcategories`).querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.classList.remove('active-subcategory');
+        });
+        
+        // Add active class to clicked button
+        event.target.classList.add('active-subcategory');
+        
+        // Here you would typically load the products for this subcategory
+        // loadProducts(currentCategory, currentSubcategory);
+    }
+
+    // Initialize with Drinks category selected
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set drinks button as active
+        document.getElementById('drinks-btn').classList.add('active-category');
+        // Set hot button as active
+        document.querySelector('#drinks-subcategories button').classList.add('active-subcategory');
+    });
+</script>
 @endsection
