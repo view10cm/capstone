@@ -122,3 +122,8 @@ Route::prefix('admin')->group(function () {
     Route::put('/products/{product}/availability', [ProductController::class, 'updateAvailability'])
         ->name('admin.products.availability');
 });
+
+Route::get('/admin/menu', function () {
+    $products = \App\Models\ProductsData::with('category')->paginate(7); // Changed to 7 items per page
+    return view('admin.adminMenu', ['products' => $products]);
+})->name('admin.adminMenu');
