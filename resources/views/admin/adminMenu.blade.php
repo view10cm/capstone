@@ -290,12 +290,14 @@
                                         </path>
                                     </svg>
                                     <p class="text-sm text-gray-500 mb-2">Upload your product image here</p>
+                                    <p class="text-xs text-gray-400 mb-2">Max size: 5MB (JPEG, PNG, JPG, GIF)</p>
                                     <button type="button"
                                         class="px-4 py-2 bg-orange-500 text-white text-sm rounded-lg hover:bg-orange-600 transition-colors">
                                         Choose File
                                     </button>
                                 </div>
-                                <input type="file" id="productImage" class="hidden" accept="image/*">
+                                <input type="file" id="productImage" class="hidden"
+                                    accept="image/jpeg,image/png,image/jpg,image/gif">
                             </div>
                         </div>
                     </div>

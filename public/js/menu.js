@@ -507,6 +507,7 @@ function handleImageDrop(e) {
 function displayImagePreview(file) {
     const reader = new FileReader();
     reader.onload = function (e) {
+        const fileSize = (file.size / (1024 * 1024)).toFixed(2); // Convert to MB
         imageUploadArea.innerHTML = `
             <div class="relative">
                 <img src="${e.target.result}" alt="Preview" class="w-full h-40 object-cover rounded-lg">
@@ -516,7 +517,7 @@ function displayImagePreview(file) {
                     </svg>
                 </button>
                 <div class="mt-2 text-center">
-                    <p class="text-sm text-gray-600">${file.name}</p>
+                    <p class="text-sm text-gray-600">${file.name} (${fileSize} MB)</p>
                     <button type="button" onclick="changeImage()" class="text-orange-500 text-sm hover:text-orange-600 transition-colors">
                         Change Image
                     </button>
@@ -571,6 +572,11 @@ async function createMenuProduct() {
 
     // Append the image file if it exists
     if (imageInput.files[0]) {
+        const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+        if (imageInput.files[0].size > maxSize) {
+            showNotification("Image size must be less than 5MB", "error");
+            return;
+        }
         formData.append("image", imageInput.files[0]);
     }
 
