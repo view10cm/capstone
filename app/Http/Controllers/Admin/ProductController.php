@@ -17,8 +17,8 @@ class ProductController extends Controller
             'category' => 'required|string|max:100',
             'subcategory' => 'required|string|max:100',
             'price' => 'required|numeric|min:0',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'availability' => 'required|in:Available,Unavailable', // Add this
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // Changed from 2048 to 5120 (5MB)
+            'availability' => 'required|in:Available,Unavailable',
         ]);
 
         // Handle image upload
