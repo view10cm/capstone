@@ -216,32 +216,100 @@
                                             </td>
                                         </tr>
                                     @endforeach
+                                    @if ($products->count() > 0)
                                 </tbody>
                             </table>
-                            @if ($products->count() > 0)
-                                <div class="px-6 py-4">
-                                    {{ $products->links() }}
+
+                            {{-- Pagination --}}
+                            <div class="w-full px-6 py-4 border-t border-gray-200">
+                                <div class="flex flex-col items-center">
+                                    {{-- Showing X to Y of Z results --}}
+                                    <div class="text-sm text-gray-600 mb-2">
+                                        Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} of
+                                        {{ $products->total() }} results
+                                    </div>
+
+                                    {{-- Pagination Links --}}
+                                    <div class="flex items-center space-x-1">
+                                        {{-- Previous Page Link --}}
+                                        @if ($products->onFirstPage())
+                                            <span
+                                                class="px-3 py-1 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed">
+                                                &laquo;
+                                            </span>
+                                        @else
+                                            <a href="{{ $products->previousPageUrl() }}"
+                                                class="px-3 py-1 rounded-md bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors">
+                                                &laquo;
+                                            </a>
+                                        @endif
+
+                                        {{-- Pagination Elements --}}
+                                        @foreach ($products->getUrlRange(1, $products->lastPage()) as $page => $url)
+                                            @if ($page == $products->currentPage())
+                                                <span class="px-3 py-1 rounded-md bg-orange-500 text-white">
+                                                    {{ $page }}
+                                                </span>
+                                            @else
+                                                <a href="{{ $url }}"
+                                                    class="px-3 py-1 rounded-md bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors">
+                                                    {{ $page }}
+                                                </a>
+                                            @endif
+                                        @endforeach
+
+                                        {{-- Next Page Link --}}
+                                        @if ($products->hasMorePages())
+                                            <a href="{{ $products->nextPageUrl() }}"
+                                                class="px-3 py-1 rounded-md bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors">
+                                                &raquo;
+                                            </a>
+                                        @else
+                                            <span
+                                                class="px-3 py-1 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed">
+                                                &raquo;
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
-                            @endif
+                            </div>
                         @else
-                            <!-- Empty State Section -->
+                            {{-- Your existing empty state content --}}
                             <div class="flex flex-col items-center justify-center py-20 px-6">
                                 <!-- Empty State Image -->
                                 <div class="mb-8">
                                     <img src="{{ asset('images/emptyMenu.svg') }}" alt="No menu items"
                                         class="w-80 h-80 object-contain">
                                 </div>
-
                                 <!-- Empty State Text -->
                                 <div class="text-center mb-8">
                                     <h3 class="text-xl font-semibold text-gray-900 mb-2">No menu items yet</h3>
                                     <p class="text-gray-600 text-sm max-w-md">
                                         Start building your menu by adding your first product. You can add drinks, food
-                                        items, and
-                                        more to showcase your offerings.
+                                        items, and more to showcase your offerings.
                                     </p>
                                 </div>
                             </div>
+                        @endif
+                    @else
+                        <!-- Empty State Section -->
+                        <div class="flex flex-col items-center justify-center py-20 px-6">
+                            <!-- Empty State Image -->
+                            <div class="mb-8">
+                                <img src="{{ asset('images/emptyMenu.svg') }}" alt="No menu items"
+                                    class="w-80 h-80 object-contain">
+                            </div>
+
+                            <!-- Empty State Text -->
+                            <div class="text-center mb-8">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">No menu items yet</h3>
+                                <p class="text-gray-600 text-sm max-w-md">
+                                    Start building your menu by adding your first product. You can add drinks, food
+                                    items, and
+                                    more to showcase your offerings.
+                                </p>
+                            </div>
+                        </div>
                         @endif
                     </div>
                 </div>
