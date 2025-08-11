@@ -188,11 +188,12 @@ function initializeSubcategories() {
     subcategories = {
         1: [
             // Main Course ID
-            { id: "Noodles", name: "Pork" },
+            { id: "Pork", name: "Pork" },
             { id: "Chicken", name: "Chicken" },
             { id: "Beef", name: "Beef" },
             { id: "Fish and Seafood", name: "Fish and Seafood" },
             { id: "Pasta", name: "Pasta" },
+            { id: "Noodles", name: "Noodles" },
             { id: "Specials", name: "Specials" },
         ],
         2: [
