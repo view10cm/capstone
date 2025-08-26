@@ -65,3 +65,39 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
         }
     });
 });
+
+// Modal functions
+function openModalUser() {
+    document.getElementById('addUserModal').classList.remove('hidden');
+    document.getElementById('addUserModal').classList.add('flex');
+}
+
+function closeModalUser() {
+    document.getElementById('addUserModal').classList.remove('flex');
+    document.getElementById('addUserModal').classList.add('hidden');
+}
+
+// Close modal when clicking outside
+document.getElementById('addUserModal').addEventListener('click', function(e) {
+    if (e.target.id === 'addUserModal') {
+        closeModalUser();
+    }
+});
+
+// Form submission handling
+document.getElementById('addUserForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const password = formData.get('password');
+    const passwordConfirmation = formData.get('password_confirmation');
+    
+    // Validate passwords match
+    if (password !== passwordConfirmation) {
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    // Submit the form if validation passes
+    this.submit();
+});
