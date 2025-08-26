@@ -111,7 +111,12 @@
                 <p class="text-xs text-gray-600 mb-1 text-center">{{ $product->productDescription }}</p>
                 <span class="text-orange-500 font-bold mb-1">₱{{ number_format($product->productPrice, 2) }}</span>
                 <div class="flex-grow"></div>
-                <button class="w-full bg-orange-200 hover:bg-orange-300 text-orange-900 font-semibold py-1 rounded text-sm">Add Item</button>
+                <button 
+                    onclick="addToOrder({{ json_encode($product) }})" 
+                    class="w-full bg-orange-200 hover:bg-orange-300 text-orange-900 font-semibold py-1 rounded text-sm"
+                >
+                    Add Item
+                </button>
             </div>
         @endforeach
     </div>
@@ -266,7 +271,12 @@
                 <p class="text-xs text-gray-600 mb-1 text-center">${product.productDescription}</p>
                 <span class="text-orange-500 font-bold mb-1">₱${parseFloat(product.productPrice).toFixed(2)}</span>
                 <div class="flex-grow"></div>
-                <button class="w-full bg-orange-200 hover:bg-orange-300 text-orange-900 font-semibold py-1 rounded text-sm">Add Item</button>
+                <button 
+                    onclick="addToOrder(${JSON.stringify(product).replace(/"/g, '&quot;')})" 
+                    class="w-full bg-orange-200 hover:bg-orange-300 text-orange-900 font-semibold py-1 rounded text-sm"
+                >
+                    Add Item
+                </button>
             `;
             
             productsContainer.appendChild(productElement);

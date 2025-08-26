@@ -17,6 +17,30 @@
             /* orange-500 */
             color: #f97316;
         }
+        
+        /* Custom scrollbar for order items */
+        .order-items-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .order-items-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .order-items-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .order-items-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        .order-items-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
     </style>
 @endpush
 
@@ -95,29 +119,72 @@
         <div class="w-80 bg-white shadow-lg border-l border-gray-200 rounded-tl-xl rounded-tr-xl">
             <div class="p-6 h-full flex flex-col">
                 <!-- Header -->
-                <div class="mb-8">
+                <div class="mb-4">
                     <h2 class="text-xl font-semibold text-gray-800">Order Summary</h2>
+                    
+                    <!-- Order Type Selection -->
+                    <div class="flex mt-4 space-x-2">
+                        <button id="dine-in-btn" class="flex-1 py-2 bg-orange-500 text-white rounded-md font-medium text-sm">
+                            Dine-in
+                        </button>
+                        <button id="takeout-btn" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-md font-medium text-sm">
+                            Takeout
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Empty State -->
-                <div class="flex-1 flex flex-col items-center justify-center text-center">
-                    <!-- Shopping Cart Icon -->
-                    <div class="mb-4">
-                        <svg class="w-16 h-16 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                            <path
-                                d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z" />
-                            <path d="M9 8V17H11V8H9ZM13 8V17H15V8H13Z" />
-                        </svg>
-                    </div>
+                <!-- Order Items Container -->
+                <div id="order-items-container" class="order-items-container mb-4">
+                    <!-- Order items will be dynamically added here -->
+                </div>
 
-                    <!-- Empty Message -->
-                    <p class="text-gray-400 text-sm font-medium">Your order is still empty</p>
+                <!-- Order Summary Details -->
+                <div class="mt-auto border-t border-gray-200 pt-4">
+                    <!-- Special Request -->
+                    <div class="mb-4">
+                        <textarea 
+                            id="special-request" 
+                            placeholder="Special Request" 
+                            class="w-full p-2 border border-gray-300 rounded-md text-sm resize-none"
+                            rows="2"
+                        ></textarea>
+                    </div>
+                    
+                    <!-- Summary -->
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Items (<span id="items-count">0</span>)</span>
+                            <span>₱<span id="subtotal">0.00</span></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Tax</span>
+                            <span>₱<span id="tax">0.00</span></span>
+                        </div>
+                        <div class="flex justify-between font-semibold text-lg mt-2">
+                            <span>Total Amount</span>
+                            <span>₱<span id="total-amount">0.00</span></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3 mt-6">
+                        <button id="cancel-order" class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-md font-medium">
+                            Cancel
+                        </button>
+                        <button id="checkout-btn" class="flex-1 py-3 bg-orange-500 text-white rounded-md font-medium">
+                            Checkout
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Order management
+        let orderItems = [];
+        let orderType = 'dine-in';
+        
         // Set default category to Drinks
         let currentCategory = 'drinks';
         let currentSubcategory = 'hot';
@@ -162,12 +229,173 @@
             // loadProducts(currentCategory, currentSubcategory);
         }
 
+        // Function to add item to order
+        function addToOrder(product) {
+            // Check if product already exists in order
+            const existingItemIndex = orderItems.findIndex(item => item.id === product.id);
+            
+            if (existingItemIndex !== -1) {
+                // Increment quantity if product already exists
+                orderItems[existingItemIndex].quantity += 1;
+            } else {
+                // Add new item to order
+                orderItems.push({
+                    id: product.id,
+                    name: product.productName,
+                    price: parseFloat(product.productPrice),
+                    quantity: 1,
+                    image: product.productImage || null
+                });
+            }
+            
+            // Update order display
+            updateOrderDisplay();
+        }
+
+        // Function to update order display
+        function updateOrderDisplay() {
+            const orderContainer = document.getElementById('order-items-container');
+            const itemsCount = document.getElementById('items-count');
+            const subtotalEl = document.getElementById('subtotal');
+            const taxEl = document.getElementById('tax');
+            const totalAmountEl = document.getElementById('total-amount');
+            
+            // Clear container
+            orderContainer.innerHTML = '';
+            
+            if (orderItems.length === 0) {
+                // Show empty state
+                orderContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center text-center py-10">
+                        <svg class="w-16 h-16 text-gray-300 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z" />
+                            <path d="M9 8V17H11V8H9ZM13 8V17H15V8H13Z" />
+                        </svg>
+                        <p class="text-gray-400 text-sm font-medium">Your order is still empty</p>
+                    </div>
+                `;
+                
+                // Reset counts
+                itemsCount.textContent = '0';
+                subtotalEl.textContent = '0.00';
+                taxEl.textContent = '0.00';
+                totalAmountEl.textContent = '0.00';
+                
+                return;
+            }
+            
+            // Calculate totals
+            let itemsTotal = 0;
+            let itemsCountValue = 0;
+            
+            // Render each order item
+            orderItems.forEach((item, index) => {
+                itemsTotal += item.price * item.quantity;
+                itemsCountValue += item.quantity;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'border-b border-gray-200 py-3';
+                itemElement.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h4 class="font-medium text-gray-800">${item.name}</h4>
+                            <p class="text-sm text-gray-600">${item.price.toFixed(2)}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="decreaseQuantity(${index})" class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-700">-</button>
+                            <span class="text-sm font-medium">${item.quantity}</span>
+                            <button onclick="increaseQuantity(${index})" class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-700">+</button>
+                            <button onclick="removeItem(${index})" class="ml-2 text-red-500 hover:text-red-700">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                orderContainer.appendChild(itemElement);
+            });
+            
+            // Calculate tax (assuming 12% tax rate)
+            const tax = itemsTotal * 0.12;
+            const totalAmount = itemsTotal + tax;
+            
+            // Update display values
+            itemsCount.textContent = itemsCountValue;
+            subtotalEl.textContent = itemsTotal.toFixed(2);
+            taxEl.textContent = tax.toFixed(2);
+            totalAmountEl.textContent = totalAmount.toFixed(2);
+        }
+
+        // Function to increase item quantity
+        function increaseQuantity(index) {
+            orderItems[index].quantity += 1;
+            updateOrderDisplay();
+        }
+
+        // Function to decrease item quantity
+        function decreaseQuantity(index) {
+            if (orderItems[index].quantity > 1) {
+                orderItems[index].quantity -= 1;
+            } else {
+                orderItems.splice(index, 1);
+            }
+            updateOrderDisplay();
+        }
+
+        // Function to remove item from order
+        function removeItem(index) {
+            orderItems.splice(index, 1);
+            updateOrderDisplay();
+        }
+
         // Initialize with Drinks category selected
         document.addEventListener('DOMContentLoaded', function() {
             // Set drinks button as active
             document.getElementById('drinks-btn').classList.add('active-category');
             // Set hot button as active
             document.querySelector('#drinks-subcategories button').classList.add('active-subcategory');
+            
+            // Set up order type buttons
+            document.getElementById('dine-in-btn').addEventListener('click', function() {
+                this.classList.add('bg-orange-500', 'text-white');
+                this.classList.remove('bg-gray-200', 'text-gray-700');
+                document.getElementById('takeout-btn').classList.add('bg-gray-200', 'text-gray-700');
+                document.getElementById('takeout-btn').classList.remove('bg-orange-500', 'text-white');
+                orderType = 'dine-in';
+            });
+            
+            document.getElementById('takeout-btn').addEventListener('click', function() {
+                this.classList.add('bg-orange-500', 'text-white');
+                this.classList.remove('bg-gray-200', 'text-gray-700');
+                document.getElementById('dine-in-btn').classList.add('bg-gray-200', 'text-gray-700');
+                document.getElementById('dine-in-btn').classList.remove('bg-orange-500', 'text-white');
+                orderType = 'takeout';
+            });
+            
+            // Set up cancel and checkout buttons
+            document.getElementById('cancel-order').addEventListener('click', function() {
+                if (confirm('Are you sure you want to cancel this order?')) {
+                    orderItems = [];
+                    updateOrderDisplay();
+                }
+            });
+            
+            document.getElementById('checkout-btn').addEventListener('click', function() {
+                if (orderItems.length === 0) {
+                    alert('Please add items to your order before checking out.');
+                    return;
+                }
+                
+                // Here you would typically submit the order to the server
+                alert('Order placed successfully!');
+                orderItems = [];
+                updateOrderDisplay();
+            });
+            
+            // Initialize order display
+            updateOrderDisplay();
         });
     </script>
 @endsection
