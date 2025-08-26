@@ -68,36 +68,132 @@ document.getElementById("searchInput").addEventListener("keyup", function () {
 
 // Modal functions
 function openModalUser() {
-    document.getElementById('addUserModal').classList.remove('hidden');
-    document.getElementById('addUserModal').classList.add('flex');
+    document.getElementById("addUserModal").classList.remove("hidden");
+    document.getElementById("addUserModal").classList.add("flex");
 }
 
 function closeModalUser() {
-    document.getElementById('addUserModal').classList.remove('flex');
-    document.getElementById('addUserModal').classList.add('hidden');
+    document.getElementById("addUserModal").classList.remove("flex");
+    document.getElementById("addUserModal").classList.add("hidden");
 }
 
 // Close modal when clicking outside
-document.getElementById('addUserModal').addEventListener('click', function(e) {
-    if (e.target.id === 'addUserModal') {
+document.getElementById("addUserModal").addEventListener("click", function (e) {
+    if (e.target.id === "addUserModal") {
         closeModalUser();
     }
 });
 
 // Form submission handling
-document.getElementById('addUserForm').addEventListener('submit', function(e) {
+document.getElementById("addUserForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
-    const password = formData.get('password');
-    const passwordConfirmation = formData.get('password_confirmation');
-    
+    const password = formData.get("password");
+    const passwordConfirmation = formData.get("password_confirmation");
+
     // Validate passwords match
     if (password !== passwordConfirmation) {
-        alert('Passwords do not match!');
+        alert("Passwords do not match!");
         return;
     }
-    
+
     // Submit the form if validation passes
     this.submit();
 });
+
+// User Created Modal functions
+function showUserCreatedModal() {
+    const modal = document.getElementById("userCreatedModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+}
+
+function closeUserCreatedModal() {
+    const modal = document.getElementById("userCreatedModal");
+    modal.classList.remove("flex");
+    modal.classList.add("hidden");
+}
+
+// Close modal when clicking outside
+if (document.getElementById("userCreatedModal")) {
+    document
+        .getElementById("userCreatedModal")
+        .addEventListener("click", function (e) {
+            if (e.target.id === "userCreatedModal") {
+                closeUserCreatedModal();
+            }
+        });
+}
+
+// Update the form submission handling to show success modal
+document
+    .getElementById("addUserForm")
+    .addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const password = formData.get("password");
+        const passwordConfirmation = formData.get("password_confirmation");
+
+        // Validate passwords match
+        if (password !== passwordConfirmation) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        // Show loading state (optional)
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalText = submitButton.textContent;
+        submitButton.textContent = "Creating...";
+        submitButton.disabled = true;
+
+        try {
+            // Submit the form via AJAX
+            const response = await fetch(this.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                    Accept: "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Close the add user modal
+                closeModalUser();
+
+                // Show success modal
+                showUserCreatedModal();
+
+                // Wait 3 seconds before closing the modal and refreshing
+                setTimeout(() => {
+                    closeUserCreatedModal();
+                    window.location.reload();
+                }, 3000);
+            } else {
+                // Handle validation errors
+                if (data.errors) {
+                    let errorMessage = "Please fix the following errors:\n";
+                    for (const field in data.errors) {
+                        errorMessage += `- ${data.errors[field][0]}\n`;
+                    }
+                    alert(errorMessage);
+                } else {
+                    alert(data.message || "Error creating user");
+                }
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Network error. Please check your connection and try again.");
+        } finally {
+            // Restore button state
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+        }
+    });

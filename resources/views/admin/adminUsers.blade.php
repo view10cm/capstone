@@ -159,7 +159,8 @@
     </div>
 
     <!-- Add New User Modal -->
-    <div id="addUserModal" class="fixed inset-0 bg-transparent flex items-center justify-center hidden z-50" style="backdrop-filter: blur(8px); background-color: rgba(255,255,255,0.3);">
+    <div id="addUserModal" class="fixed inset-0 bg-transparent flex items-center justify-center hidden z-50"
+        style="backdrop-filter: blur(8px); background-color: rgba(255,255,255,0.3);">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
             <!-- Modal Header -->
             <div class="flex items-center justify-between p-4 border-b">
@@ -218,6 +219,33 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+
+    <!-- User Created Success Modal -->
+    <div id="userCreatedModal"
+        class="fixed inset-0 bg-transparent flex items-center justify-center hidden z-50"
+        style="backdrop-filter: blur(8px); background-color: rgba(255,255,255,0.3);">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+            <div class="flex flex-col items-center">
+                <!-- Checkmark Icon -->
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+
+                <!-- Success Message -->
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">User Created!</h3>
+                <p class="text-gray-600 text-center mb-6">New user has been created successfully</p>
+
+                <!-- Done Button -->
+                <button onclick="closeUserCreatedModal()"
+                    class="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors">
+                    Done
+                </button>
+            </div>
         </div>
     </div>
 
