@@ -99,8 +99,10 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Customer routes
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/customer/landing', [CustomerController::class, 'landing'])->name('customer.landing');
+    Route::get('/customer/products-gallery', [CustomerController::class, 'productsGallery'])->name('customer.productsGallery');
 });
 
 Route::get('/customer/system-description', function () {
@@ -108,7 +110,8 @@ Route::get('/customer/system-description', function () {
 })->name('customer.systemDescription');
 
 Route::get('/customer/order-area', function () {
-    return view('customer.customerOrderArea');
+    $products = \App\Models\ProductsData::all();
+    return view('customer.customerOrderArea', ['products' => $products]);
 })->name('customer.orderArea');
 
 Route::prefix('admin')->group(function () {

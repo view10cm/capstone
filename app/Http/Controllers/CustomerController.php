@@ -13,4 +13,13 @@ class CustomerController extends Controller
     {
         return view('customerLandingPage');
     }
+
+    /**
+     * Show the products gallery page
+     */
+    public function productsGallery()
+    {
+        $products = \App\Models\ProductsData::all();
+        return view('customer.productsGallery', ['products' => $products]);
+    }
 }
