@@ -182,63 +182,19 @@
 
     <script>
         // Order management
-        let orderItems = [];
-        let orderType = 'dine-in';
-        
+        window.orderItems = [];
+        window.orderType = 'dine-in';
+
         // Set default category to Drinks
-        let currentCategory = 'drinks';
-        let currentSubcategory = 'hot';
+        window.currentCategory = 'drinks';
+        window.currentSubcategory = 'hot';
 
-        function changeCategory(category) {
-            currentCategory = category;
-
-            // Update active category button
-            document.getElementById('drinks-btn').classList.remove('active-category');
-            document.getElementById('main-course-btn').classList.remove('active-category');
-            document.getElementById('appetizers-btn').classList.remove('active-category');
-            document.getElementById(`${category}-btn`).classList.add('active-category');
-
-            // Hide all subcategory menus
-            document.getElementById('drinks-subcategories').classList.add('hidden');
-            document.getElementById('main-course-subcategories').classList.add('hidden');
-            document.getElementById('appetizers-subcategories').classList.add('hidden');
-
-            // Show the selected subcategory menu
-            document.getElementById(`${category}-subcategories`).classList.remove('hidden');
-
-            // Reset subcategory to first option
-            const subcategoryButtons = document.getElementById(`${category}-subcategories`).querySelectorAll('button');
-            if (subcategoryButtons.length > 0) {
-                changeSubcategory(subcategoryButtons[0].getAttribute('onclick').match(/'([^']+)'/)[1]);
-            }
-        }
-
-        function changeSubcategory(subcategory) {
-            currentSubcategory = subcategory;
-
-            // Remove active class from all subcategory buttons in current category
-            const buttons = document.getElementById(`${currentCategory}-subcategories`).querySelectorAll('button');
-            buttons.forEach(btn => {
-                btn.classList.remove('active-subcategory');
-            });
-
-            // Add active class to clicked button
-            event.target.classList.add('active-subcategory');
-
-            // Here you would typically load the products for this subcategory
-            // loadProducts(currentCategory, currentSubcategory);
-        }
-
-        // Function to add item to order
-        function addToOrder(product) {
+        window.addToOrder = function(product) {
             // Check if product already exists in order
             const existingItemIndex = orderItems.findIndex(item => item.id === product.id);
-            
             if (existingItemIndex !== -1) {
-                // Increment quantity if product already exists
                 orderItems[existingItemIndex].quantity += 1;
             } else {
-                // Add new item to order
                 orderItems.push({
                     id: product.id,
                     name: product.productName,
@@ -247,24 +203,17 @@
                     image: product.productImage || null
                 });
             }
-            
-            // Update order display
             updateOrderDisplay();
         }
 
-        // Function to update order display
-        function updateOrderDisplay() {
+        window.updateOrderDisplay = function() {
             const orderContainer = document.getElementById('order-items-container');
             const itemsCount = document.getElementById('items-count');
             const subtotalEl = document.getElementById('subtotal');
             const taxEl = document.getElementById('tax');
             const totalAmountEl = document.getElementById('total-amount');
-            
-            // Clear container
             orderContainer.innerHTML = '';
-            
             if (orderItems.length === 0) {
-                // Show empty state
                 orderContainer.innerHTML = `
                     <div class="flex flex-col items-center justify-center text-center py-10">
                         <svg class="w-16 h-16 text-gray-300 mb-4" fill="currentColor" viewBox="0 0 24 24">
@@ -274,68 +223,56 @@
                         <p class="text-gray-400 text-sm font-medium">Your order is still empty</p>
                     </div>
                 `;
-                
-                // Reset counts
                 itemsCount.textContent = '0';
                 subtotalEl.textContent = '0.00';
                 taxEl.textContent = '0.00';
                 totalAmountEl.textContent = '0.00';
-                
                 return;
             }
-            
-            // Calculate totals
             let itemsTotal = 0;
             let itemsCountValue = 0;
-            
-            // Render each order item
             orderItems.forEach((item, index) => {
                 itemsTotal += item.price * item.quantity;
                 itemsCountValue += item.quantity;
-                
                 const itemElement = document.createElement('div');
-                itemElement.className = 'border-b border-gray-200 py-3';
+                itemElement.className = 'flex items-center bg-white rounded-lg shadow p-2 mb-2';
                 itemElement.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <h4 class="font-medium text-gray-800">${item.name}</h4>
-                            <p class="text-sm text-gray-600">${item.price.toFixed(2)}</p>
+                    <div class="w-16 h-16 bg-gray-200 rounded mr-3 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                        ${item.image ? `<img src="/storage/${item.image}" alt="${item.name}" class="w-full h-full object-cover rounded" />` : ''}
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold text-sm text-gray-800">${item.name}</span>
+                            <span class="font-bold text-orange-500 text-base">₱${item.price.toFixed(2)}</span>
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <button onclick="decreaseQuantity(${index})" class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-700">-</button>
-                            <span class="text-sm font-medium">${item.quantity}</span>
-                            <button onclick="increaseQuantity(${index})" class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-gray-700">+</button>
-                            <button onclick="removeItem(${index})" class="ml-2 text-red-500 hover:text-red-700">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex items-center mt-2">
+                            <button onclick="decreaseQuantity(${index})" class="w-6 h-6 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold">-</button>
+                            <span class="mx-2 text-base font-semibold">${item.quantity}</span>
+                            <button onclick="increaseQuantity(${index})" class="w-6 h-6 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold">+</button>
+                            <button onclick="removeItem(${index})" class="ml-3 w-6 h-6 bg-red-200 rounded-full flex items-center justify-center text-red-700 hover:bg-red-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                 </svg>
                             </button>
                         </div>
                     </div>
                 `;
-                
                 orderContainer.appendChild(itemElement);
             });
-            
-            // Calculate tax (assuming 12% tax rate)
             const tax = itemsTotal * 0.12;
             const totalAmount = itemsTotal + tax;
-            
-            // Update display values
             itemsCount.textContent = itemsCountValue;
             subtotalEl.textContent = itemsTotal.toFixed(2);
             taxEl.textContent = tax.toFixed(2);
             totalAmountEl.textContent = totalAmount.toFixed(2);
         }
 
-        // Function to increase item quantity
-        function increaseQuantity(index) {
+        window.increaseQuantity = function(index) {
             orderItems[index].quantity += 1;
             updateOrderDisplay();
         }
 
-        // Function to decrease item quantity
-        function decreaseQuantity(index) {
+        window.decreaseQuantity = function(index) {
             if (orderItems[index].quantity > 1) {
                 orderItems[index].quantity -= 1;
             } else {
@@ -344,20 +281,14 @@
             updateOrderDisplay();
         }
 
-        // Function to remove item from order
-        function removeItem(index) {
+        window.removeItem = function(index) {
             orderItems.splice(index, 1);
             updateOrderDisplay();
         }
 
-        // Initialize with Drinks category selected
         document.addEventListener('DOMContentLoaded', function() {
-            // Set drinks button as active
             document.getElementById('drinks-btn').classList.add('active-category');
-            // Set hot button as active
             document.querySelector('#drinks-subcategories button').classList.add('active-subcategory');
-            
-            // Set up order type buttons
             document.getElementById('dine-in-btn').addEventListener('click', function() {
                 this.classList.add('bg-orange-500', 'text-white');
                 this.classList.remove('bg-gray-200', 'text-gray-700');
@@ -365,7 +296,6 @@
                 document.getElementById('takeout-btn').classList.remove('bg-orange-500', 'text-white');
                 orderType = 'dine-in';
             });
-            
             document.getElementById('takeout-btn').addEventListener('click', function() {
                 this.classList.add('bg-orange-500', 'text-white');
                 this.classList.remove('bg-gray-200', 'text-gray-700');
@@ -373,28 +303,21 @@
                 document.getElementById('dine-in-btn').classList.remove('bg-orange-500', 'text-white');
                 orderType = 'takeout';
             });
-            
-            // Set up cancel and checkout buttons
             document.getElementById('cancel-order').addEventListener('click', function() {
                 if (confirm('Are you sure you want to cancel this order?')) {
                     orderItems = [];
                     updateOrderDisplay();
                 }
             });
-            
             document.getElementById('checkout-btn').addEventListener('click', function() {
                 if (orderItems.length === 0) {
                     alert('Please add items to your order before checking out.');
                     return;
                 }
-                
-                // Here you would typically submit the order to the server
                 alert('Order placed successfully!');
                 orderItems = [];
                 updateOrderDisplay();
             });
-            
-            // Initialize order display
             updateOrderDisplay();
         });
     </script>
