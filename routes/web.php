@@ -127,3 +127,12 @@ Route::get('/admin/menu', function () {
     $products = \App\Models\ProductsData::with('category')->paginate(7); // Changed to 7 items per page
     return view('admin.adminMenu', ['products' => $products]);
 })->name('admin.adminMenu');
+
+// Add this to your web.php routes file
+Route::post('/admin/users', [App\Http\Controllers\Admin\UserController::class, 'store'])
+    ->name('admin.users.store');
+
+    Route::get('/admin/users', function () {
+    $users = \App\Models\User::all();
+    return view('admin.adminUsers', ['users' => $users]);
+})->name('admin.adminUsers');
