@@ -133,6 +133,74 @@
     let currentPage = 1;
     const productsPerPage = 8;
     const totalPages = Math.ceil(allProducts.length / productsPerPage);
+    
+    // Track current category and subcategory
+    let currentCategory = 'drinks';
+    let currentSubcategory = 'hot';
+
+    // Function to change category
+    function changeCategory(category) {
+        // Update current category
+        currentCategory = category;
+        
+        // Reset to first page when changing category
+        currentPage = 1;
+        
+        // Update UI for category buttons
+        document.querySelectorAll('[id$="-btn"]').forEach(btn => {
+            btn.classList.remove('bg-orange-500', 'text-white');
+            btn.classList.add('text-gray-800', 'hover:bg-orange-100');
+        });
+        
+        // Highlight the active category button
+        document.getElementById(`${category}-btn`).classList.add('bg-orange-500', 'text-white');
+        document.getElementById(`${category}-btn`).classList.remove('text-gray-800', 'hover:bg-orange-100');
+        
+        // Show the appropriate subcategories
+        document.querySelectorAll('[id$="-subcategories"]').forEach(subcat => {
+            subcat.classList.add('hidden');
+        });
+        document.getElementById(`${category}-subcategories`).classList.remove('hidden');
+        
+        // Reset subcategory to the first one in the category
+        const firstSubcategory = document.querySelector(`#${category}-subcategories button`);
+        if (firstSubcategory) {
+            changeSubcategory(firstSubcategory.textContent.trim().toLowerCase());
+        }
+        
+        // Update products display
+        updateProductsDisplay();
+        updateArrowButtons();
+    }
+
+    // Function to change subcategory
+    function changeSubcategory(subcategory) {
+        // Update current subcategory
+        currentSubcategory = subcategory;
+        
+        // Reset to first page when changing subcategory
+        currentPage = 1;
+        
+        // Update UI for subcategory buttons
+        document.querySelectorAll(`#${currentCategory}-subcategories button`).forEach(btn => {
+            btn.classList.remove('text-orange-500', 'font-bold');
+            btn.classList.add('text-gray-700');
+        });
+        
+        // Find and highlight the active subcategory button
+        const subcategoryButtons = document.querySelectorAll(`#${currentCategory}-subcategories button`);
+        for (let button of subcategoryButtons) {
+            if (button.textContent.trim().toLowerCase() === subcategory.toLowerCase()) {
+                button.classList.add('text-orange-500', 'font-bold');
+                button.classList.remove('text-gray-700');
+                break;
+            }
+        }
+        
+        // Update products display
+        updateProductsDisplay();
+        updateArrowButtons();
+    }
 
     // Function to navigate between product pages
     function navigateProducts(direction) {
@@ -150,6 +218,9 @@
 
     // Function to update the products display
     function updateProductsDisplay() {
+        // In a real application, you would filter products by category and subcategory
+        // For this example, we'll just use the pagination
+        
         const startIndex = (currentPage - 1) * productsPerPage;
         const endIndex = startIndex + productsPerPage;
         const currentProducts = allProducts.slice(startIndex, endIndex);
@@ -202,8 +273,12 @@
         }
     }
 
-    // Initialize arrow button states
+    // Initialize the page
     document.addEventListener('DOMContentLoaded', function() {
+        // Set initial active category
+        changeCategory('drinks');
+        
+        // Initialize arrow button states
         updateArrowButtons();
     });
 </script>
