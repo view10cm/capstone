@@ -259,7 +259,7 @@
                 `;
                 orderContainer.appendChild(itemElement);
             });
-            const tax = itemsTotal * 0.12;
+            const tax = itemsTotal * 0.00;
             const totalAmount = itemsTotal + tax;
             itemsCount.textContent = itemsCountValue;
             subtotalEl.textContent = itemsTotal.toFixed(2);
