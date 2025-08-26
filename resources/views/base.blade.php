@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Default Title')</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/Mug.svg') }}">
     <!-- Other head elements -->
