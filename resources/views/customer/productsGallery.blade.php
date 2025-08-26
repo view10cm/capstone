@@ -20,23 +20,23 @@
     <div class="flex justify-center space-x-6 px-4 py-3 bg-gray-50 border-t border-gray-200 overflow-x-auto">
         <!-- Drinks Subcategories (default visible) -->
         <div id="drinks-subcategories" class="flex space-x-6">
-            <button onclick="changeSubcategory('hot')"
+            <button onclick="changeSubcategory('Hot')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors active-subcategory">
                 Hot
             </button>
-            <button onclick="changeSubcategory('iced')"
+            <button onclick="changeSubcategory('Iced')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Iced
             </button>
-            <button onclick="changeSubcategory('frappe')"
+            <button onclick="changeSubcategory('Frappe')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Frappe
             </button>
-            <button onclick="changeSubcategory('milktea')"
+            <button onclick="changeSubcategory('Milktea')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Milktea
             </button>
-            <button onclick="changeSubcategory('specials')"
+            <button onclick="changeSubcategory('Specials')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Specials
             </button>
@@ -44,31 +44,31 @@
 
         <!-- Main Course Subcategories (hidden by default) -->
         <div id="main-course-subcategories" class="flex space-x-6 hidden">
-            <button onclick="changeSubcategory('pork')"
+            <button onclick="changeSubcategory('Pork')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Pork
             </button>
-            <button onclick="changeSubcategory('chicken')"
+            <button onclick="changeSubcategory('Chicken')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Chicken
             </button>
-            <button onclick="changeSubcategory('beef')"
+            <button onclick="changeSubcategory('Beef')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Beef
             </button>
-            <button onclick="changeSubcategory('fish-seafood')"
+            <button onclick="changeSubcategory('Fish and Seafood')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Fish & Seafood
             </button>
-            <button onclick="changeSubcategory('pasta')"
+            <button onclick="changeSubcategory('Pasta')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Pasta
             </button>
-            <button onclick="changeSubcategory('noodles')"
+            <button onclick="changeSubcategory('Noodles')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Noodles
             </button>
-            <button onclick="changeSubcategory('specials')"
+            <button onclick="changeSubcategory('Specials')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Specials
             </button>
@@ -76,19 +76,19 @@
 
         <!-- Appetizers Subcategories (hidden by default) -->
         <div id="appetizers-subcategories" class="flex space-x-6 hidden">
-            <button onclick="changeSubcategory('sandwiches')"
+            <button onclick="changeSubcategory('Sandwiches')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Sandwiches
             </button>
-            <button onclick="changeSubcategory('knick-knacks')"
+            <button onclick="changeSubcategory('Knick/Knacks')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Knick/Knacks
             </button>
-            <button onclick="changeSubcategory('salads')"
+            <button onclick="changeSubcategory('Salads')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Salads
             </button>
-            <button onclick="changeSubcategory('specials')"
+            <button onclick="changeSubcategory('Specials')"
                 class="px-3 py-1 font-medium text-gray-700 hover:text-orange-500 transition-colors">
                 Specials
             </button>
@@ -132,11 +132,11 @@
     let allProducts = @json($products);
     let currentPage = 1;
     const productsPerPage = 8;
-    const totalPages = Math.ceil(allProducts.length / productsPerPage);
+    let totalPages = Math.ceil(allProducts.length / productsPerPage);
     
     // Track current category and subcategory
     let currentCategory = 'drinks';
-    let currentSubcategory = 'hot';
+    let currentSubcategory = 'Hot';
 
     // Function to change category
     function changeCategory(category) {
@@ -165,7 +165,7 @@
         // Reset subcategory to the first one in the category
         const firstSubcategory = document.querySelector(`#${category}-subcategories button`);
         if (firstSubcategory) {
-            changeSubcategory(firstSubcategory.textContent.trim().toLowerCase());
+            changeSubcategory(firstSubcategory.textContent.trim());
         }
         
         // Update products display
@@ -190,7 +190,7 @@
         // Find and highlight the active subcategory button
         const subcategoryButtons = document.querySelectorAll(`#${currentCategory}-subcategories button`);
         for (let button of subcategoryButtons) {
-            if (button.textContent.trim().toLowerCase() === subcategory.toLowerCase()) {
+            if (button.textContent.trim() === subcategory) {
                 button.classList.add('text-orange-500', 'font-bold');
                 button.classList.remove('text-gray-700');
                 break;
@@ -204,7 +204,11 @@
 
     // Function to navigate between product pages
     function navigateProducts(direction) {
-        if (direction === 'next' && currentPage < totalPages) {
+        // Get filtered products for current category and subcategory
+        const filteredProducts = filterProductsBySubcategory();
+        const filteredTotalPages = Math.ceil(filteredProducts.length / productsPerPage);
+        
+        if (direction === 'next' && currentPage < filteredTotalPages) {
             currentPage++;
         } else if (direction === 'prev' && currentPage > 1) {
             currentPage--;
@@ -216,17 +220,37 @@
         updateArrowButtons();
     }
 
+    // Function to filter products by current subcategory
+    function filterProductsBySubcategory() {
+        return allProducts.filter(product => 
+            product.productSubcategory === currentSubcategory
+        );
+    }
+
     // Function to update the products display
     function updateProductsDisplay() {
-        // In a real application, you would filter products by category and subcategory
-        // For this example, we'll just use the pagination
+        // Filter products by current subcategory
+        const filteredProducts = filterProductsBySubcategory();
+        
+        // Update total pages based on filtered products
+        totalPages = Math.ceil(filteredProducts.length / productsPerPage);
         
         const startIndex = (currentPage - 1) * productsPerPage;
         const endIndex = startIndex + productsPerPage;
-        const currentProducts = allProducts.slice(startIndex, endIndex);
+        const currentProducts = filteredProducts.slice(startIndex, endIndex);
         
         const productsContainer = document.getElementById('products-container');
         productsContainer.innerHTML = '';
+        
+        if (currentProducts.length === 0) {
+            // Display message when no products are found
+            productsContainer.innerHTML = `
+                <div class="col-span-4 text-center py-10">
+                    <p class="text-gray-500 text-lg">No products in this category</p>
+                </div>
+            `;
+            return;
+        }
         
         currentProducts.forEach(product => {
             const productElement = document.createElement('div');
@@ -254,8 +278,12 @@
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         
+        // Get filtered products for current category and subcategory
+        const filteredProducts = filterProductsBySubcategory();
+        const filteredTotalPages = Math.ceil(filteredProducts.length / productsPerPage);
+        
         // Disable prev button on first page
-        if (currentPage === 1) {
+        if (currentPage === 1 || filteredProducts.length === 0) {
             prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
             prevBtn.disabled = true;
         } else {
@@ -264,7 +292,7 @@
         }
         
         // Disable next button on last page
-        if (currentPage === totalPages) {
+        if (currentPage === filteredTotalPages || filteredProducts.length === 0) {
             nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
             nextBtn.disabled = true;
         } else {
