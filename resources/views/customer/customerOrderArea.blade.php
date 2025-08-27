@@ -41,6 +41,24 @@
         .order-items-container::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #f97316;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 @endpush
 
@@ -294,6 +312,63 @@
             updateOrderDisplay();
         }
 
+        // Function to handle checkout
+        window.processCheckout = function() {
+            const checkoutBtn = document.getElementById('checkout-btn');
+            const originalText = checkoutBtn.innerHTML;
+            
+            // Show loading spinner
+            checkoutBtn.innerHTML = '<div class="spinner"></div> Processing...';
+            checkoutBtn.disabled = true;
+            
+            // Prepare order data
+            const orderData = {
+                order_type: orderType,
+                order_date: new Date().toISOString(),
+                special_request: document.getElementById('special-request').value,
+                total_items: parseInt(document.getElementById('items-count').textContent),
+                subtotal: parseFloat(document.getElementById('subtotal').textContent),
+                tax: parseFloat(document.getElementById('tax').textContent),
+                totalAmount: parseFloat(document.getElementById('total-amount').textContent),
+                status: 'New Order',
+                order_items: orderItems.map(item => ({
+                    product_name: item.name,
+                    quantity: item.quantity,
+                    unit_price: item.price
+                }))
+            };
+            
+            // Send AJAX request to save order
+            fetch('{{ route("order.checkout") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Order placed successfully! Your order ID is: ' + data.order_id);
+                    orderItems = [];
+                    updateOrderDisplay();
+                    document.getElementById('special-request').value = '';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing your order. Please try again.');
+            })
+            .finally(() => {
+                // Restore button text
+                checkoutBtn.innerHTML = originalText;
+                checkoutBtn.disabled = orderItems.length === 0;
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('drinks-btn').classList.add('active-category');
             document.querySelector('#drinks-subcategories button').classList.add('active-subcategory');
@@ -317,15 +392,7 @@
                     updateOrderDisplay();
                 }
             });
-            document.getElementById('checkout-btn').addEventListener('click', function() {
-                if (orderItems.length === 0) {
-                    alert('Please add items to your order before checking out.');
-                    return;
-                }
-                alert('Order placed successfully!');
-                orderItems = [];
-                updateOrderDisplay();
-            });
+            document.getElementById('checkout-btn').addEventListener('click', processCheckout);
             updateOrderDisplay();
         });
     </script>
