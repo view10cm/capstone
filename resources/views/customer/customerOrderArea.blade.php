@@ -171,7 +171,7 @@
                         <button id="cancel-order" class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-md font-medium">
                             Cancel
                         </button>
-                        <button id="checkout-btn" class="flex-1 py-3 bg-orange-500 text-white rounded-md font-medium">
+                        <button id="checkout-btn" class="flex-1 py-3 bg-orange-500 text-white rounded-md font-medium" disabled style="cursor: not-allowed; opacity: 0.6;">
                             Checkout
                         </button>
                     </div>
@@ -212,6 +212,7 @@
             const subtotalEl = document.getElementById('subtotal');
             const taxEl = document.getElementById('tax');
             const totalAmountEl = document.getElementById('total-amount');
+            const checkoutBtn = document.getElementById('checkout-btn');
             orderContainer.innerHTML = '';
             if (orderItems.length === 0) {
                 orderContainer.innerHTML = `
@@ -227,7 +228,14 @@
                 subtotalEl.textContent = '0.00';
                 taxEl.textContent = '0.00';
                 totalAmountEl.textContent = '0.00';
+                checkoutBtn.disabled = true;
+                checkoutBtn.style.cursor = 'not-allowed';
+                checkoutBtn.style.opacity = '0.6';
                 return;
+            } else {
+                checkoutBtn.disabled = false;
+                checkoutBtn.style.cursor = 'pointer';
+                checkoutBtn.style.opacity = '1';
             }
             let itemsTotal = 0;
             let itemsCountValue = 0;
@@ -259,7 +267,7 @@
                 `;
                 orderContainer.appendChild(itemElement);
             });
-            const tax = itemsTotal * 0.12;
+            const tax = itemsTotal * 0.00;
             const totalAmount = itemsTotal + tax;
             itemsCount.textContent = itemsCountValue;
             subtotalEl.textContent = itemsTotal.toFixed(2);
