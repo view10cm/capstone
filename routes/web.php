@@ -139,3 +139,5 @@ Route::post('/admin/users', [App\Http\Controllers\Admin\UserController::class, '
     $users = \App\Models\User::all();
     return view('admin.adminUsers', ['users' => $users]);
 })->name('admin.adminUsers');
+
+Route::post('/order/checkout', [App\Http\Controllers\OrderController::class, 'checkout'])->name('order.checkout');
