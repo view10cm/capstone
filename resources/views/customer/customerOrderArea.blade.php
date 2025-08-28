@@ -59,6 +59,39 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Assistant typing indicator */
+        .typing-indicator {
+            display: flex;
+            padding: 10px;
+        }
+        
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: bounce 1.3s linear infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+        
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-5px);
+            }
+        }
     </style>
 @endpush
 
@@ -85,7 +118,7 @@
                         style="font-family: 'Manrope', 'Arial', sans-serif;">
                         <!-- Conversation Messages Area -->
                         <div class="p-6 max-h-40 overflow-y-auto scrollbar-hide"
-                            style="scrollbar-width: none; -ms-overflow-style: none;">
+                            style="scrollbar-width: none; -ms-overflow-style: none;" id="conversation-scroll">
                             <style>
                                 .scrollbar-hide::-webkit-scrollbar {
                                     display: none;
@@ -109,8 +142,8 @@
                             </div>
 
                             <!-- Placeholder for conversation messages -->
-                            <div class="text-center text-gray-400 py-8">
-
+                            <div id="conversation-messages">
+                                <!-- Transcribed messages will appear here -->
                             </div>
                         </div>
                     </div>
@@ -122,7 +155,10 @@
                 <!-- Microphone Button Overlay -->
                 <div class="absolute inset-0 flex items-center justify-center z-30" style="transform: translateY(-25%)">
                     <button
-                        class="bg-white rounded-full p-4 shadow-lg hover:shadow-xl transition-shadow duration-200 hover:bg-gray-50 active:scale-95 transform transition-transform border-2 border-gray-300">
+                        class="bg-white rounded-full p-4 shadow-lg hover:shadow-xl transition-shadow duration-200 hover:bg-gray-50 active:scale-95 transform transition-transform border-2 border-gray-300"
+                        id="microphone-btn"
+                        type="button"
+                    >
                         <svg class="w-8 h-8 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
                             <path
@@ -199,6 +235,246 @@
     </div>
 
     <script>
+        // Voice recording and transcript display
+        document.addEventListener('DOMContentLoaded', function() {
+            const micBtn = document.getElementById('microphone-btn');
+            const messagesPanel = document.getElementById('conversation-messages');
+            const conversationScroll = document.getElementById('conversation-scroll');
+            let recognizing = false;
+            let recognition;
+            
+            // Available products for voice recognition matching
+            const availableProducts = [
+                { name: "Espresso", price: 120, category: "drinks", subcategory: "hot" },
+                { name: "Cappuccino", price: 140, category: "drinks", subcategory: "hot" },
+                { name: "Latte", price: 150, category: "drinks", subcategory: "hot" },
+                { name: "Americano", price: 130, category: "drinks", subcategory: "hot" },
+                { name: "Mocha", price: 160, category: "drinks", subcategory: "hot" },
+                { name: "Iced Coffee", price: 140, category: "drinks", subcategory: "cold" },
+                { name: "Cold Brew", price: 150, category: "drinks", subcategory: "cold" },
+                { name: "Iced Latte", price: 160, category: "drinks", subcategory: "cold" },
+                { name: "Iced Mocha", price: 170, category: "drinks", subcategory: "cold" },
+                { name: "Frappuccino", price: 180, category: "drinks", subcategory: "cold" },
+                { name: "Croissant", price: 80, category: "pastries", subcategory: "pastries" },
+                { name: "Muffin", price: 70, category: "pastries", subcategory: "pastries" },
+                { name: "Donut", price: 60, category: "pastries", subcategory: "pastries" },
+                { name: "Bagel", price: 75, category: "pastries", subcategory: "pastries" },
+                { name: "Cake Slice", price: 120, category: "pastries", subcategory: "pastries" }
+            ];
+            
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = function() {
+                    recognizing = true;
+                    micBtn.classList.add('bg-orange-100');
+                };
+                recognition.onend = function() {
+                    recognizing = false;
+                    micBtn.classList.remove('bg-orange-100');
+                };
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    displayUserMessage(transcript);
+                    processVoiceCommand(transcript);
+                };
+            } else {
+                micBtn.disabled = true;
+                micBtn.title = 'Speech Recognition not supported in this browser.';
+            }
+
+            micBtn.addEventListener('click', function() {
+                if (!recognition) return;
+                if (recognizing) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+
+            function displayUserMessage(text) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'flex items-start space-x-3 mb-4 justify-end';
+                msgDiv.innerHTML = `
+                    <div class="flex-1 text-right">
+                        <div class="bg-orange-100 rounded-lg px-4 py-3 max-w-md inline-block">
+                            <p class="text-gray-800" style="font-size: 16px;">${text}</p>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">You</p>
+                    </div>
+                `;
+                messagesPanel.appendChild(msgDiv);
+                scrollToBottom();
+            }
+            
+            function displayAssistantMessage(text, isTyping = false) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'mb-4 assistant-message';
+                
+                if (isTyping) {
+                    msgDiv.innerHTML = `
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-orange-100 rounded-full p-2 flex-shrink-0">
+                                <img src="{{ asset('images/voiceFill.svg') }}" alt="Voice Assistant" class="w-4 h-4">
+                            </div>
+                            <div class="flex-1">
+                                <div class="bg-gray-100 rounded-lg px-4 py-3 max-w-md">
+                                    <div class="typing-indicator">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Assistant is typing...</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    msgDiv.innerHTML = `
+                        <div class="flex items-start space-x-3">
+                            <div class="bg-orange-100 rounded-full p-2 flex-shrink-0">
+                                <img src="{{ asset('images/voiceFill.svg') }}" alt="Voice Assistant" class="w-4 h-4">
+                            </div>
+                            <div class="flex-1">
+                                <div class="bg-gray-100 rounded-lg px-4 py-3 max-w-md">
+                                    <p class="text-gray-800" style="font-size: 16px;">${text}</p>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Assistant</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                messagesPanel.appendChild(msgDiv);
+                scrollToBottom();
+                return msgDiv;
+            }
+            
+            function scrollToBottom() {
+                conversationScroll.scrollTop = conversationScroll.scrollHeight;
+            }
+            
+            function processVoiceCommand(transcript) {
+                // Show typing indicator
+                const typingIndicator = displayAssistantMessage('', true);
+                
+                // Convert transcript to lowercase for easier matching
+                const lowerTranscript = transcript.toLowerCase();
+                
+                // Check for greeting
+                if (lowerTranscript.includes('hello') || lowerTranscript.includes('hi')) {
+                    setTimeout(() => {
+                        messagesPanel.removeChild(typingIndicator);
+                        displayAssistantMessage('Hello! How can I help you with your order today?');
+                    }, 1500);
+                    return;
+                }
+                
+                // Check for menu inquiry
+                if (lowerTranscript.includes('menu') || lowerTranscript.includes('what do you have')) {
+                    setTimeout(() => {
+                        messagesPanel.removeChild(typingIndicator);
+                        displayAssistantMessage('We have a variety of hot and cold drinks, as well as delicious pastries. What would you like to order?');
+                    }, 1500);
+                    return;
+                }
+                
+                // Check for order commands
+                let orderDetected = false;
+                let matchedProducts = [];
+                
+                // Check for quantity
+                let quantity = 1;
+                const quantityMatch = lowerTranscript.match(/(\d+)/);
+                if (quantityMatch) {
+                    quantity = parseInt(quantityMatch[1]);
+                } else if (lowerTranscript.includes('a') || lowerTranscript.includes('one')) {
+                    quantity = 1;
+                } else if (lowerTranscript.includes('two') || lowerTranscript.includes('couple')) {
+                    quantity = 2;
+                } else if (lowerTranscript.includes('three')) {
+                    quantity = 3;
+                }
+                
+                // Match products
+                availableProducts.forEach(product => {
+                    if (lowerTranscript.includes(product.name.toLowerCase())) {
+                        orderDetected = true;
+                        // Add the product to the order with the detected quantity
+                        for (let i = 0; i < quantity; i++) {
+                            window.addToOrder({
+                                id: Date.now() + Math.random(),
+                                productName: product.name,
+                                productPrice: product.price,
+                                productImage: null
+                            });
+                        }
+                        matchedProducts.push({name: product.name, quantity: quantity});
+                    }
+                });
+                
+                if (orderDetected) {
+                    setTimeout(() => {
+                        messagesPanel.removeChild(typingIndicator);
+                        if (matchedProducts.length === 1) {
+                            displayAssistantMessage(`Added ${matchedProducts[0].quantity} ${matchedProducts[0].name} to your order. Would you like anything else?`);
+                        } else {
+                            let productList = '';
+                            matchedProducts.forEach((product, index) => {
+                                productList += `${product.quantity} ${product.name}`;
+                                if (index < matchedProducts.length - 1) {
+                                    productList += ', ';
+                                }
+                            });
+                            displayAssistantMessage(`Added ${productList} to your order. Would you like anything else?`);
+                        }
+                    }, 1500);
+                    return;
+                }
+                
+                // Check for checkout command
+                if (lowerTranscript.includes('checkout') || lowerTranscript.includes('check out') || 
+                    lowerTranscript.includes('finish order') || lowerTranscript.includes('done')) {
+                    if (window.orderItems.length > 0) {
+                        setTimeout(() => {
+                            messagesPanel.removeChild(typingIndicator);
+                            displayAssistantMessage('Completing your order now. Thank you for your purchase!');
+                            setTimeout(() => {
+                                window.processCheckout();
+                            }, 1000);
+                        }, 1500);
+                    } else {
+                        setTimeout(() => {
+                            messagesPanel.removeChild(typingIndicator);
+                            displayAssistantMessage('Your order is empty. Please add some items before checking out.');
+                        }, 1500);
+                    }
+                    return;
+                }
+                
+                // Check for cancel command
+                if (lowerTranscript.includes('cancel') || lowerTranscript.includes('clear order')) {
+                    setTimeout(() => {
+                        messagesPanel.removeChild(typingIndicator);
+                        displayAssistantMessage('Your order has been cleared. What would you like to order?');
+                        window.orderItems = [];
+                        window.updateOrderDisplay();
+                    }, 1500);
+                    return;
+                }
+                
+                // Default response for unrecognized commands
+                setTimeout(() => {
+                    messagesPanel.removeChild(typingIndicator);
+                    displayAssistantMessage("I'm not sure I understood. You can order by saying something like 'I would like a latte' or 'Add a cappuccino to my order'.");
+                }, 1500);
+            }
+        });
+        
         // Order management
         window.orderItems = [];
         window.orderType = 'dine-in';
@@ -209,7 +485,7 @@
 
         window.addToOrder = function(product) {
             // Check if product already exists in order
-            const existingItemIndex = orderItems.findIndex(item => item.id === product.id);
+            const existingItemIndex = orderItems.findIndex(item => item.name === product.productName);
             if (existingItemIndex !== -1) {
                 orderItems[existingItemIndex].quantity += 1;
             } else {
