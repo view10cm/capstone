@@ -203,6 +203,29 @@
         </div>
     </div>
 
+    <!-- Order Confirmation Modal -->
+    <div id="order-confirm-modal" class="fixed inset-0 flex items-center justify-center bg-transparent backdrop-blur-md bg-opacity-50 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full text-center">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Confirm Order?</h3>
+            <p class="text-gray-600 mb-6">Your order will be sent to Caffe Arabica Staff for payment.</p>
+            <div class="flex space-x-4 justify-center">
+                <button id="confirm-order-btn" class="bg-orange-500 text-white px-6 py-2 rounded font-medium">Confirm</button>
+                <button id="cancel-modal-btn" class="bg-gray-200 text-gray-700 px-6 py-2 rounded font-medium">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Success Modal -->
+    <div id="order-success-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 hidden">
+        <div class="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full text-center">
+            <h3 class="text-xl font-semibold mb-4 text-green-600">Order placed successfully!</h3>
+            <p class="text-gray-700 mb-6">Your order ID is: <span id="order-id-success" class="font-bold text-orange-500"></span>
+            </p>
+            <button id="close-success-modal-btn"
+                class="bg-orange-500 text-white px-6 py-2 rounded font-medium">Close</button>
+        </div>
+    </div>
+
     <script>
         // Voice recording and transcript display
         document.addEventListener('DOMContentLoaded', function() {
@@ -609,10 +632,17 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Order placed successfully! Your order ID is: ' + data.order_id);
+                        // Show success modal
+                        document.getElementById('order-id-success').textContent = data.order_id;
+                        document.getElementById('order-success-modal').classList.remove('hidden');
                         orderItems = [];
                         updateOrderDisplay();
                         document.getElementById('special-request').value = '';
+
+                        // Redirect after 4 seconds
+                        setTimeout(function() {
+                            window.location.href = "{{ route('customer.landing') }}";
+                        }, 4000);
                     } else {
                         alert('Error: ' + data.message);
                     }
@@ -651,7 +681,23 @@
                     updateOrderDisplay();
                 }
             });
-            document.getElementById('checkout-btn').addEventListener('click', processCheckout);
+            document.getElementById('checkout-btn').addEventListener('click', function() {
+                document.getElementById('order-confirm-modal').classList.remove('hidden');
+            });
+
+            document.getElementById('cancel-modal-btn').addEventListener('click', function() {
+                document.getElementById('order-confirm-modal').classList.add('hidden');
+            });
+
+            document.getElementById('confirm-order-btn').addEventListener('click', function() {
+                document.getElementById('order-confirm-modal').classList.add('hidden');
+                processCheckout();
+            });
+
+            document.getElementById('close-success-modal-btn').addEventListener('click', function() {
+                document.getElementById('order-success-modal').classList.add('hidden');
+            });
+
             updateOrderDisplay();
         });
     </script>
