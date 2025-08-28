@@ -17,31 +17,31 @@
             /* orange-500 */
             color: #f97316;
         }
-        
+
         /* Custom scrollbar for order items */
         .order-items-container {
             max-height: 300px;
             overflow-y: auto;
         }
-        
+
         .order-items-container::-webkit-scrollbar {
             width: 6px;
         }
-        
+
         .order-items-container::-webkit-scrollbar-track {
             background: #f1f1f1;
             border-radius: 10px;
         }
-        
+
         .order-items-container::-webkit-scrollbar-thumb {
             background: #c1c1c1;
             border-radius: 10px;
         }
-        
+
         .order-items-container::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
-        
+
         /* Loading spinner */
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
@@ -54,42 +54,14 @@
             margin-right: 10px;
             vertical-align: middle;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
 
-        /* Assistant typing indicator */
-        .typing-indicator {
-            display: flex;
-            padding: 10px;
-        }
-        
-        .typing-indicator span {
-            height: 8px;
-            width: 8px;
-            background-color: #9ca3af;
-            border-radius: 50%;
-            display: inline-block;
-            margin: 0 2px;
-            animation: bounce 1.3s linear infinite;
-        }
-        
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.15s;
-        }
-        
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-        
-        @keyframes bounce {
-            0%, 60%, 100% {
-                transform: translateY(0);
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
             }
-            30% {
-                transform: translateY(-5px);
+
+            100% {
+                transform: rotate(360deg);
             }
         }
     </style>
@@ -117,8 +89,8 @@
                     <div class="bg-white shadow-lg border border-gray-200 max-h-48 overflow-hidden"
                         style="font-family: 'Manrope', 'Arial', sans-serif;">
                         <!-- Conversation Messages Area -->
-                        <div class="p-6 max-h-40 overflow-y-auto scrollbar-hide"
-                            style="scrollbar-width: none; -ms-overflow-style: none;" id="conversation-scroll">
+                        <div id="conversation-panel" class="p-6 max-h-40 overflow-y-auto scrollbar-hide"
+                            style="scrollbar-width: none; -ms-overflow-style: none;">
                             <style>
                                 .scrollbar-hide::-webkit-scrollbar {
                                     display: none;
@@ -142,7 +114,7 @@
                             </div>
 
                             <!-- Placeholder for conversation messages -->
-                            <div id="conversation-messages">
+                            <div id="conversation-messages" class="text-center text-gray-400 py-8">
                                 <!-- Transcribed messages will appear here -->
                             </div>
                         </div>
@@ -156,9 +128,7 @@
                 <div class="absolute inset-0 flex items-center justify-center z-30" style="transform: translateY(-25%)">
                     <button
                         class="bg-white rounded-full p-4 shadow-lg hover:shadow-xl transition-shadow duration-200 hover:bg-gray-50 active:scale-95 transform transition-transform border-2 border-gray-300"
-                        id="microphone-btn"
-                        type="button"
-                    >
+                        id="microphone-btn" type="button">
                         <svg class="w-8 h-8 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" />
                             <path
@@ -175,13 +145,15 @@
                 <!-- Header -->
                 <div class="mb-4">
                     <h2 class="text-xl font-semibold text-gray-800">Order Summary</h2>
-                    
+
                     <!-- Order Type Selection -->
                     <div class="flex mt-4 space-x-2">
-                        <button id="dine-in-btn" class="flex-1 py-2 bg-orange-500 text-white rounded-md font-medium text-sm">
+                        <button id="dine-in-btn"
+                            class="flex-1 py-2 bg-orange-500 text-white rounded-md font-medium text-sm">
                             Dine-in
                         </button>
-                        <button id="takeout-btn" class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-md font-medium text-sm">
+                        <button id="takeout-btn"
+                            class="flex-1 py-2 bg-gray-200 text-gray-700 rounded-md font-medium text-sm">
                             Takeout
                         </button>
                     </div>
@@ -196,14 +168,10 @@
                 <div class="mt-auto border-t border-gray-200 pt-4">
                     <!-- Special Request -->
                     <div class="mb-4">
-                        <textarea 
-                            id="special-request" 
-                            placeholder="Special Request" 
-                            class="w-full p-2 border border-gray-300 rounded-md text-sm resize-none"
-                            rows="2"
-                        ></textarea>
+                        <textarea id="special-request" placeholder="Special Request"
+                            class="w-full p-2 border border-gray-300 rounded-md text-sm resize-none" rows="2"></textarea>
                     </div>
-                    
+
                     <!-- Summary -->
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between">
@@ -219,13 +187,14 @@
                             <span>₱<span id="total-amount">0.00</span></span>
                         </div>
                     </div>
-                    
+
                     <!-- Action Buttons -->
                     <div class="flex space-x-3 mt-6">
                         <button id="cancel-order" class="flex-1 py-3 bg-gray-200 text-gray-700 rounded-md font-medium">
                             Cancel
                         </button>
-                        <button id="checkout-btn" class="flex-1 py-3 bg-orange-500 text-white rounded-md font-medium" disabled style="cursor: not-allowed; opacity: 0.6;">
+                        <button id="checkout-btn" class="flex-1 py-3 bg-orange-500 text-white rounded-md font-medium"
+                            disabled style="cursor: not-allowed; opacity: 0.6;">
                             Checkout
                         </button>
                     </div>
@@ -239,29 +208,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const micBtn = document.getElementById('microphone-btn');
             const messagesPanel = document.getElementById('conversation-messages');
-            const conversationScroll = document.getElementById('conversation-scroll');
+            const conversationPanel = document.getElementById('conversation-panel');
             let recognizing = false;
             let recognition;
-            
-            // Available products for voice recognition matching
-            const availableProducts = [
-                { name: "Espresso", price: 120, category: "drinks", subcategory: "hot" },
-                { name: "Cappuccino", price: 140, category: "drinks", subcategory: "hot" },
-                { name: "Latte", price: 150, category: "drinks", subcategory: "hot" },
-                { name: "Americano", price: 130, category: "drinks", subcategory: "hot" },
-                { name: "Mocha", price: 160, category: "drinks", subcategory: "hot" },
-                { name: "Iced Coffee", price: 140, category: "drinks", subcategory: "cold" },
-                { name: "Cold Brew", price: 150, category: "drinks", subcategory: "cold" },
-                { name: "Iced Latte", price: 160, category: "drinks", subcategory: "cold" },
-                { name: "Iced Mocha", price: 170, category: "drinks", subcategory: "cold" },
-                { name: "Frappuccino", price: 180, category: "drinks", subcategory: "cold" },
-                { name: "Croissant", price: 80, category: "pastries", subcategory: "pastries" },
-                { name: "Muffin", price: 70, category: "pastries", subcategory: "pastries" },
-                { name: "Donut", price: 60, category: "pastries", subcategory: "pastries" },
-                { name: "Bagel", price: 75, category: "pastries", subcategory: "pastries" },
-                { name: "Cake Slice", price: 120, category: "pastries", subcategory: "pastries" }
-            ];
-            
+
+            // Store all available products for voice recognition
+            window.allAvailableProducts = @json($products);
+
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 recognition = new SpeechRecognition();
@@ -300,182 +253,212 @@
                 const msgDiv = document.createElement('div');
                 msgDiv.className = 'flex items-start space-x-3 mb-4 justify-end';
                 msgDiv.innerHTML = `
-                    <div class="flex-1 text-right">
-                        <div class="bg-orange-100 rounded-lg px-4 py-3 max-w-md inline-block">
-                            <p class="text-gray-800" style="font-size: 16px;">${text}</p>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">You</p>
+                <div class="flex-1 text-right">
+                    <div class="bg-orange-100 rounded-lg px-4 py-3 max-w-md inline-block">
+                        <p class="text-gray-800" style="font-size: 16px;">${text}</p>
                     </div>
-                `;
+                    <p class="text-xs text-gray-500 mt-1">You</p>
+                </div>
+            `;
                 messagesPanel.appendChild(msgDiv);
-                scrollToBottom();
+                messagesPanel.classList.remove('text-gray-400', 'py-8');
+
+                // Auto-scroll to bottom
+                conversationPanel.scrollTop = conversationPanel.scrollHeight;
             }
-            
-            function displayAssistantMessage(text, isTyping = false) {
+
+            function displaySystemMessage(text) {
                 const msgDiv = document.createElement('div');
-                msgDiv.className = 'mb-4 assistant-message';
-                
-                if (isTyping) {
-                    msgDiv.innerHTML = `
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-orange-100 rounded-full p-2 flex-shrink-0">
-                                <img src="{{ asset('images/voiceFill.svg') }}" alt="Voice Assistant" class="w-4 h-4">
-                            </div>
-                            <div class="flex-1">
-                                <div class="bg-gray-100 rounded-lg px-4 py-3 max-w-md">
-                                    <div class="typing-indicator">
-                                        <span></span>
-                                        <span></span>
-                                        <span></span>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-1">Assistant is typing...</p>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    msgDiv.innerHTML = `
-                        <div class="flex items-start space-x-3">
-                            <div class="bg-orange-100 rounded-full p-2 flex-shrink-0">
-                                <img src="{{ asset('images/voiceFill.svg') }}" alt="Voice Assistant" class="w-4 h-4">
-                            </div>
-                            <div class="flex-1">
-                                <div class="bg-gray-100 rounded-lg px-4 py-3 max-w-md">
-                                    <p class="text-gray-800" style="font-size: 16px;">${text}</p>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-1">Assistant</p>
-                            </div>
-                        </div>
-                    `;
-                }
-                
+                msgDiv.className = 'flex items-start space-x-3 mb-4';
+                msgDiv.innerHTML = `
+                <div class="bg-orange-100 rounded-full p-2 flex-shrink-0">
+                    <img src="{{ asset('images/voiceFill.svg') }}" alt="Voice Assistant" class="w-4 h-4">
+                </div>
+                <div class="flex-1">
+                    <div class="bg-gray-100 rounded-lg px-4 py-3 max-w-md">
+                        <p class="text-gray-800" style="font-size: 16px;">${text}</p>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Assistant</p>
+                </div>
+            `;
                 messagesPanel.appendChild(msgDiv);
-                scrollToBottom();
-                return msgDiv;
+
+                // Auto-scroll to bottom
+                conversationPanel.scrollTop = conversationPanel.scrollHeight;
             }
-            
-            function scrollToBottom() {
-                conversationScroll.scrollTop = conversationScroll.scrollHeight;
-            }
-            
+
             function processVoiceCommand(transcript) {
-                // Show typing indicator
-                const typingIndicator = displayAssistantMessage('', true);
-                
                 // Convert transcript to lowercase for easier matching
-                const lowerTranscript = transcript.toLowerCase();
-                
-                // Check for greeting
-                if (lowerTranscript.includes('hello') || lowerTranscript.includes('hi')) {
-                    setTimeout(() => {
-                        messagesPanel.removeChild(typingIndicator);
-                        displayAssistantMessage('Hello! How can I help you with your order today?');
-                    }, 1500);
-                    return;
+                const command = transcript.toLowerCase().trim();
+
+                // Try to find a matching product from all available products
+                let matchedProduct = findProductByVoiceCommand(command);
+
+                // If we found a product, add it to the order
+                if (matchedProduct) {
+                    addToOrder(matchedProduct);
+                    displaySystemMessage(`The ${matchedProduct.productName} is added to the order.`);
+                } else {
+                    displaySystemMessage("I couldn't find that product. Please try again or browse the menu.");
                 }
-                
-                // Check for menu inquiry
-                if (lowerTranscript.includes('menu') || lowerTranscript.includes('what do you have')) {
-                    setTimeout(() => {
-                        messagesPanel.removeChild(typingIndicator);
-                        displayAssistantMessage('We have a variety of hot and cold drinks, as well as delicious pastries. What would you like to order?');
-                    }, 1500);
-                    return;
-                }
-                
-                // Check for order commands
-                let orderDetected = false;
-                let matchedProducts = [];
-                
-                // Check for quantity
-                let quantity = 1;
-                const quantityMatch = lowerTranscript.match(/(\d+)/);
-                if (quantityMatch) {
-                    quantity = parseInt(quantityMatch[1]);
-                } else if (lowerTranscript.includes('a') || lowerTranscript.includes('one')) {
-                    quantity = 1;
-                } else if (lowerTranscript.includes('two') || lowerTranscript.includes('couple')) {
-                    quantity = 2;
-                } else if (lowerTranscript.includes('three')) {
-                    quantity = 3;
-                }
-                
-                // Match products
-                availableProducts.forEach(product => {
-                    if (lowerTranscript.includes(product.name.toLowerCase())) {
-                        orderDetected = true;
-                        // Add the product to the order with the detected quantity
-                        for (let i = 0; i < quantity; i++) {
-                            window.addToOrder({
-                                id: Date.now() + Math.random(),
-                                productName: product.name,
-                                productPrice: product.price,
-                                productImage: null
-                            });
-                        }
-                        matchedProducts.push({name: product.name, quantity: quantity});
+            }
+
+            function findProductByVoiceCommand(command) {
+                // First, try to find exact matches in the entire product catalog
+                for (const product of window.allAvailableProducts) {
+                    const productName = product.productName.toLowerCase();
+
+                    // Check if command contains the product name
+                    if (command.includes(productName)) {
+                        return product;
                     }
-                });
-                
-                if (orderDetected) {
-                    setTimeout(() => {
-                        messagesPanel.removeChild(typingIndicator);
-                        if (matchedProducts.length === 1) {
-                            displayAssistantMessage(`Added ${matchedProducts[0].quantity} ${matchedProducts[0].name} to your order. Would you like anything else?`);
-                        } else {
-                            let productList = '';
-                            matchedProducts.forEach((product, index) => {
-                                productList += `${product.quantity} ${product.name}`;
-                                if (index < matchedProducts.length - 1) {
-                                    productList += ', ';
-                                }
-                            });
-                            displayAssistantMessage(`Added ${productList} to your order. Would you like anything else?`);
-                        }
-                    }, 1500);
-                    return;
-                }
-                
-                // Check for checkout command
-                if (lowerTranscript.includes('checkout') || lowerTranscript.includes('check out') || 
-                    lowerTranscript.includes('finish order') || lowerTranscript.includes('done')) {
-                    if (window.orderItems.length > 0) {
-                        setTimeout(() => {
-                            messagesPanel.removeChild(typingIndicator);
-                            displayAssistantMessage('Completing your order now. Thank you for your purchase!');
-                            setTimeout(() => {
-                                window.processCheckout();
-                            }, 1000);
-                        }, 1500);
-                    } else {
-                        setTimeout(() => {
-                            messagesPanel.removeChild(typingIndicator);
-                            displayAssistantMessage('Your order is empty. Please add some items before checking out.');
-                        }, 1500);
+
+                    // Check for common variations and abbreviations
+                    if (doesCommandMatchProduct(command, productName, product)) {
+                        return product;
                     }
-                    return;
                 }
-                
-                // Check for cancel command
-                if (lowerTranscript.includes('cancel') || lowerTranscript.includes('clear order')) {
-                    setTimeout(() => {
-                        messagesPanel.removeChild(typingIndicator);
-                        displayAssistantMessage('Your order has been cleared. What would you like to order?');
-                        window.orderItems = [];
-                        window.updateOrderDisplay();
-                    }, 1500);
-                    return;
+
+                // If no exact match, try fuzzy matching
+                return findProductByFuzzyMatch(command);
+            }
+
+            function doesCommandMatchProduct(command, productName, product) {
+                // Handle common variations in speech recognition for all product categories
+                const variations = {
+                    // Coffee drinks
+                    'espresso': ['expresso', 'espress', 'expresso'],
+                    'caffe': ['cafe', 'coffee', 'café'],
+                    'latte': ['lute', 'late', 'latté', 'latt'],
+                    'americano': ['american', 'america no', 'americano'],
+                    'cappuccino': ['capruccino', 'cappuchino', 'capuccino'],
+                    'macchiato': ['macchiato', 'machiato', 'macato'],
+                    'mocha': ['moca', 'mocka', 'mokha'],
+                    'frappe': ['frap', 'frapp', 'frape'],
+
+                    // Sizes
+                    '8oz': ['8 oz', '8 ounce', '8 ounces', '8oz', '8 os'],
+                    '12oz': ['12 oz', '12 ounce', '12 ounces', '12oz', '12 os'],
+                    '16oz': ['16 oz', '16 ounce', '16 ounces', '16oz', '16 os'],
+                    '22oz': ['22 oz', '22 ounce', '22 ounces', '22oz', '22 os'],
+
+                    // Ingredients and flavors
+                    'hazelnut': ['hazehurt', 'hazlenut', 'haselnut'],
+                    'vanilla': ['vanila', 'vanella', 'vanila'],
+                    'caramel': ['carmel', 'caramell', 'karmel'],
+                    'chocolate': ['choco', 'choclate', 'chocolat'],
+                    'matcha': ['macha', 'matca', 'green tea'],
+                    'white chocolate': ['white choco', 'whitechocolate'],
+                    'french vanilla': ['french vanila', 'french vanella'],
+                    'salted caramel': ['salt caramel', 'salted carmel'],
+
+                    // Milk tea variations
+                    'milktea': ['milktea', 'milkiea', 'milicea', 'milletea', 'millitea', 'milk tea'],
+                    'classic': ['classic', 'clasic'],
+                    'wintermelon': ['wintermelon', 'winter melon', 'wintermelon'],
+                    'okinawa': ['okinawa', 'okinawa'],
+                    'taro': ['taro', 'tarro'],
+                    'rocksalt': ['rock salt', 'rock-salt'],
+
+                    // Food items
+                    'barbeque': ['barbecue', 'bbq', 'bar-b-que'],
+                    'bagnet': ['bagnet', 'bag net'],
+                    'pork': ['pork', 'porc'],
+                    'chicken': ['chicken', 'chiken'],
+                    'beef': ['beef', 'beef'],
+                    'seafood': ['sea food', 'see food'],
+                    'pasta': ['pasta', 'pastah'],
+                    'noodles': ['noodles', 'noodels'],
+                    'sandwiches': ['sandwich', 'sandwiche'],
+                    'salads': ['salad', 'salat'],
+
+                    // Specific food items
+                    'quesadillas': ['quesadillas', 'kesadillas', 'quesadila'],
+                    'lasagna': ['lasagna', 'lasagne', 'lasanya'],
+                    'pad thai': ['pad thai', 'padthai', 'pat tai'],
+                    'crab rangoon': ['crab rangoon', 'crab rangon', 'crab rangun'],
+                    'caesar': ['caesar', 'cesar', 'ceasar'],
+
+                    // Preparation styles
+                    'crispy': ['crispy', 'crispi'],
+                    'grilled': ['grilled', 'griled'],
+                    'roasted': ['roasted', 'rosted'],
+                    'creamy': ['creamy', 'creame'],
+                };
+
+                // Check if command contains any known variations that match the product
+                for (const [correct, aliases] of Object.entries(variations)) {
+                    for (const alias of aliases) {
+                        if (command.includes(alias) && productName.includes(correct)) {
+                            return true;
+                        }
+                    }
                 }
-                
-                // Default response for unrecognized commands
-                setTimeout(() => {
-                    messagesPanel.removeChild(typingIndicator);
-                    displayAssistantMessage("I'm not sure I understood. You can order by saying something like 'I would like a latte' or 'Add a cappuccino to my order'.");
-                }, 1500);
+
+                // Special handling for specific products with common recognition errors
+                const specialCases = {
+                    'Belago Choco': ['belago choco', 'belago chocolate', 'velago choco'],
+                    'Macademia': ['macademia', 'macadamia', 'macedemia'],
+                    'Butterscotch': ['butterscotch', 'butter scotch', 'butterscotch'],
+                    'Java Chip': ['java chip', 'java chips', 'jawa chip'],
+                    'Biscoff': ['biscoff', 'biscof', 'biskoff'],
+                    'Adora\'s': ['adoras', 'adora', 'aduras'],
+                    'Porchetta Paella': ['porchetta paella', 'porcheta paella', 'porchetta pella'],
+                    'Cream Dory': ['cream dory', 'creamed dory', 'cream dori'],
+                    'Hungarian Sausage': ['hungarian sausage', 'hungarian sausauge'],
+                    'Aligue Seafood': ['aligue seafood', 'aligue sea food', 'aligi seafood'],
+                };
+
+                for (const [correct, aliases] of Object.entries(specialCases)) {
+                    for (const alias of aliases) {
+                        if (command.includes(alias) && product.productName.includes(correct)) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            function findProductByFuzzyMatch(command) {
+                let bestMatch = null;
+                let bestScore = 0;
+
+                for (const product of window.allAvailableProducts) {
+                    const productName = product.productName.toLowerCase();
+                    const score = calculateSimilarity(command, productName);
+
+                    if (score > bestScore && score > 0.5) { // Lower threshold for fuzzy matching
+                        bestScore = score;
+                        bestMatch = product;
+                    }
+                }
+
+                return bestMatch;
+            }
+
+            function calculateSimilarity(str1, str2) {
+                // Simple similarity calculation - can be improved with more advanced algorithms
+                const words1 = str1.split(/\s+/);
+                const words2 = str2.split(/\s+/);
+
+                let matchCount = 0;
+                for (const word1 of words1) {
+                    if (word1.length < 3) continue; // Skip short words
+
+                    for (const word2 of words2) {
+                        if (word2.includes(word1) || word1.includes(word2)) {
+                            matchCount++;
+                            break;
+                        }
+                    }
+                }
+
+                return matchCount / Math.max(words1.length, words2.length);
             }
         });
-        
-        // Order management
+
+        // Order management (remaining code unchanged)
         window.orderItems = [];
         window.orderType = 'dine-in';
 
@@ -485,7 +468,7 @@
 
         window.addToOrder = function(product) {
             // Check if product already exists in order
-            const existingItemIndex = orderItems.findIndex(item => item.name === product.productName);
+            const existingItemIndex = orderItems.findIndex(item => item.id === product.id);
             if (existingItemIndex !== -1) {
                 orderItems[existingItemIndex].quantity += 1;
             } else {
@@ -510,14 +493,14 @@
             orderContainer.innerHTML = '';
             if (orderItems.length === 0) {
                 orderContainer.innerHTML = `
-                    <div class="flex flex-col items-center justify-center text-center py-10">
-                        <svg class="w-16 h-16 text-gray-300 mb-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z" />
-                            <path d="M9 8V17H11V8H9ZM13 8V17H15V8H13Z" />
-                        </svg>
-                        <p class="text-gray-400 text-sm font-medium">Your order is still empty</p>
-                    </div>
-                `;
+                <div class="flex flex-col items-center justify-center text-center py-10">
+                    <svg class="w-16 h-16 text-gray-300 mb-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z" />
+                        <path d="M9 8V17H11V8H9ZM13 8V17H15V8H13Z" />
+                    </svg>
+                    <p class="text-gray-400 text-sm font-medium">Your order is still empty</p>
+                </div>
+            `;
                 itemsCount.textContent = '0';
                 subtotalEl.textContent = '0.00';
                 taxEl.textContent = '0.00';
@@ -539,26 +522,26 @@
                 const itemElement = document.createElement('div');
                 itemElement.className = 'flex items-center bg-white rounded-lg shadow p-2 mb-2';
                 itemElement.innerHTML = `
-                    <div class="w-16 h-16 bg-gray-200 rounded mr-3 flex-shrink-0 flex items-center justify-center overflow-hidden">
-                        ${item.image ? `<img src="/storage/${item.image}" alt="${item.name}" class="w-full h-full object-cover rounded" />` : ''}
+                <div class="w-16 h-16 bg-gray-200 rounded mr-3 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                    ${item.image ? `<img src="/storage/${item.image}" alt="${item.name}" class="w-full h-full object-cover rounded" />` : ''}
+                </div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-sm text-gray-800">${item.name}</span>
+                        <span class="font-bold text-orange-500 text-base">₱${item.price.toFixed(2)}</span>
                     </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold text-sm text-gray-800">${item.name}</span>
-                            <span class="font-bold text-orange-500 text-base">₱${item.price.toFixed(2)}</span>
-                        </div>
-                        <div class="flex items-center mt-2">
-                            <button onclick="decreaseQuantity(${index})" class="w-6 h-6 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold">-</button>
-                            <span class="mx-2 text-base font-semibold">${item.quantity}</span>
-                            <button onclick="increaseQuantity(${index})" class="w-6 h-6 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold">+</button>
-                            <button onclick="removeItem(${index})" class="ml-3 w-6 h-6 bg-red-200 rounded-full flex items-center justify-center text-red-700 hover:bg-red-300">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </div>
+                    <div class="flex items-center mt-2">
+                        <button onclick="decreaseQuantity(${index})" class="w-6 h-6 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold">-</button>
+                        <span class="mx-2 text-base font-semibold">${item.quantity}</span>
+                        <button onclick="increaseQuantity(${index})" class="w-6 h-6 bg-orange-200 rounded-full flex items-center justify-center text-orange-700 font-bold">+</button>
+                        <button onclick="removeItem(${index})" class="ml-3 w-6 h-6 bg-red-200 rounded-full flex items-center justify-center text-red-700 hover:bg-red-300">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
                     </div>
-                `;
+                </div>
+            `;
                 orderContainer.appendChild(itemElement);
             });
             const tax = itemsTotal * 0.00;
@@ -592,11 +575,11 @@
         window.processCheckout = function() {
             const checkoutBtn = document.getElementById('checkout-btn');
             const originalText = checkoutBtn.innerHTML;
-            
+
             // Show loading spinner
             checkoutBtn.innerHTML = '<div class="spinner"></div> Processing...';
             checkoutBtn.disabled = true;
-            
+
             // Prepare order data
             const orderData = {
                 order_type: orderType,
@@ -613,36 +596,36 @@
                     unit_price: item.price
                 }))
             };
-            
+
             // Send AJAX request to save order
-            fetch('{{ route("order.checkout") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify(orderData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Order placed successfully! Your order ID is: ' + data.order_id);
-                    orderItems = [];
-                    updateOrderDisplay();
-                    document.getElementById('special-request').value = '';
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while processing your order. Please try again.');
-            })
-            .finally(() => {
-                // Restore button text
-                checkoutBtn.innerHTML = originalText;
-                checkoutBtn.disabled = orderItems.length === 0;
-            });
+            fetch('{{ route('order.checkout') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(orderData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Order placed successfully! Your order ID is: ' + data.order_id);
+                        orderItems = [];
+                        updateOrderDisplay();
+                        document.getElementById('special-request').value = '';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while processing your order. Please try again.');
+                })
+                .finally(() => {
+                    // Restore button text
+                    checkoutBtn.innerHTML = originalText;
+                    checkoutBtn.disabled = orderItems.length === 0;
+                });
         }
 
         document.addEventListener('DOMContentLoaded', function() {
