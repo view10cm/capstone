@@ -146,3 +146,8 @@ Route::post('/order/checkout', [App\Http\Controllers\OrderController::class, 'ch
 Route::get('/staff/staffLandingPage', function () {
     return view('staff.staffLandingPage');
 })->name('staff.staffLandingPage')->middleware('auth');
+
+// Staff Order Tracker Route
+Route::get('/staff/order-tracker', function () {
+    return view('staff.staffOrderTracker');
+})->name('staff.orderTracker')->middleware('auth');
