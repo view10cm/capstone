@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Default Title')</title>
+    <title>@yield('title', 'Caffe Arabica - Order Tracker')</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/Mug.svg') }}">
     <!-- Other head elements -->
     @vite('resources/css/app.css')
@@ -44,9 +44,9 @@
 
         <!-- Middle Right - Order Tracker Button -->
         <div class="mr-16">
-            <a href="{{ route('staff.orderTracker') }}"
+            <a href="{{ route('staff.staffLandingPage') }}"
                 class="bg-orange-500 hover:bg-orange-600 transition-colors duration-200 text-white px-6 py-2 rounded-md font-medium inline-block">
-                Order Tracker
+                Order Desk
             </a>
         </div>
         <!-- Right - Date/Time -->
