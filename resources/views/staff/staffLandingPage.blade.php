@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="bg-gray-200 text-gray-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center mr-2">${item.Quantity || 1}</span>
                             ${item.ProductName}
                         </span>
-                        ${item.Price ? `<span class="text-sm text-gray-600">$${item.Price}</span>` : ''}
+                        ${item.Price ? `<span class="text-sm text-gray-600">P${item.Price}</span>` : ''}
                     </li>`;
                 });
             }
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </ul>
                     <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between">
                         <p class="text-sm font-medium text-gray-700">Subtotal:</p>
-                        <p class="text-sm font-semibold text-gray-800">$${order.subtotal || '0.00'}</p>
+                        <p class="text-sm font-semibold text-gray-800">P${order.subtotal || '0.00'}</p>
                     </div>
                 </div>
             `;
