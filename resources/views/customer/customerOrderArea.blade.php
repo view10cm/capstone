@@ -483,7 +483,7 @@
 
         // Order management (remaining code unchanged)
         window.orderItems = [];
-        window.orderType = 'dine-in';
+        window.orderType = 'Dine-in'; // default
 
         // Set default category to Drinks
         window.currentCategory = 'drinks';
@@ -661,20 +661,30 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('drinks-btn').classList.add('active-category');
             document.querySelector('#drinks-subcategories button').classList.add('active-subcategory');
-            document.getElementById('dine-in-btn').addEventListener('click', function() {
-                this.classList.add('bg-orange-500', 'text-white');
-                this.classList.remove('bg-gray-200', 'text-gray-700');
-                document.getElementById('takeout-btn').classList.add('bg-gray-200', 'text-gray-700');
-                document.getElementById('takeout-btn').classList.remove('bg-orange-500', 'text-white');
-                orderType = 'dine-in';
+
+            const dineInBtn = document.getElementById('dine-in-btn');
+            const takeoutBtn = document.getElementById('takeout-btn');
+
+            dineInBtn.addEventListener('click', function() {
+                orderType = 'Dine-in';
+                dineInBtn.classList.add('bg-orange-500', 'text-white');
+                dineInBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                takeoutBtn.classList.remove('bg-orange-500', 'text-white');
+                takeoutBtn.classList.add('bg-gray-200', 'text-gray-700');
             });
-            document.getElementById('takeout-btn').addEventListener('click', function() {
-                this.classList.add('bg-orange-500', 'text-white');
-                this.classList.remove('bg-gray-200', 'text-gray-700');
-                document.getElementById('dine-in-btn').classList.add('bg-gray-200', 'text-gray-700');
-                document.getElementById('dine-in-btn').classList.remove('bg-orange-500', 'text-white');
-                orderType = 'takeout';
+
+            takeoutBtn.addEventListener('click', function() {
+                orderType = 'Take-out';
+                takeoutBtn.classList.add('bg-orange-500', 'text-white');
+                takeoutBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                dineInBtn.classList.remove('bg-orange-500', 'text-white');
+                dineInBtn.classList.add('bg-gray-200', 'text-gray-700');
             });
+
+            // Set initial state
+            dineInBtn.classList.add('bg-orange-500', 'text-white');
+            takeoutBtn.classList.add('bg-gray-200', 'text-gray-700');
+
             document.getElementById('cancel-order').addEventListener('click', function() {
                 if (confirm('Are you sure you want to cancel this order?')) {
                     orderItems = [];
