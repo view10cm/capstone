@@ -141,3 +141,8 @@ Route::post('/admin/users', [App\Http\Controllers\Admin\UserController::class, '
 })->name('admin.adminUsers');
 
 Route::post('/order/checkout', [App\Http\Controllers\OrderController::class, 'checkout'])->name('order.checkout');
+
+// Staff Dashboard Route
+Route::get('/staff/staffLandingPage', function () {
+    return view('staff.staffLandingPage');
+})->name('staff.staffLandingPage')->middleware('auth');
