@@ -80,10 +80,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
             
+            // Display subtotal price
             html += `
                     </ul>
+                    <div class="mt-3 pt-2 border-t border-gray-100">
+                        <p class="text-sm font-semibold text-gray-800">Subtotal: P${order.subtotal || '0.00'}</p>
+                    </div>
                 </div>
-                
+            `;
+            
+            // Display special requests if available
+            if (order.special_request) {
+                html += `
+                <div class="border-t border-gray-200 pt-3 mb-4">
+                    <p class="text-sm font-medium text-gray-700">Special Request:</p>
+                    <p class="text-sm text-gray-600 bg-yellow-50 p-2 rounded mt-1">${order.special_request}</p>
+                </div>
+                `;
+            }
+            
+            html += `
                 <div class="border-t border-gray-200 pt-3">
                     <div class="flex space-x-2">
                         <button onclick="sendToKitchen('${order.OrderID}')" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded text-sm font-medium">
