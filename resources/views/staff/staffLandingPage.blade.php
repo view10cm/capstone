@@ -15,11 +15,55 @@
     </div>
 </div>
 
+<!-- Confirmation Modal -->
+<div id="kitchenModal" class="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div class="p-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Confirm Action</h3>
+            <p class="text-gray-600 mb-6" id="modalMessage">Do you wish to send the Order to the Kitchen?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="modalCancel" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+                    Cancel
+                </button>
+                <button id="modalConfirm" class="px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     const ordersPerPage = 4;
+    let selectedOrderId = null;
     
+    // Get modal elements
+    const kitchenModal = document.getElementById('kitchenModal');
+    const modalMessage = document.getElementById('modalMessage');
+    const modalCancel = document.getElementById('modalCancel');
+    const modalConfirm = document.getElementById('modalConfirm');
+    
+    // Setup modal event listeners
+    modalCancel.addEventListener('click', function() {
+        kitchenModal.classList.add('hidden');
+    });
+    
+    modalConfirm.addEventListener('click', function() {
+        if (selectedOrderId) {
+            updateOrderStatus(selectedOrderId, 'Preparing');
+            kitchenModal.classList.add('hidden');
+        }
+    });
+    
+    // Close modal when clicking outside
+    kitchenModal.addEventListener('click', function(e) {
+        if (e.target === kitchenModal) {
+            kitchenModal.classList.add('hidden');
+        }
+    });
+
     // Fetch orders from the server
     function fetchOrders(page = 1) {
         fetch(`/staff/orders/data?page=${page}&per_page=${ordersPerPage}`)
@@ -52,12 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
         let html = '';
         
         orders.forEach(order => {
-            // Calculate time difference
-            const orderDate = new Date(order.order_date);
-            const now = new Date();
-            const diffMs = now - orderDate;
-            const diffMins = Math.floor(diffMs / 60000);
-            
             html += `
             <div class="bg-white rounded-lg shadow-md p-4 border-l-4 ${getStatusColor(order.status)} order-card">
                 <div class="flex justify-between items-start mb-4">
@@ -89,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="bg-gray-200 text-gray-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center mr-2">${item.Quantity || 1}</span>
                             ${item.ProductName}
                         </span>
-                        ${item.Price ? `<span class="text-sm text-gray-600">P${item.Price}</span>` : ''}
+                        ${item.Price ? `<span class="text-sm text-gray-600">$${item.Price}</span>` : ''}
                     </li>`;
                 });
             }
@@ -99,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </ul>
                     <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between">
                         <p class="text-sm font-medium text-gray-700">Subtotal:</p>
-                        <p class="text-sm font-semibold text-gray-800">P${order.subtotal || '0.00'}</p>
+                        <p class="text-sm font-semibold text-gray-800">$${order.subtotal || '0.00'}</p>
                     </div>
                 </div>
             `;
@@ -117,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `
                 <div class="border-t border-gray-200 pt-3">
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="sendToKitchen('${order.OrderID}')" class="bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded text-sm font-medium transition-colors">
+                        <button onclick="showKitchenConfirmation('${order.OrderID}')" class="bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded text-sm font-medium transition-colors">
                             To Kitchen
                         </button>
                         <button onclick="cancelOrder('${order.OrderID}')" class="bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded text-sm font-medium transition-colors">
@@ -134,6 +172,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
         container.innerHTML = html;
     }
+
+    // Show kitchen confirmation modal
+    window.showKitchenConfirmation = function(orderId) {
+        selectedOrderId = orderId;
+        modalMessage.textContent = `Do you wish to send Order #${orderId} to the Kitchen?`;
+        kitchenModal.classList.remove('hidden');
+    };
 
     // Set up pagination controls
     function setupPagination(total, perPage, currentPage) {
@@ -176,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
         for (let i = startPage; i <= endPage; i++) {
             html += `
                 <button onclick="changePage(${i})" 
-                    class="px-3 py-1 rounded border ${i === currentPage ? 'bg-black-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}">
+                    class="px-3 py-1 rounded border ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'}">
                     ${i}
                 </button>
             `;
@@ -214,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get status color for border
     function getStatusColor(status) {
         switch(status) {
-            case 'New Order': return 'border-black-500';
+            case 'New Order': return 'border-blue-500';
             case 'Preparing': return 'border-yellow-500';
             case 'Bumped': return 'border-orange-500';
             case 'Done': return 'border-green-500';
@@ -263,16 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Format date for display
-    function formatDate(date) {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
     // Action functions
-    window.sendToKitchen = function(orderId) {
-        updateOrderStatus(orderId, 'Preparing');
-    };
-
     window.cancelOrder = function(orderId) {
         if (confirm('Are you sure you want to cancel this order?')) {
             updateOrderStatus(orderId, 'Cancelled');
@@ -329,6 +365,14 @@ document.addEventListener('DOMContentLoaded', function() {
     .order-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    #kitchenModal {
+        transition: opacity 0.3s ease;
+    }
+    
+    #kitchenModal .backdrop-blur-sm {
+        backdrop-filter: blur(4px);
     }
 </style>
 @endsection
