@@ -151,3 +151,33 @@ Route::get('/staff/staffLandingPage', function () {
 Route::get('/staff/order-tracker', function () {
     return view('staff.staffOrderTracker');
 })->name('staff.orderTracker')->middleware('auth');
+
+// Staff order routes
+Route::prefix('staff')->middleware(['auth'])->group(function () {
+    Route::get('/orders/data', function () {
+        $perPage = request('per_page', 4);
+        $orders = \App\Models\OrderTransaction::with('menuOrderItems')
+            ->orderBy('order_date', 'desc')
+            ->paginate($perPage);
+        
+        return response()->json([
+            'orders' => $orders->items(),
+            'total' => $orders->total(),
+            'current_page' => $orders->currentPage(),
+            'per_page' => $perPage
+        ]);
+    })->name('staff.orders.data');
+    
+    Route::post('/orders/update-status', function (Request $request) {
+        $order = \App\Models\OrderTransaction::where('OrderID', $request->order_id)->first();
+        
+        if ($order) {
+            $order->status = $request->status;
+            $order->save();
+            
+            return response()->json(['success' => true]);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Order not found']);
+    })->name('staff.orders.update-status');
+});
