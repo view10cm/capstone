@@ -33,6 +33,12 @@ class LoginController extends Controller
             if (Auth::user()->role === 'Admin') {
                 return redirect()->intended('/admin/dashboard');
             }
+            
+            // Add Staff role redirection
+            if (Auth::user()->role === 'Staff') {
+                return redirect()->intended('/staff/staffLandingPage');
+            }
+            
             return redirect()->intended('/customer/landing');
         }
 
