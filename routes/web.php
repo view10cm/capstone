@@ -8,6 +8,8 @@ use App\Http\Controllers\MenuCategoryController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\Staff\OrderController;
+use Illuminate\Http\Request;
 
 // Public Routes
 Route::get('/', function () {
@@ -154,8 +156,8 @@ Route::get('/staff/order-tracker', function () {
 
 // Staff order routes
 Route::prefix('staff')->middleware(['auth'])->group(function () {
-    Route::get('/orders/data', function () {
-        $perPage = request('per_page', 4);
+    Route::get('/orders/data', function (Request $request) {
+        $perPage = $request->input('per_page', 4);
         $orders = \App\Models\OrderTransaction::with('menuOrderItems')
             ->orderBy('order_date', 'desc')
             ->paginate($perPage);
@@ -180,6 +182,41 @@ Route::prefix('staff')->middleware(['auth'])->group(function () {
         
         return response()->json(['success' => false, 'message' => 'Order not found']);
     })->name('staff.orders.update-status');
+    
+    // Add this new route for sending orders to kitchen
+    Route::post('/orders/send-to-kitchen', function (Request $request) {
+        try {
+            $data = $request->json()->all();
+            
+            // Create kitchen cooking record
+            $kitchenCooking = \App\Models\KitchenCooking::create([
+                'order_name' => $data['order_name'],
+                'order_type' => $data['order_type'],
+                'special_request' => $data['special_request'],
+                'subtotal' => $data['subtotal']
+            ]);
+            
+            // Create kitchen cooking products
+            if (!empty($data['items'])) {
+                foreach ($data['items'] as $item) {
+                    \App\Models\KitchenCookingProduct::create([
+                        'kitchen_cooking_id' => $kitchenCooking->KitchenID,
+                        'product_name' => $item['ProductName'],
+                        'size' => $item['Size'] ?? null,
+                        'quantity' => $item['Quantity'] ?? 1,
+                        'price' => $item['Price'] ?? 0.00
+                    ]);
+                }
+            }
+            
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Error saving to kitchen: ' . $e->getMessage()
+            ]);
+        }
+    })->name('staff.orders.send-to-kitchen');
 });
 
 // Kitchen routes
@@ -187,4 +224,34 @@ Route::prefix('kitchen')->middleware(['auth'])->group(function () {
     Route::get('/kitchenBase', function () {
         return view('kitchen.kitchenLandingPage');
     })->name('kitchen.landingPage');
+    
+    // Kitchen order data routes
+    Route::get('/orders/data', function () {
+        $orders = \App\Models\KitchenCooking::with('products')->get();
+        return response()->json(['orders' => $orders]);
+    })->name('kitchen.orders.data');
+    
+    Route::post('/orders/update-status/{id}', function ($id, Request $request) {
+        $order = \App\Models\KitchenCooking::find($id);
+        
+        if ($order) {
+            $order->status = $request->status;
+            $order->save();
+            
+            return response()->json(['success' => true]);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Order not found']);
+    })->name('kitchen.orders.update-status');
+    
+    Route::delete('/orders/complete/{id}', function ($id) {
+        $order = \App\Models\KitchenCooking::find($id);
+        
+        if ($order) {
+            $order->delete();
+            return response()->json(['success' => true]);
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Order not found']);
+    })->name('kitchen.orders.complete');
 });
