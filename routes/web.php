@@ -181,3 +181,10 @@ Route::prefix('staff')->middleware(['auth'])->group(function () {
         return response()->json(['success' => false, 'message' => 'Order not found']);
     })->name('staff.orders.update-status');
 });
+
+// Kitchen routes
+Route::prefix('kitchen')->middleware(['auth'])->group(function () {
+    Route::get('/kitchenBase', function () {
+        return view('kitchen.kitchenLandingPage');
+    })->name('kitchen.landingPage');
+});

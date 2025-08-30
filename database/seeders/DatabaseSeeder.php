@@ -36,5 +36,16 @@ class DatabaseSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        // Kitchen account
+        User::create([
+            'name' => 'CaffeArabica Kitchen',
+            'email' => 'kitchen@caffearabica.com',
+            'password' => Hash::make('Kitchen123!'),
+            'role' => 'Kitchen',
+            'email_verified_at' => now(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 }

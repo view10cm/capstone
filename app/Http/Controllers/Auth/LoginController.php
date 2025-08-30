@@ -39,6 +39,11 @@ class LoginController extends Controller
                 return redirect()->intended('/staff/staffLandingPage');
             }
             
+            // Add Kitchen role redirection
+            if (Auth::user()->role === 'Kitchen') {
+                return redirect()->intended('/kitchen/kitchenBase');
+            }
+            
             return redirect()->intended('/customer/landing');
         }
 
