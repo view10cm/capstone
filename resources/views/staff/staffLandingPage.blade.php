@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     const ordersPerPage = 4;
     let selectedOrderId = null;
+    let selectedOrderData = null;
     
     // Get modal elements
     const kitchenModal = document.getElementById('kitchenModal');
@@ -51,8 +52,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     modalConfirm.addEventListener('click', function() {
-        if (selectedOrderId) {
+        if (selectedOrderId && selectedOrderData) {
             updateOrderStatus(selectedOrderId, 'Preparing');
+            sendToKitchen(selectedOrderData);
             kitchenModal.classList.add('hidden');
         }
     });
@@ -96,11 +98,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let html = '';
         
         orders.forEach(order => {
+            // Create a safe version of the order data for JavaScript
+            const safeOrderData = JSON.stringify(order)
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, "\\'");
+                
             html += `
             <div class="bg-white rounded-lg shadow-md p-4 border-l-4 ${getStatusColor(order.status)} order-card">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <h2 class="text-xl font-bold text-gray-800">Order #${order.OrderID}</h2>
+                        <h2 class="text-xl font-bold text-gray-800">${order.OrderID}</h2>
                     </div>
                     <span class="text-sm font-semibold ${getStatusTextColor(order.status)} px-2 py-1 rounded ${getStatusBackgroundColor(order.status)}">${order.status}</span>
                 </div>
@@ -155,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `
                 <div class="border-t border-gray-200 pt-3">
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="showKitchenConfirmation('${order.OrderID}')" class="bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded text-sm font-medium transition-colors">
+                        <button data-order-id="${order.OrderID}" data-order-data="${safeOrderData}" class="to-kitchen-btn bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded text-sm font-medium transition-colors">
                             To Kitchen
                         </button>
                         <button onclick="cancelOrder('${order.OrderID}')" class="bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded text-sm font-medium transition-colors">
@@ -171,14 +178,56 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         container.innerHTML = html;
+        
+        // Add event listeners to all "To Kitchen" buttons
+        document.querySelectorAll('.to-kitchen-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const orderId = this.getAttribute('data-order-id');
+                const orderData = JSON.parse(this.getAttribute('data-order-data'));
+                showKitchenConfirmation(orderId, orderData);
+            });
+        });
     }
 
     // Show kitchen confirmation modal
-    window.showKitchenConfirmation = function(orderId) {
+    window.showKitchenConfirmation = function(orderId, orderData) {
         selectedOrderId = orderId;
+        selectedOrderData = orderData;
         modalMessage.textContent = `Do you wish to send Order #${orderId} to the Kitchen?`;
         kitchenModal.classList.remove('hidden');
     };
+
+    // Send order data to kitchen
+    function sendToKitchen(orderData) {
+        fetch('/staff/orders/send-to-kitchen', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                order_id: orderData.OrderID,
+                order_name: orderData.OrderID,
+                order_type: orderData.order_type,
+                special_request: orderData.special_request,
+                subtotal: orderData.subtotal,
+                items: orderData.menu_order_items || []
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Error sending to kitchen:', data.message);
+                alert('Error sending order to kitchen: ' + data.message);
+            } else {
+                console.log('Order successfully sent to kitchen');
+            }
+        })
+        .catch(error => {
+            console.error('Error sending to kitchen:', error);
+            alert('Error sending order to kitchen. Please try again.');
+        });
+    }
 
     // Set up pagination controls
     function setupPagination(total, perPage, currentPage) {
@@ -373,6 +422,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     #kitchenModal .backdrop-blur-sm {
         backdrop-filter: blur(4px);
+    }
+    
+    .to-kitchen-btn {
+        cursor: pointer;
     }
 </style>
 @endsection
