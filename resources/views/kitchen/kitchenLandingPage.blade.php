@@ -1,1 +1,1 @@
-<!--KITCHEN LANDING PAGE -->
+@extends('kitchen.kitchenBase')

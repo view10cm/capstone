@@ -41,7 +41,7 @@ class LoginController extends Controller
             
             // Add Kitchen role redirection
             if (Auth::user()->role === 'Kitchen') {
-                return redirect()->intended('/kitchen/kitchenBase');
+                return redirect()->intended('/kitchen/kitchenLandingPage');
             }
             
             return redirect()->intended('/customer/landing');

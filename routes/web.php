@@ -221,7 +221,7 @@ Route::prefix('staff')->middleware(['auth'])->group(function () {
 
 // Kitchen routes
 Route::prefix('kitchen')->middleware(['auth'])->group(function () {
-    Route::get('/kitchenBase', function () {
+    Route::get('/kitchenLandingPage', function () {
         return view('kitchen.kitchenLandingPage');
     })->name('kitchen.landingPage');
     
