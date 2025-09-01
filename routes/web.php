@@ -137,7 +137,7 @@ Route::get('/admin/menu', function () {
 Route::post('/admin/users', [App\Http\Controllers\Admin\UserController::class, 'store'])
     ->name('admin.users.store');
 
-    Route::get('/admin/users', function () {
+Route::get('/admin/users', function () {
     $users = \App\Models\User::all();
     return view('admin.adminUsers', ['users' => $users]);
 })->name('admin.adminUsers');
@@ -161,7 +161,7 @@ Route::prefix('staff')->middleware(['auth'])->group(function () {
         $orders = \App\Models\OrderTransaction::with('menuOrderItems')
             ->orderBy('order_date', 'desc')
             ->paginate($perPage);
-        
+
         return response()->json([
             'orders' => $orders->items(),
             'total' => $orders->total(),
@@ -169,25 +169,25 @@ Route::prefix('staff')->middleware(['auth'])->group(function () {
             'per_page' => $perPage
         ]);
     })->name('staff.orders.data');
-    
+
     Route::post('/orders/update-status', function (Request $request) {
         $order = \App\Models\OrderTransaction::where('OrderID', $request->order_id)->first();
-        
+
         if ($order) {
             $order->status = $request->status;
             $order->save();
-            
+
             return response()->json(['success' => true]);
         }
-        
+
         return response()->json(['success' => false, 'message' => 'Order not found']);
     })->name('staff.orders.update-status');
-    
+
     // Add this new route for sending orders to kitchen
     Route::post('/orders/send-to-kitchen', function (Request $request) {
         try {
             $data = $request->json()->all();
-            
+
             // Create kitchen cooking record
             $kitchenCooking = \App\Models\KitchenCooking::create([
                 'order_name' => $data['order_name'],
@@ -195,7 +195,7 @@ Route::prefix('staff')->middleware(['auth'])->group(function () {
                 'special_request' => $data['special_request'],
                 'subtotal' => $data['subtotal']
             ]);
-            
+
             // Create kitchen cooking products
             if (!empty($data['items'])) {
                 foreach ($data['items'] as $item) {
@@ -208,11 +208,11 @@ Route::prefix('staff')->middleware(['auth'])->group(function () {
                     ]);
                 }
             }
-            
+
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Error saving to kitchen: ' . $e->getMessage()
             ]);
         }
@@ -221,37 +221,42 @@ Route::prefix('staff')->middleware(['auth'])->group(function () {
 
 // Kitchen routes
 Route::prefix('kitchen')->middleware(['auth'])->group(function () {
-    Route::get('/kitchenBase', function () {
+    Route::get('/kitchenLandingPage', function () {
         return view('kitchen.kitchenLandingPage');
     })->name('kitchen.landingPage');
-    
+
+    // Add this route for completed orders
+    Route::get('/completed-orders', function () {
+        return view('kitchen.kitchenCompletedOrders');
+    })->name('kitchen.kitchenCompletedOrders');
+
     // Kitchen order data routes
     Route::get('/orders/data', function () {
         $orders = \App\Models\KitchenCooking::with('products')->get();
         return response()->json(['orders' => $orders]);
     })->name('kitchen.orders.data');
-    
+
     Route::post('/orders/update-status/{id}', function ($id, Request $request) {
         $order = \App\Models\KitchenCooking::find($id);
-        
+
         if ($order) {
             $order->status = $request->status;
             $order->save();
-            
+
             return response()->json(['success' => true]);
         }
-        
+
         return response()->json(['success' => false, 'message' => 'Order not found']);
     })->name('kitchen.orders.update-status');
-    
+
     Route::delete('/orders/complete/{id}', function ($id) {
         $order = \App\Models\KitchenCooking::find($id);
-        
+
         if ($order) {
             $order->delete();
             return response()->json(['success' => true]);
         }
-        
+
         return response()->json(['success' => false, 'message' => 'Order not found']);
     })->name('kitchen.orders.complete');
 });
