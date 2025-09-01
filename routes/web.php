@@ -262,6 +262,34 @@ Route::prefix('kitchen')->middleware(['auth'])->group(function () {
     })->name('kitchen.orders.complete');
 });
 
-Route::get('/kitchen/kitchenLandingPage', [KitchenController::class, 'landingPage'])
-    ->name('kitchen.landingPage')
-    ->middleware('auth');
+// Kitchen routes
+Route::prefix('kitchen')->middleware(['auth'])->group(function () {
+    Route::get('/kitchenLandingPage', [KitchenController::class, 'landingPage'])
+        ->name('kitchen.landingPage');
+
+    // Update this route to use POST method
+    Route::post('/orders/update-status/{id}', [KitchenController::class, 'updateStatus'])
+        ->name('kitchen.orders.update-status');
+
+    // Add this route for completed orders
+    Route::get('/completed-orders', function () {
+        return view('kitchen.kitchenCompletedOrders');
+    })->name('kitchen.kitchenCompletedOrders');
+
+    // Kitchen order data routes
+    Route::get('/orders/data', function () {
+        $orders = \App\Models\KitchenCooking::with('products')->get();
+        return response()->json(['orders' => $orders]);
+    })->name('kitchen.orders.data');
+
+    Route::delete('/orders/complete/{id}', function ($id) {
+        $order = \App\Models\KitchenCooking::find($id);
+
+        if ($order) {
+            $order->delete();
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Order not found']);
+    })->name('kitchen.orders.complete');
+});

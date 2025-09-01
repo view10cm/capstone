@@ -17,7 +17,8 @@ class KitchenCooking extends Model
         'order_name',
         'order_type',
         'special_request',
-        'subtotal'
+        'subtotal',
+        'status' // Make sure this is included
     ];
 
     public function products()
