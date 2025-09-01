@@ -44,9 +44,9 @@
 
         <!-- Middle Right - Order Tracker Button -->
         <div class="mr-16">
-            <a href="{{ route('staff.orderTracker') }}"
+            <a href="{{ route('kitchen.kitchenCompletedOrders') }}"
                 class="bg-orange-500 hover:bg-orange-600 transition-colors duration-200 text-white px-6 py-2 rounded-md font-medium inline-block">
-                Order Tracker
+                Completed Orders
             </a>
         </div>
         <!-- Right - Date/Time -->
