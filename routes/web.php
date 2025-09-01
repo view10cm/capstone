@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Staff\OrderController;
+use App\Http\Controllers\KitchenController;
 use Illuminate\Http\Request;
 
 // Public Routes
@@ -260,3 +261,7 @@ Route::prefix('kitchen')->middleware(['auth'])->group(function () {
         return response()->json(['success' => false, 'message' => 'Order not found']);
     })->name('kitchen.orders.complete');
 });
+
+Route::get('/kitchen/kitchenLandingPage', [KitchenController::class, 'landingPage'])
+    ->name('kitchen.landingPage')
+    ->middleware('auth');
