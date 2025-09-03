@@ -10,10 +10,10 @@ class KitchenController extends Controller
     public function landingPage()
     {
         $orders = KitchenCooking::with('products')
-                    ->where('status', '!=', 'Completed')
-                    ->orderBy('created_at', 'desc')
-                    ->get();
-                    
+            ->where('status', '!=', 'Completed')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('kitchen.kitchenLandingPage', compact('orders'));
     }
 
@@ -26,4 +26,15 @@ class KitchenController extends Controller
         return redirect()->route('kitchen.landingPage')
             ->with('success', 'Order status updated successfully');
     }
+
+    public function completedOrders()
+    {
+        $completedOrders = KitchenCooking::with('products')
+            ->where('status', 'Completed')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10); // You can adjust the pagination number
+
+        return view('kitchen.kitchenCompletedOrders', compact('completedOrders'));
+    }
+
 }
