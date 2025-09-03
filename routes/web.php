@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Staff\OrderController;
 use App\Http\Controllers\KitchenController;
+use App\Http\Controllers\AdminOrderController;
 use Illuminate\Http\Request;
 
 // Public Routes
@@ -294,6 +295,11 @@ Route::prefix('kitchen')->middleware(['auth'])->group(function () {
     })->name('kitchen.orders.complete');
 });
 
-// Add this route for completed orders
-Route::get('/kitchen/kitchenCompletedOrders', [KitchenController::class, 'completedOrders'])
-    ->name('kitchen.kitchenCompletedOrders');
+// Admin Order History Routes
+Route::prefix('admin')->group(function () {
+    Route::get('/orders/history', [App\Http\Controllers\Admin\AdminOrderController::class, 'orderHistory'])
+        ->name('admin.orderHistory');
+
+    Route::get('/orders/{orderId}/details', [App\Http\Controllers\Admin\AdminOrderController::class, 'getOrderDetails'])
+        ->name('admin.orders.details');
+});
