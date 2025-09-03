@@ -293,3 +293,7 @@ Route::prefix('kitchen')->middleware(['auth'])->group(function () {
         return response()->json(['success' => false, 'message' => 'Order not found']);
     })->name('kitchen.orders.complete');
 });
+
+// Add this route for completed orders
+Route::get('/kitchen/kitchenCompletedOrders', [KitchenController::class, 'completedOrders'])
+    ->name('kitchen.kitchenCompletedOrders');
