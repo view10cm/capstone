@@ -52,26 +52,38 @@
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Today's Sales Card -->
                 <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
-                    <div class="text-2xl font-bold text-gray-900 mb-2">₱18,750</div>
+                    @php
+                        use Illuminate\Support\Facades\DB;
+                        $totalSales = DB::table('menu_order_transactions')->sum('unitPrice');
+                    @endphp
+                    <div class="text-2xl font-bold text-gray-900 mb-2">₱{{ number_format($totalSales, 2) }}</div>
                     <div class="text-sm text-gray-600 mb-4">Today's Sales</div>
                 </div>
 
                 <!-- Meals Served Card -->
                 <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
-                    <div class="text-2xl font-bold text-gray-900 mb-2">125</div>
+                    @php
+                        $orderCount = DB::table('order_transactions')->count('OrderID');
+                    @endphp
+                    <div class="text-2xl font-bold text-gray-900 mb-2">{{ $orderCount }}</div>
                     <div class="text-sm text-gray-600 mb-4">Meals Served</div>
-
                 </div>
 
                 <!-- Active Orders Card -->
                 <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
-                    <div class="text-2xl font-bold text-gray-900 mb-2">13</div>
-                    <div class="text-sm text-gray-600 mb-4">Active Orders</div>
+                    @php
+                        $completedOrdersCount = DB::table('kitchen_cooking')->where('status', 'Completed')->count();
+                    @endphp
+                    <div class="text-2xl font-bold text-gray-900 mb-2">{{ $completedOrdersCount }}</div>
+                    <div class="text-sm text-gray-600 mb-4">Completed Orders</div>
                 </div>
 
                 <!-- Low Stock Items Card -->
                 <div class="bg-white rounded-xl shadow-md p-6 flex flex-col">
-                    <div class="text-2xl font-bold text-gray-900 mb-2">4</div>
+                    @php
+                        $lowStockCount = DB::table('ingredients')->where('ingredient_availability', 'Low Stock')->count();
+                    @endphp
+                    <div class="text-2xl font-bold text-gray-900 mb-2">{{ $lowStockCount }}</div>
                     <div class="text-sm text-gray-600 mb-4">Low Stock Items</div>
                 </div>
             </div>
@@ -193,27 +205,46 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border-b border-gray-200">
-                                    <td class="py-4 text-sm text-gray-900">1</td>
-                                    <td class="py-4 text-sm text-gray-900">Caffe Americano</td>
-                                    <td class="py-4 text-sm text-gray-600">Drinks</td>
-                                    <td class="py-4 text-sm text-gray-900">-</td>
-                                    <td class="py-4 text-sm text-gray-900">-</td>
-                                </tr>
-                                <tr class="border-b border-gray-200">
-                                    <td class="py-4 text-sm text-gray-900">2</td>
-                                    <td class="py-4 text-sm text-gray-900">Korean Beef Bulgogi</td>
-                                    <td class="py-4 text-sm text-gray-600">Main Course</td>
-                                    <td class="py-4 text-sm text-gray-900">-</td>
-                                    <td class="py-4 text-sm text-gray-900">-</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-4 text-sm text-gray-900">3</td>
-                                    <td class="py-4 text-sm text-gray-900">Pulled Pork Sandwich</td>
-                                    <td class="py-4 text-sm text-gray-600">Appetizers</td>
-                                    <td class="py-4 text-sm text-gray-900">-</td>
-                                    <td class="py-4 text-sm text-gray-900">-</td>
-                                </tr>
+                                @php
+                                    // Get top 3 most frequently ordered products
+                                    $topProducts = DB::table('menu_order_transactions')
+                                        ->select('ProductName', DB::raw('COUNT(*) as total_sold'), DB::raw('SUM(unitPrice) as total_revenue'))
+                                        ->groupBy('ProductName')
+                                        ->orderByDesc('total_sold')
+                                        ->limit(3)
+                                        ->get();
+                                    
+                                    $counter = 1;
+                                @endphp
+                                
+                                @foreach($topProducts as $product)
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-4 text-sm text-gray-900">{{ $counter++ }}</td>
+                                        <td class="py-4 text-sm text-gray-900">{{ $product->ProductName }}</td>
+                                        <td class="py-4 text-sm text-gray-600">
+                                            @php
+                                                // Simple categorization based on product name
+                                                $category = 'Other';
+                                                if (stripos($product->ProductName, 'coffee') !== false || stripos($product->ProductName, 'caffe') !== false || stripos($product->ProductName, 'latte') !== false) {
+                                                    $category = 'Drinks';
+                                                } elseif (stripos($product->ProductName, 'beef') !== false || stripos($product->ProductName, 'pork') !== false || stripos($product->ProductName, 'chicken') !== false) {
+                                                    $category = 'Main Course';
+                                                } elseif (stripos($product->ProductName, 'sandwich') !== false || stripos($product->ProductName, 'pastry') !== false || stripos($product->ProductName, 'cake') !== false) {
+                                                    $category = 'Appetizers';
+                                                }
+                                            @endphp
+                                            {{ $category }}
+                                        </td>
+                                        <td class="py-4 text-sm text-gray-900">{{ $product->total_sold }}</td>
+                                        <td class="py-4 text-sm text-gray-900">₱{{ number_format($product->total_revenue, 2) }}</td>
+                                    </tr>
+                                @endforeach
+                                
+                                @if($topProducts->isEmpty())
+                                    <tr>
+                                        <td colspan="5" class="py-4 text-sm text-gray-600 text-center">No products sold yet</td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -233,21 +264,33 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="border-b border-gray-200">
-                                    <td class="py-4 text-sm text-gray-900">Beef</td>
-                                    <td class="py-4 text-sm text-gray-600">15 kg</td>
-                                    <td class="py-4 text-sm text-green-600 font-medium">In Stock</td>
-                                </tr>
-                                <tr class="border-b border-gray-200">
-                                    <td class="py-4 text-sm text-gray-900">Oxtail</td>
-                                    <td class="py-4 text-sm text-gray-600">5 pcs</td>
-                                    <td class="py-4 text-sm text-yellow-600 font-medium">Low Stock</td>
-                                </tr>
-                                <tr>
-                                    <td class="py-4 text-sm text-gray-900">Garlic</td>
-                                    <td class="py-4 text-sm text-gray-600">1 kg</td>
-                                    <td class="py-4 text-sm text-yellow-600 font-medium">Low Stock</td>
-                                </tr>
+                                @php
+                                    // Get top 3 ingredients with highest quantity
+                                    $topIngredients = DB::table('ingredients')
+                                        ->select('ingredient_name', 'ingredient_quantity', 'ingredient_availability')
+                                        ->orderByDesc('ingredient_quantity')
+                                        ->limit(3)
+                                        ->get();
+                                @endphp
+                                
+                                @foreach($topIngredients as $ingredient)
+                                    <tr class="border-b border-gray-200">
+                                        <td class="py-4 text-sm text-gray-900">{{ $ingredient->ingredient_name }}</td>
+                                        <td class="py-4 text-sm text-gray-600">{{ $ingredient->ingredient_quantity }}</td>
+                                        <td class="py-4 text-sm font-medium 
+                                            @if($ingredient->ingredient_availability === 'In Stock') text-green-600
+                                            @elseif($ingredient->ingredient_availability === 'Low Stock') text-yellow-600
+                                            @else text-red-600 @endif">
+                                            {{ $ingredient->ingredient_availability }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                
+                                @if($topIngredients->isEmpty())
+                                    <tr>
+                                        <td colspan="3" class="py-4 text-sm text-gray-600 text-center">No ingredients found</td>
+                                    </tr>
+                                @endif
                             </tbody>
                         </table>
                     </div>
