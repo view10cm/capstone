@@ -1,43 +1,68 @@
+{{-- filepath: c:\Users\redne\capstone\resources\views\welcome.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <title>Welcome to Caffe Arabica</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
+
 </head>
+<body class="bg-amber-50 min-h-screen flex items-center justify-center relative"
+      style="background: url('{{ asset('/images/START (1).svg') }}') center center / cover no-repeat;">
 
-<body class="relative min-h-screen bg-cover bg-center flex items-center justify-center"
-    style="background-image: url('{{ asset('images/viewWelcomeBladeBackground.svg') }}');">
+    <span class="absolute top-20 left-1/2 -translate-x-1/2 text-white text-[24px] font-normal responsive-font" style="font-family:'Times New Roman', Times, serif;">
+        A cup of coffee a day without God is tasteless
+    </span>
+    <h1 class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white font-bold text-[48px] responsive-font" style="font-family: 'Cinzel', serif;">
+        WELCOME TO CAFFE ARABICA
+    </h1>
+    <span class="absolute left-1/2 top-[53%] -translate-x-1/2 text-white text-[24px] font-normal responsive-font" style="font-family:'Times New Roman', Times, serif; letter-spacing: 0.1em;">
+        A PREMIUM DINING EXPERIENCE
+    </span>
 
-    <!-- ✅ Orange color overlay (acts like a filter/tint) -->
-    <div class="absolute inset-0 bg-[#E67809] opacity-20 z-0 pointer-events-none"></div>
-
-    <!-- Main content stays above the overlay -->
-    <div class="relative z-10 text-center text-white px-4">
-        <p class="italic mb-4 -mt-6" style="font-family: 'Times New Roman', serif; font-size: 24px;">
-            "A cup of coffee a day without God is tasteless!"
-        </p>
-        <h1 class="text-[48px] md:text-5xl font-bold mb-2 font-bold" style="font-family: 'Cinzel', serif;">
-            WELCOME TO CAFFE ARABICA
-        </h1>
-
-        <h2 class="text-lg md:text-xl tracking-wider uppercase" style="font-family: 'Times New Roman', serif;">
-            A Premium Dining Experience
-        </h2>
+    <!-- Bottom "Touch to start" button overlay -->
+    <div class="fixed bottom-0 left-0 w-full bg-black bg-opacity-50 flex flex-col items-center py-6 cursor-pointer"
+         style="cursor: pointer;">
+        <a href="{{ route('systemDescription') }}">
+            <button class="text-white text-3xl font-semibold mb-2 focus:outline-none responsive-font" style="font-family: 'Cinzel', serif; cursor: pointer;">
+                Touch to start
+            </button>
+        </a>
+        <span class="text-white text-base opacity-80 responsive-font" style="font-family:'Times New Roman', Times, serif; cursor: pointer;">
+            Ready to order? Tap to begin.
+        </span>
     </div>
-
-    <!-- 📍 Full-width 'Touch to start' at bottom -->
-    <a href="{{ route('customer.viewReminder') }}">
-        <div
-            class="absolute bottom-0 left-0 w-full bg-black bg-opacity-80 py-6 px-4 text-white text-center z-10 cursor-pointer">
-            <p class="text-2xl font-semibold mb-2">Touch to start</p>
-            <p class="text-sm">Ready to order? Tap to begin.</p>
-        </div>
-    </a>
-
 </body>
+<script>
+    // Check for browser support
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (window.SpeechRecognition) {
+        const recognition = new window.SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = function(event) {
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    const transcript = event.results[i][0].transcript.trim().toLowerCase();
+                    if (transcript.includes('touch to start')) {
+                        window.location.href = "{{ route('systemDescription') }}";
+                    }
+                }
+            }
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+        };
+
+        recognition.start();
+    } else {
+        console.warn('Speech Recognition API not supported in this browser.');
+    }
+</script>
 
 </html>
