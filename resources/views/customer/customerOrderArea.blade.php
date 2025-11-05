@@ -350,8 +350,8 @@
                 // Handle common variations in speech recognition for all product categories
                 const variations = {
                     // Coffee drinks
-                    'espresso': ['expresso', 'espress', 'expresso'],
-                    'caffe': ['cafe', 'coffee', 'café'],
+                    'espresso eight ounce': ['expresso eight ounce', 'espresso eight ounce', 'expresso oz', 'espresso 8 oz'],
+                    'espresso twelve ounce': ['expresso twelve ounce', 'espresso twelve ounce', 'espresso twelve oz', 'espresso 12 oz'],
                     'latte': ['lute', 'late', 'latté', 'latt'],
                     'americano': ['american', 'america no', 'americano'],
                     'cappuccino': ['capruccino', 'cappuchino', 'capuccino'],
