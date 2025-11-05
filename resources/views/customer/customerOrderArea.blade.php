@@ -311,136 +311,153 @@
             }
 
             function processVoiceCommand(transcript) {
-                // Convert transcript to lowercase for easier matching
                 const command = transcript.toLowerCase().trim();
+                console.log("Processing voice command:", command);
 
-                // Try to find a matching product from all available products
                 let matchedProduct = findProductByVoiceCommand(command);
 
-                // If we found a product, add it to the order
                 if (matchedProduct) {
+                    console.log("Matched product:", matchedProduct.productName);
                     addToOrder(matchedProduct);
                     displaySystemMessage(`The ${matchedProduct.productName} is added to the order.`);
                 } else {
+                    console.log("No product matched");
                     displaySystemMessage("I couldn't find that product. Please try again or browse the menu.");
                 }
             }
 
             function findProductByVoiceCommand(command) {
-                // First, try to find exact matches in the entire product catalog
+                // Convert command to lowercase and clean it up
+                const cleanCommand = command.toLowerCase().trim();
+                
+                // Log for debugging
+                console.log("Voice command received:", cleanCommand);
+                
+                // First, try exact matching with product names
                 for (const product of window.allAvailableProducts) {
                     const productName = product.productName.toLowerCase();
-
-                    // Check if command contains the product name
-                    if (command.includes(productName)) {
-                        return product;
-                    }
-
-                    // Check for common variations and abbreviations
-                    if (doesCommandMatchProduct(command, productName, product)) {
+                    
+                    // Check for exact match in command
+                    if (cleanCommand.includes(productName)) {
+                        console.log("Exact match found:", productName);
                         return product;
                     }
                 }
-
-                // If no exact match, try fuzzy matching
-                return findProductByFuzzyMatch(command);
+                
+                // If no exact match, try keyword-based matching
+                return findProductByKeywords(cleanCommand);
             }
 
-            function doesCommandMatchProduct(command, productName, product) {
-                // Handle common variations in speech recognition for all product categories
-                const variations = {
-                    // Coffee drinks
-                    'espresso eight ounce': ['expresso eight ounce', 'espresso eight ounce', 'expresso oz', 'espresso 8 oz'],
-                    'espresso twelve ounce': ['expresso twelve ounce', 'espresso twelve ounce', 'espresso twelve oz', 'espresso 12 oz'],
-                    'latte': ['lute', 'late', 'latté', 'latt'],
-                    'americano': ['american', 'america no', 'americano'],
-                    'cappuccino': ['capruccino', 'cappuchino', 'capuccino'],
-                    'macchiato': ['macchiato', 'machiato', 'macato'],
-                    'mocha': ['moca', 'mocka', 'mokha'],
-                    'frappe': ['frap', 'frapp', 'frape'],
-
-                    // Sizes
-                    '8oz': ['8 oz', '8 ounce', '8 ounces', '8oz', '8 os'],
-                    '12oz': ['12 oz', '12 ounce', '12 ounces', '12oz', '12 os'],
-                    '16oz': ['16 oz', '16 ounce', '16 ounces', '16oz', '16 os'],
-                    '22oz': ['22 oz', '22 ounce', '22 ounces', '22oz', '22 os'],
-
-                    // Ingredients and flavors
-                    'hazelnut': ['hazehurt', 'hazlenut', 'haselnut'],
-                    'vanilla': ['vanila', 'vanella', 'vanila'],
-                    'caramel': ['carmel', 'caramell', 'karmel'],
-                    'chocolate': ['choco', 'choclate', 'chocolat'],
-                    'matcha': ['macha', 'matca', 'green tea'],
-                    'white chocolate': ['white choco', 'whitechocolate'],
-                    'french vanilla': ['french vanila', 'french vanella'],
-                    'salted caramel': ['salt caramel', 'salted carmel'],
-
-                    // Milk tea variations
-                    'milktea': ['milktea', 'milkiea', 'milicea', 'milletea', 'millitea', 'milk tea'],
-                    'classic': ['classic', 'clasic'],
-                    'wintermelon': ['wintermelon', 'winter melon', 'wintermelon'],
-                    'okinawa': ['okinawa', 'okinawa'],
-                    'taro': ['taro', 'tarro'],
-                    'rocksalt': ['rock salt', 'rock-salt'],
-
-                    // Food items
-                    'barbeque': ['barbecue', 'bbq', 'bar-b-que'],
-                    'bagnet': ['bagnet', 'bag net'],
-                    'pork': ['pork', 'porc'],
-                    'chicken': ['chicken', 'chiken'],
-                    'beef': ['beef', 'beef'],
-                    'seafood': ['sea food', 'see food'],
-                    'pasta': ['pasta', 'pastah'],
-                    'noodles': ['noodles', 'noodels'],
-                    'sandwiches': ['sandwich', 'sandwiche'],
-                    'salads': ['salad', 'salat'],
-
-                    // Specific food items
-                    'quesadillas': ['quesadillas', 'kesadillas', 'quesadila'],
-                    'lasagna': ['lasagna', 'lasagne', 'lasanya'],
-                    'pad thai': ['pad thai', 'padthai', 'pat tai'],
-                    'crab rangoon': ['crab rangoon', 'crab rangon', 'crab rangun'],
-                    'caesar': ['caesar', 'cesar', 'ceasar'],
-
-                    // Preparation styles
-                    'crispy': ['crispy', 'crispi'],
-                    'grilled': ['grilled', 'griled'],
-                    'roasted': ['roasted', 'rosted'],
-                    'creamy': ['creamy', 'creame'],
+            function findProductByKeywords(command) {
+                // Define product keywords and their variations
+                const productKeywords = {
+                    'caffe americano': [
+                        'cafe americano', 'caffe americano', 'americano', 'american coffee',
+                        'caffe american', 'cafe american', 'america no'
+                    ],
+                    'espresso': [
+                        'espresso', 'expresso', 'espress', 'express'
+                    ],
+                    'cappuccino': [
+                        'cappuccino', 'capuccino', 'cappuchino', 'capruccino'
+                    ],
+                    'latte': [
+                        'latte', 'late', 'latté'
+                    ],
+                    'mocha': [
+                        'mocha', 'moca', 'mocka'
+                    ],
+                    'macchiato': [
+                        'macchiato', 'machiato', 'macato'
+                    ]
                 };
 
-                // Check if command contains any known variations that match the product
-                for (const [correct, aliases] of Object.entries(variations)) {
-                    for (const alias of aliases) {
-                        if (command.includes(alias) && productName.includes(correct)) {
-                            return true;
+                // Size variations
+                const sizeKeywords = {
+                    '8oz': ['8oz', '8 oz', '8 ounce', '8 ounces', 'eight ounce', 'eight oz'],
+                    '12oz': ['12oz', '12 oz', '12 ounce', '12 ounces', 'twelve ounce', 'twelve oz'],
+                    '16oz': ['16oz', '16 oz', '16 ounce', '16 ounces', 'sixteen ounce', 'sixteen oz']
+                };
+
+                // Extract size from command first
+                let detectedSize = null;
+                for (const [size, variations] of Object.entries(sizeKeywords)) {
+                    for (const variation of variations) {
+                        if (command.includes(variation)) {
+                            detectedSize = size;
+                            break;
                         }
+                    }
+                    if (detectedSize) break;
+                }
+
+                // Try to find the best product match
+                let bestMatch = null;
+                let bestScore = 0;
+
+                for (const product of window.allAvailableProducts) {
+                    const productName = product.productName.toLowerCase();
+                    let score = 0;
+
+                    // Check against product keywords
+                    for (const [baseProduct, variations] of Object.entries(productKeywords)) {
+                        for (const variation of variations) {
+                            if (command.includes(variation)) {
+                                // If the actual product name contains the base product, give high score
+                                if (productName.includes(baseProduct)) {
+                                    score += 0.8;
+                                }
+                                // Additional points for exact name match
+                                if (productName.includes(variation)) {
+                                    score += 0.5;
+                                }
+                            }
+                        }
+                    }
+
+                    // Check if product name directly contains words from command
+                    const commandWords = command.split(/\s+/);
+                    const productWords = productName.split(/\s+/);
+                    
+                    for (const cmdWord of commandWords) {
+                        if (cmdWord.length < 3) continue;
+                        
+                        for (const prodWord of productWords) {
+                            if (prodWord.includes(cmdWord) || cmdWord.includes(prodWord)) {
+                                score += 0.3;
+                            }
+                        }
+                    }
+
+                    // Bonus points for size match
+                    if (detectedSize && productName.includes(detectedSize.toLowerCase())) {
+                        score += 0.5;
+                    }
+
+                    // Special handling for Americano vs Espresso confusion
+                    if (command.includes('americano') && productName.includes('espresso') && !productName.includes('americano')) {
+                        score -= 1.0; // Penalize espresso when americano is requested
+                    }
+
+                    if (command.includes('espresso') && productName.includes('americano') && !productName.includes('espresso')) {
+                        score -= 1.0; // Penalize americano when espresso is requested
+                    }
+
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMatch = product;
                     }
                 }
 
-                // Special handling for specific products with common recognition errors
-                const specialCases = {
-                    'Belago Choco': ['belago choco', 'belago chocolate', 'velago choco'],
-                    'Macademia': ['macademia', 'macadamia', 'macedemia'],
-                    'Butterscotch': ['butterscotch', 'butter scotch', 'butterscotch'],
-                    'Java Chip': ['java chip', 'java chips', 'jawa chip'],
-                    'Biscoff': ['biscoff', 'biscof', 'biskoff'],
-                    'Adora\'s': ['adoras', 'adora', 'aduras'],
-                    'Porchetta Paella': ['porchetta paella', 'porcheta paella', 'porchetta pella'],
-                    'Cream Dory': ['cream dory', 'creamed dory', 'cream dori'],
-                    'Hungarian Sausage': ['hungarian sausage', 'hungarian sausauge'],
-                    'Aligue Seafood': ['aligue seafood', 'aligue sea food', 'aligi seafood'],
-                };
-
-                for (const [correct, aliases] of Object.entries(specialCases)) {
-                    for (const alias of aliases) {
-                        if (command.includes(alias) && product.productName.includes(correct)) {
-                            return true;
-                        }
-                    }
+                console.log("Best match score:", bestScore, "Product:", bestMatch?.productName);
+                
+                // Only return if we have a reasonably good match
+                if (bestScore > 0.5) {
+                    return bestMatch;
                 }
 
-                return false;
+                // If no good match found with keywords, try fuzzy matching as fallback
+                return findProductByFuzzyMatch(command);
             }
 
             function findProductByFuzzyMatch(command) {
@@ -451,7 +468,12 @@
                     const productName = product.productName.toLowerCase();
                     const score = calculateSimilarity(command, productName);
 
-                    if (score > bestScore && score > 0.5) { // Lower threshold for fuzzy matching
+                    // Additional checks to prevent wrong matches
+                    if (command.includes('americano') && productName.includes('espresso') && !productName.includes('americano')) {
+                        continue; // Skip espresso when specifically asking for americano
+                    }
+
+                    if (score > bestScore && score > 0.4) {
                         bestScore = score;
                         bestMatch = product;
                     }
@@ -461,16 +483,18 @@
             }
 
             function calculateSimilarity(str1, str2) {
-                // Simple similarity calculation - can be improved with more advanced algorithms
-                const words1 = str1.split(/\s+/);
-                const words2 = str2.split(/\s+/);
+                // Improved similarity calculation
+                const words1 = str1.split(/\s+/).filter(word => word.length >= 3);
+                const words2 = str2.split(/\s+/).filter(word => word.length >= 3);
+
+                if (words1.length === 0 || words2.length === 0) return 0;
 
                 let matchCount = 0;
                 for (const word1 of words1) {
-                    if (word1.length < 3) continue; // Skip short words
-
                     for (const word2 of words2) {
-                        if (word2.includes(word1) || word1.includes(word2)) {
+                        // More flexible matching
+                        if (word2.includes(word1) || word1.includes(word2) || 
+                            levenshteinDistance(word1, word2) <= 2) {
                             matchCount++;
                             break;
                         }
@@ -478,6 +502,31 @@
                 }
 
                 return matchCount / Math.max(words1.length, words2.length);
+            }
+
+            // Add Levenshtein distance function for better fuzzy matching
+            function levenshteinDistance(a, b) {
+                const matrix = [];
+                for (let i = 0; i <= b.length; i++) {
+                    matrix[i] = [i];
+                }
+                for (let j = 0; j <= a.length; j++) {
+                    matrix[0][j] = j;
+                }
+                for (let i = 1; i <= b.length; i++) {
+                    for (let j = 1; j <= a.length; j++) {
+                        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                            matrix[i][j] = matrix[i - 1][j - 1];
+                        } else {
+                            matrix[i][j] = Math.min(
+                                matrix[i - 1][j - 1] + 1,
+                                matrix[i][j - 1] + 1,
+                                matrix[i - 1][j] + 1
+                            );
+                        }
+                    }
+                }
+                return matrix[b.length][a.length];
             }
         });
 
