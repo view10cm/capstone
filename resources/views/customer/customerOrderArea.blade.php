@@ -317,7 +317,7 @@
                 let matchedProduct = findProductByVoiceCommand(command);
 
                 if (matchedProduct) {
-                    console.log("Matched product:", matchedProduct.productName);
+                    console.log("Matched product:", matchedProduct.productName, "Confidence:", matchedProduct.confidenceScore + "%");
                     addToOrder(matchedProduct);
                     displaySystemMessage(`The ${matchedProduct.productName} is added to the order.`);
                 } else {
@@ -340,6 +340,7 @@
                     // Check for exact match in command
                     if (cleanCommand.includes(productName)) {
                         console.log("Exact match found:", productName);
+                        product.confidenceScore = 100; // 100% for exact match
                         return product;
                     }
                 }
@@ -369,24 +370,14 @@
                     ],
                     'macchiato': [
                         'macchiato', 'machiato', 'macato'
-                    ],
-                    'macademia': [
-                        'macademia', 'macadamia', 'makadamia'
-                    ],
-                    'frappe': [
-                        'frappe', 'frap', 'frapée', 'frappé', 'frapp'
-                    ],
-                    'mocha frappe': [
-                        'mocha frappe', 'moca frappe', 'mocka frappe', 'mocha frap', 'moca frap', 'mohafrab', 'mokafrab'
                     ]
                 };
 
                 // Size variations
                 const sizeKeywords = {
-                    '8oz': ['8oz', '8 oz', '8 ounce', '8 ounces', 'eight ounce', 'eight oz', 'pinakamaliit'],
+                    '8oz': ['8oz', '8 oz', '8 ounce', '8 ounces', 'eight ounce', 'eight oz'],
                     '12oz': ['12oz', '12 oz', '12 ounce', '12 ounces', 'twelve ounce', 'twelve oz'],
-                    '16oz': ['16oz', '16 oz', '16 ounce', '16 ounces', 'sixteen ounce', 'sixteen oz'],
-                    '22oz': ['22oz', '22 oz', '22 ounce', '22 ounces', 'twenty two ounce', 'twenty two oz']
+                    '16oz': ['16oz', '16 oz', '16 ounce', '16 ounces', 'sixteen ounce', 'sixteen oz']
                 };
 
                 // Extract size from command first
@@ -408,66 +399,79 @@
                 for (const product of window.allAvailableProducts) {
                     const productName = product.productName.toLowerCase();
                     let score = 0;
+                    let maxPossibleScore = 0;
 
-                    // Check against product keywords
+                    // Check against product keywords (Max: 40%)
                     for (const [baseProduct, variations] of Object.entries(productKeywords)) {
                         for (const variation of variations) {
                             if (command.includes(variation)) {
+                                maxPossibleScore += 40;
                                 // If the actual product name contains the base product, give high score
                                 if (productName.includes(baseProduct)) {
-                                    score += 0.8;
+                                    score += 40; // 40% for primary product match
                                 }
                                 // Additional points for exact name match
                                 if (productName.includes(variation)) {
-                                    score += 0.5;
+                                    score += 20; // 20% for exact variation match
                                 }
                             }
                         }
                     }
 
-                    // Check if product name directly contains words from command
-                    const commandWords = command.split(/\s+/);
+                    // Check if product name directly contains words from command (Max: 30%)
+                    const commandWords = command.split(/\s+/).filter(word => word.length >= 3);
                     const productWords = productName.split(/\s+/);
+                    const maxWordScore = Math.min(commandWords.length * 10, 30); // Max 30%
                     
                     for (const cmdWord of commandWords) {
-                        if (cmdWord.length < 3) continue;
-                        
                         for (const prodWord of productWords) {
                             if (prodWord.includes(cmdWord) || cmdWord.includes(prodWord)) {
-                                score += 0.3;
+                                score += 10; // 10% per matching word
+                                break;
                             }
                         }
                     }
+                    maxPossibleScore += maxWordScore;
 
-                    // Bonus points for size match
+                    // Bonus points for size match (Max: 20%)
                     if (detectedSize && productName.includes(detectedSize.toLowerCase())) {
-                        score += 0.5;
+                        score += 20; // 20% for correct size
+                        maxPossibleScore += 20;
                     }
 
-                    // Special handling for Americano vs Espresso confusion
+                    // Penalty for wrong matches (Max: -50%)
                     if (command.includes('americano') && productName.includes('espresso') && !productName.includes('americano')) {
-                        score -= 1.0; // Penalize espresso when americano is requested
+                        score -= 50; // -50% penalty for espresso when americano is requested
                     }
 
                     if (command.includes('espresso') && productName.includes('americano') && !productName.includes('espresso')) {
-                        score -= 1.0; // Penalize americano when espresso is requested
+                        score -= 50; // -50% penalty for americano when espresso is requested
                     }
+
+                    // Ensure score is between 0-100%
+                    score = Math.max(0, Math.min(100, score));
 
                     if (score > bestScore) {
                         bestScore = score;
                         bestMatch = product;
+                        bestMatch.confidenceScore = Math.round(score); // Store confidence percentage
                     }
                 }
 
-                console.log("Best match score:", bestScore, "Product:", bestMatch?.productName);
+                console.log("Best match confidence:", bestScore + "%", "Product:", bestMatch?.productName);
                 
-                // Only return if we have a reasonably good match
-                if (bestScore > 0.5) {
+                // Only return if we have a reasonably good match (50% confidence or higher)
+                if (bestScore >= 50) {
                     return bestMatch;
                 }
 
                 // If no good match found with keywords, try fuzzy matching as fallback
-                return findProductByFuzzyMatch(command);
+                const fuzzyMatch = findProductByFuzzyMatch(command);
+                if (fuzzyMatch && fuzzyMatch.confidenceScore >= 40) {
+                    return fuzzyMatch;
+                }
+
+                return null;
             }
 
             function findProductByFuzzyMatch(command) {
@@ -476,16 +480,21 @@
 
                 for (const product of window.allAvailableProducts) {
                     const productName = product.productName.toLowerCase();
-                    const score = calculateSimilarity(command, productName);
+                    const similarity = calculateSimilarity(command, productName);
+                    let score = Math.round(similarity * 100); // Convert to percentage
 
                     // Additional checks to prevent wrong matches
                     if (command.includes('americano') && productName.includes('espresso') && !productName.includes('americano')) {
-                        continue; // Skip espresso when specifically asking for americano
+                        score -= 50; // -50% penalty
                     }
 
-                    if (score > bestScore && score > 0.4) {
+                    // Ensure score is between 0-100%
+                    score = Math.max(0, Math.min(100, score));
+
+                    if (score > bestScore) {
                         bestScore = score;
                         bestMatch = product;
+                        bestMatch.confidenceScore = score;
                     }
                 }
 
