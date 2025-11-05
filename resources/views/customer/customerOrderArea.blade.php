@@ -369,14 +369,24 @@
                     ],
                     'macchiato': [
                         'macchiato', 'machiato', 'macato'
+                    ],
+                    'macademia': [
+                        'macademia', 'macadamia', 'makadamia'
+                    ],
+                    'frappe': [
+                        'frappe', 'frap', 'frapée', 'frappé', 'frapp'
+                    ],
+                    'mocha frappe': [
+                        'mocha frappe', 'moca frappe', 'mocka frappe', 'mocha frap', 'moca frap', 'mohafrab', 'mokafrab'
                     ]
                 };
 
                 // Size variations
                 const sizeKeywords = {
-                    '8oz': ['8oz', '8 oz', '8 ounce', '8 ounces', 'eight ounce', 'eight oz'],
+                    '8oz': ['8oz', '8 oz', '8 ounce', '8 ounces', 'eight ounce', 'eight oz', 'pinakamaliit'],
                     '12oz': ['12oz', '12 oz', '12 ounce', '12 ounces', 'twelve ounce', 'twelve oz'],
-                    '16oz': ['16oz', '16 oz', '16 ounce', '16 ounces', 'sixteen ounce', 'sixteen oz']
+                    '16oz': ['16oz', '16 oz', '16 ounce', '16 ounces', 'sixteen ounce', 'sixteen oz'],
+                    '22oz': ['22oz', '22 oz', '22 ounce', '22 ounces', 'twenty two ounce', 'twenty two oz']
                 };
 
                 // Extract size from command first
