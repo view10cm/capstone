@@ -370,6 +370,9 @@
                     ],
                     'macchiato': [
                         'macchiato', 'machiato', 'macato'
+                    ],
+                    'double espresso': [
+                        'dobol espresso', 'dobol', 'double expresso', 'double express', 'double', 'dubol', 'do bold espresso'
                     ]
                 };
 
