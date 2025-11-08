@@ -6,43 +6,11 @@
     <title>Forgot Password</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-image: url('/images/landingPageBackground.svg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            min-height: 100vh;
-        }
-        .card {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.9);
-        }
-        .btn-primary {
-            background-color: #3b82f6;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #2563eb;
-            transform: translateY(-2px);
-        }
-        .form-input:focus {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-        .back-link {
-            transition: all 0.2s ease;
-        }
-        .back-link:hover {
-            transform: translateX(-3px);
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body class="min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat" style="background-image: url('/images/landingPageBackground.svg'); font-family: 'Inter', sans-serif;">
     <div class="w-full max-w-md">
-        <div class="card bg-white rounded-2xl p-8 border border-white/50">
+        <div class="bg-white rounded-2xl p-8 border border-white/50 shadow-2xl backdrop-blur-sm bg-opacity-90">
             <!-- Header with Logo/Icon -->
             <div class="text-center mb-8">
                 <div class="inline-flex items-center justify-center mb-4">
@@ -62,7 +30,7 @@
                             id="email" 
                             name="email"
                             placeholder="Enter your email"
-                            class="form-input w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200"
                             required
                         >
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -75,7 +43,7 @@
                 <button 
                     type="submit" 
                     id="sendCodeBtn"
-                    class="btn-primary w-full py-3 px-4 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mb-6 flex items-center justify-center"
+                    class="w-full py-3 px-4 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-300 mb-6 flex items-center justify-center transition duration-300 ease-in-out transform hover:-translate-y-0.5"
                 >
                     <span id="btnText">Send Code</span>
                     <i id="btnSpinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
@@ -86,7 +54,7 @@
             <div class="text-center">
                 <p class="text-gray-600">
                     Remember your password? 
-                    <a href="#" class="text-blue-600 font-medium hover:text-blue-800 transition back-link inline-flex items-center">
+                    <a href="#" class="text-orange-600 font-medium hover:text-orange-500 transition duration-200 ease-in-out inline-flex items-center transform hover:-translate-x-0.5">
                         <i class="fas fa-arrow-left mr-1 text-sm"></i>
                         Back to Sign in
                     </a>
