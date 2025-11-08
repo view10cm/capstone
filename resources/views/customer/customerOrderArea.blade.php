@@ -106,7 +106,7 @@
                                     <div class="flex-1">
                                         <div class="bg-gray-100 rounded-lg px-4 py-3 max-w-md">
                                             <p class="text-gray-800" style="font-size: 16px;">Hello! Welcome to Caffe
-                                                Arabica. What would you like to order today?</p>
+                                                Arabica. My name is Dinevo! What would you like to order today?</p>
                                         </div>
                                         <p class="text-xs text-gray-500 mt-1">Assistant</p>
                                     </div>
@@ -227,6 +227,157 @@
     </div>
 
     <script>
+        // Text-to-speech functionality - Always enabled
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                utterance.lang = 'en-US';
+                
+                // Wait for voices to load
+                if (speechSynthesis.getVoices().length === 0) {
+                    speechSynthesis.addEventListener('voiceschanged', function() {
+                        const voices = speechSynthesis.getVoices();
+                        const preferredVoice = voices.find(voice => 
+                            voice.lang.includes('en') && 
+                            voice.name.toLowerCase().includes('female')
+                        );
+                        if (preferredVoice) {
+                            utterance.voice = preferredVoice;
+                        }
+                        speechSynthesis.speak(utterance);
+                    });
+                } else {
+                    const voices = speechSynthesis.getVoices();
+                    const preferredVoice = voices.find(voice => 
+                        voice.lang.includes('en') && 
+                        voice.name.toLowerCase().includes('female')
+                    );
+                    if (preferredVoice) {
+                        utterance.voice = preferredVoice;
+                    }
+                    speechSynthesis.speak(utterance);
+                }
+            } else {
+                console.warn('Speech synthesis not supported in this browser.');
+            }
+        }
+
+        // New function to extract size from command
+        function extractSizeFromCommand(command) {
+            const sizePatterns = {
+                '8oz': ['8oz', '8 oz', '8 ounce', '8 ounces', 'eight ounce', 'eight oz', 'eight'],
+                '12oz': ['12oz', '12 oz', '12 ounce', '12 ounces', 'twelve ounce', 'twelve oz', 'twelve', '12'],
+                '16oz': ['16oz', '16 oz', '16 ounce', '16 ounces', 'sixteen ounce', 'sixteen oz', 'sixteen', '16']
+            };
+
+            // Also check for number patterns that might indicate size
+            const numberWords = {
+                '8': ['eight', 'ate'],
+                '12': ['twelve'],
+                '16': ['sixteen']
+            };
+
+            // First check for explicit size patterns
+            for (const [size, patterns] of Object.entries(sizePatterns)) {
+                for (const pattern of patterns) {
+                    // Use word boundaries to avoid partial matches
+                    const regex = new RegExp('\\b' + pattern + '\\b', 'i');
+                    if (regex.test(command)) {
+                        return size;
+                    }
+                }
+            }
+
+            // Then check for number words that might indicate size
+            for (const [number, words] of Object.entries(numberWords)) {
+                for (const word of words) {
+                    const regex = new RegExp('\\b' + word + '\\b', 'i');
+                    if (regex.test(command)) {
+                        return number + 'oz';
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        // New function to extract product type from command
+        function extractProductFromCommand(command) {
+            const productKeywords = {
+                'espresso': ['espresso', 'expresso', 'espress', 'express'],
+                'caffe americano': ['americano', 'american coffee', 'cafe americano', 'caffe americano'],
+                'cappuccino': ['cappuccino', 'capuccino', 'cappuchino'],
+                'latte': ['latte', 'late', 'latté'],
+                'mocha': ['mocha', 'moca', 'mocka'],
+                'macchiato': ['macchiato', 'machiato', 'macato'],
+                'double espresso': ['double espresso', 'double expresso', 'dobol espresso', 'double']
+            };
+
+            for (const [product, keywords] of Object.entries(productKeywords)) {
+                for (const keyword of keywords) {
+                    if (command.includes(keyword)) {
+                        return product;
+                    }
+                }
+            }
+            return null;
+        }
+
+        // New function to find exact product match
+        function findExactProductMatch(productType, size) {
+            const searchTerm = productType.toLowerCase();
+            const sizeTerm = size.toLowerCase();
+            
+            for (const product of window.allAvailableProducts) {
+                const productName = product.productName.toLowerCase();
+                
+                // Check if product name contains both the product type and size
+                if (productName.includes(searchTerm) && productName.includes(sizeTerm)) {
+                    product.confidenceScore = 100;
+                    return product;
+                }
+            }
+            return null;
+        }
+
+        // New function for fallback matching
+        function findFallbackProduct(productType, preferredSize = null) {
+            const searchTerm = productType.toLowerCase();
+            let bestMatch = null;
+            let bestScore = 0;
+
+            for (const product of window.allAvailableProducts) {
+                const productName = product.productName.toLowerCase();
+                let score = 0;
+
+                // Base score for product type match
+                if (productName.includes(searchTerm)) {
+                    score += 70;
+                }
+
+                // Bonus for preferred size match
+                if (preferredSize && productName.includes(preferredSize.toLowerCase())) {
+                    score += 30;
+                } else if (preferredSize) {
+                    // Penalty for wrong size
+                    score -= 20;
+                }
+
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = product;
+                    bestMatch.confidenceScore = Math.max(0, score);
+                }
+            }
+
+            return bestMatch && bestMatch.confidenceScore >= 50 ? bestMatch : null;
+        }
+
         // Voice recording and transcript display
         document.addEventListener('DOMContentLoaded', function() {
             const micBtn = document.getElementById('microphone-btn');
@@ -308,22 +459,34 @@
 
                 // Auto-scroll to bottom
                 conversationPanel.scrollTop = conversationPanel.scrollHeight;
+                
+                // Speak the message with error handling
+                try {
+                    speakText(text);
+                } catch (error) {
+                    console.warn('Text-to-speech failed:', error);
+                }
             }
 
             function processVoiceCommand(transcript) {
                 const command = transcript.toLowerCase().trim();
+                console.log("=== VOICE COMMAND DEBUG ===");
                 console.log("Processing voice command:", command);
+
+                // Debug: log all available products
+                console.log("Available products:", window.allAvailableProducts.map(p => p.productName));
 
                 let matchedProduct = findProductByVoiceCommand(command);
 
                 if (matchedProduct) {
-                    console.log("Matched product:", matchedProduct.productName, "Confidence:", matchedProduct.confidenceScore + "%");
+                    console.log("✅ FINAL MATCH:", matchedProduct.productName, "Confidence:", matchedProduct.confidenceScore + "%");
                     addToOrder(matchedProduct);
-                    displaySystemMessage(`The ${matchedProduct.productName} is added to the order.`);
+                    displaySystemMessage(`The ${matchedProduct.productName} is added to the order. Is there anything else you want to add?`);
                 } else {
-                    console.log("No product matched");
+                    console.log("❌ No product matched");
                     displaySystemMessage("I couldn't find that product. Please try again or browse the menu.");
                 }
+                console.log("=== END DEBUG ===");
             }
 
             function findProductByVoiceCommand(command) {
@@ -333,23 +496,42 @@
                 // Log for debugging
                 console.log("Voice command received:", cleanCommand);
                 
-                // First, try exact matching with product names
-                for (const product of window.allAvailableProducts) {
-                    const productName = product.productName.toLowerCase();
-                    
-                    // Check for exact match in command
-                    if (cleanCommand.includes(productName)) {
-                        console.log("Exact match found:", productName);
-                        product.confidenceScore = 100; // 100% for exact match
-                        return product;
+                // Extract size from command first
+                const detectedSize = extractSizeFromCommand(cleanCommand);
+                console.log("Detected size:", detectedSize);
+                
+                // Extract product type from command
+                const detectedProduct = extractProductFromCommand(cleanCommand);
+                console.log("Detected product:", detectedProduct);
+                
+                // If we have both product and size, try to find exact match first
+                if (detectedProduct && detectedSize) {
+                    const exactMatch = findExactProductMatch(detectedProduct, detectedSize);
+                    if (exactMatch) {
+                        console.log("Found exact product with size match:", exactMatch.productName);
+                        return exactMatch;
                     }
                 }
                 
-                // If no exact match, try keyword-based matching
-                return findProductByKeywords(cleanCommand);
+                // Try keyword-based matching with size consideration
+                const keywordMatch = findProductByKeywords(cleanCommand, detectedSize, detectedProduct);
+                if (keywordMatch && keywordMatch.confidenceScore >= 60) {
+                    return keywordMatch;
+                }
+                
+                // Final fallback - find any product that matches the main product type
+                if (detectedProduct) {
+                    const fallbackMatch = findFallbackProduct(detectedProduct, detectedSize);
+                    if (fallbackMatch) {
+                        console.log("Using fallback match:", fallbackMatch.productName);
+                        return fallbackMatch;
+                    }
+                }
+                
+                return null;
             }
 
-            function findProductByKeywords(command) {
+            function findProductByKeywords(command, detectedSize = null, detectedProduct = null) {
                 // Define product keywords and their variations
                 const productKeywords = {
                     'caffe americano': [
@@ -376,25 +558,6 @@
                     ]
                 };
 
-                // Size variations
-                const sizeKeywords = {
-                    '8oz': ['8oz', '8 oz', '8 ounce', '8 ounces', 'eight ounce', 'eight oz'],
-                    '12oz': ['12oz', '12 oz', '12 ounce', '12 ounces', 'twelve ounce', 'twelve oz'],
-                    '16oz': ['16oz', '16 oz', '16 ounce', '16 ounces', 'sixteen ounce', 'sixteen oz']
-                };
-
-                // Extract size from command first
-                let detectedSize = null;
-                for (const [size, variations] of Object.entries(sizeKeywords)) {
-                    for (const variation of variations) {
-                        if (command.includes(variation)) {
-                            detectedSize = size;
-                            break;
-                        }
-                    }
-                    if (detectedSize) break;
-                }
-
                 // Try to find the best product match
                 let bestMatch = null;
                 let bestScore = 0;
@@ -402,53 +565,35 @@
                 for (const product of window.allAvailableProducts) {
                     const productName = product.productName.toLowerCase();
                     let score = 0;
-                    let maxPossibleScore = 0;
 
-                    // Check against product keywords (Max: 40%)
+                    // Check against product keywords (Max: 60%)
                     for (const [baseProduct, variations] of Object.entries(productKeywords)) {
                         for (const variation of variations) {
                             if (command.includes(variation)) {
-                                maxPossibleScore += 40;
                                 // If the actual product name contains the base product, give high score
                                 if (productName.includes(baseProduct)) {
-                                    score += 40; // 40% for primary product match
-                                }
-                                // Additional points for exact name match
-                                if (productName.includes(variation)) {
-                                    score += 20; // 20% for exact variation match
+                                    score += 60; // 60% for primary product match
                                 }
                             }
                         }
                     }
 
-                    // Check if product name directly contains words from command (Max: 30%)
-                    const commandWords = command.split(/\s+/).filter(word => word.length >= 3);
-                    const productWords = productName.split(/\s+/);
-                    const maxWordScore = Math.min(commandWords.length * 10, 30); // Max 30%
-                    
-                    for (const cmdWord of commandWords) {
-                        for (const prodWord of productWords) {
-                            if (prodWord.includes(cmdWord) || cmdWord.includes(prodWord)) {
-                                score += 10; // 10% per matching word
-                                break;
-                            }
+                    // Bonus for detected product type match (Max: 40%)
+                    if (detectedProduct && productName.includes(detectedProduct)) {
+                        score += 40;
+                    }
+
+                    // Size matching (Max: 50% - very important)
+                    if (detectedSize) {
+                        const sizePattern = detectedSize.toLowerCase();
+                        if (productName.includes(sizePattern)) {
+                            score += 50; // 50% for correct size
+                            console.log("Size match bonus applied for:", productName);
+                        } else {
+                            // Heavy penalty for size mismatch when size is specifically requested
+                            score -= 40; // -40% penalty for wrong size
+                            console.log("Size mismatch penalty applied for:", productName);
                         }
-                    }
-                    maxPossibleScore += maxWordScore;
-
-                    // Bonus points for size match (Max: 20%)
-                    if (detectedSize && productName.includes(detectedSize.toLowerCase())) {
-                        score += 20; // 20% for correct size
-                        maxPossibleScore += 20;
-                    }
-
-                    // Penalty for wrong matches (Max: -50%)
-                    if (command.includes('americano') && productName.includes('espresso') && !productName.includes('americano')) {
-                        score -= 50; // -50% penalty for espresso when americano is requested
-                    }
-
-                    if (command.includes('espresso') && productName.includes('americano') && !productName.includes('espresso')) {
-                        score -= 50; // -50% penalty for americano when espresso is requested
                     }
 
                     // Ensure score is between 0-100%
@@ -457,27 +602,17 @@
                     if (score > bestScore) {
                         bestScore = score;
                         bestMatch = product;
-                        bestMatch.confidenceScore = Math.round(score); // Store confidence percentage
+                        bestMatch.confidenceScore = Math.round(score);
                     }
                 }
 
                 console.log("Best match confidence:", bestScore + "%", "Product:", bestMatch?.productName);
                 
-                // Only return if we have a reasonably good match (50% confidence or higher)
-                if (bestScore >= 50) {
-                    return bestMatch;
-                }
-
-                // If no good match found with keywords, try fuzzy matching as fallback
-                const fuzzyMatch = findProductByFuzzyMatch(command);
-                if (fuzzyMatch && fuzzyMatch.confidenceScore >= 40) {
-                    return fuzzyMatch;
-                }
-
-                return null;
+                // Only return if we have a good match
+                return bestScore >= 50 ? bestMatch : null;
             }
 
-            function findProductByFuzzyMatch(command) {
+            function findProductByFuzzyMatch(command, detectedSize = null) {
                 let bestMatch = null;
                 let bestScore = 0;
 
@@ -485,6 +620,16 @@
                     const productName = product.productName.toLowerCase();
                     const similarity = calculateSimilarity(command, productName);
                     let score = Math.round(similarity * 100); // Convert to percentage
+
+                    // Size consideration for fuzzy matching
+                    if (detectedSize) {
+                        const sizePattern = detectedSize.toLowerCase();
+                        if (productName.includes(sizePattern)) {
+                            score += 25; // Bonus for correct size
+                        } else {
+                            score -= 20; // Penalty for wrong size
+                        }
+                    }
 
                     // Additional checks to prevent wrong matches
                     if (command.includes('americano') && productName.includes('espresso') && !productName.includes('americano')) {
