@@ -534,27 +534,425 @@
             function findProductByKeywords(command, detectedSize = null, detectedProduct = null) {
                 // Define product keywords and their variations
                 const productKeywords = {
-                    'caffe americano': [
-                        'cafe americano', 'caffe americano', 'americano', 'american coffee',
-                        'caffe american', 'cafe american', 'america no'
+                    'ala': [
+                        'a la', 'alla', 'ala', 'aala',
                     ],
-                    'espresso': [
-                        'espresso', 'expresso', 'espress', 'express'
+                    'alfredo': [
+                        'alfredo', 'apredo', 'alpedo', 'alpredo',
+                    ],
+                    'aligue': [
+                        'alige', 'aligue', 'algiue', 'allyigwe',
+                    ],
+                    'almond': [
+                        'almond', 'ahmond', 'amond', 'halmond',
+                    ],
+                    'baby': [
+                        'baby', 'beybi', 'babby', 'babi',
+                    ],
+                    'back': [
+                        'back', 'bak', 'bacc', 'buck',
+                    ],
+                    'baked': [
+                        'baked', 'bake', 'backe', 'beyk',
+                    ],
+                    'bang': [
+                        'bang', 'bangg', 'beng', 'bing',
+                    ],
+                    'bean': [
+                        'bean', 'been', 'bin', 'binn',
+                    ],
+                    'belago': [
+                        'belago', 'belaygo', 'bellago', 'bilago',
+                    ],
+                    'belly': [
+                        'belly', 'bely', 'bel ly', 'belie',
+                    ],
+                    'biscoff': [
+                        'biscoff', 'biskop', 'bisco', 'biskof',
+                    ],
+                    'binagoongan': [
+                        'binagoongan', 'bagoong', 'bagong', 'bagoongan',
+                    ],
+                    'bone': [
+                        'bone', 'bown', 'bonn', 'bon',
+                    ],
+                    'bulgogi': [
+                        'bulgogi', 'bugogi', 'bul go gi', 'bulgogii',
+                    ],
+                    'buttered': [
+                        'buttered', 'battered', 'bettered', 'bottered',
+                    ],
+                    'caesar': [
+                        'caesar', 'cr', 'sisar', 'seesar',
+                    ],
+                    'canton': [
+                        'canton', 'kanton', 'cantoon', 'kantoon',
+                    ],
+                    'cajun': [
+                        'cajun', 'kajun', 'caa jun', 'cajoon',
+                    ],
+                    'aligue': [
+                        'alige', 'aligue', 'algiue', 'allyigwe',
                     ],
                     'cappuccino': [
                         'cappuccino', 'capuccino', 'cappuchino', 'capruccino'
                     ],
-                    'latte': [
-                        'latte', 'late', 'latté'
+                    'cheese': [
+                        'cheese', 'chiz', 'chis', 'chiss',
                     ],
-                    'mocha': [
-                        'mocha', 'moca', 'mocka'
+                    'chip': [
+                        'chip', 'tsip', 'cheap', 'cheep',
+                    ],
+                    'choco': [
+                        'choco', 'cho co', 'chooco', 'tsoco',
+                    ],
+                    'classic': [
+                        'classic', 'class', 'clasik', 'klasic',
+                    ],
+                    'clubhouse': [
+                        'clubhouse', 'club house', 'clumbhouse', 'clumphouse',
+                    ],
+                    'cookies': [
+                        'cookies', 'kookies', 'cookie', 'cookies',
+                    ],
+                    'cristo': [
+                        'cristo', 'christ', 'crist', 'cisto',
+                    ],
+                    'cutlet': [
+                        'cutlet', 'cat let', 'katlet', 'cuttlet',
+                    ],
+                    'dressing': [
+                        'dressing', 'dreesing', 'resting', 'deuresting',
+                    ],
+                    'dory': [
+                        'dory', 'dori', 'doryn', 'doreen',
+                    ],
+                    'english': [
+                        'english', 'inglish', 'englissh', 'anglish',
+                    ],
+                    'fish': [
+                        'fish', 'pish', 'feesh', 'fissh',
+                    ],
+                    'honey': [
+                        'honey', 'honi', 'hunney', 'hunni',
+                    ],
+                    'hungarian': [
+                        'hungarian', 'hungaryan', 'hungariyan', 'hungarian',
+                    ],
+                    'java': [
+                        'java', 'jawa', 'jova', 'jaba',
+                    ],
+                    'kare-kare': [
+                        'kare-kare', 'kare kare', 'curry curry', 'carre carre',
+                    ],
+                    'king': [
+                        'king', 'kingg', 'keng', 'kang',
+                    ],
+                    'korean': [
+                        'korean', 'koreyan', 'koreaan', 'koreon',
+                    ],
+                    'lasagna': [
+                        'lasagna', 'lasagna', 'lasania', 'lazanya',
+                    ],
+                    'lemon': [
+                        'lemon', 'lemen', 'lemun', 'limon',
+                    ],
+                    'macademia': [
+                        'macademia', 'makademia', 'macadamia', 'makadamia',
+                    ],
+                    'mexican': [
+                        'mexican', 'meksikan', 'mexi kan', 'meksican',
+                    ],
+                    'milk': [
+                        'milk', 'milc', 'milik', 'melk',
+                    ],
+                    'mojos': [
+                        'mojos', 'mojos', 'mojos', 'mojos',
+                    ],
+                    'monte' : [
+                        'monte', 'monte', 'monte', 'monte',
+                    ],
+                    'nachos': [
+                        'nachos', 'nachos', 'nachos', 'nachos',
+                    ],
+                    'negra': [
+                        'negra', 'negra', 'negro', 'negra',
+                    ],
+                    'okinawa': [
+                        'okinawa', 'okinawa', 'okinawa', 'okinawa',
+                    ],
+                    'orane': [
+                        'orane','orange', 'oreyn', 'foreign',
+                    ],
+                    'orange': [
+                        'orange', 'oreynts', 'foreigns', 'oregin',
+                    ],
+                    'order': [
+                        'order', 'ordir', 'odder', 'older',
+                    ],
+                    'oregano': [
+                        'oregano', 'organo', 'ore gano', 'origano',
+                    ],
+                    'pad': [
+                        'pad', 'phad', 'pa ad', 'pod',
+                    ],
+                    'pancit': [
+                        'pancit', 'pasit', 'pan sit', 'pansit',
+                    ],
+                    'parmesan': [
+                        'parmesan', 'pamesan', 'par mesan', 'parmisan',
+                    ],
+                    'peanut': [
+                        'peanut', 'pinat', 'pea nut', 'nuts',
+                    ],
+                    'pesto': [
+                        'pesto', 'pest o', 'pest', 'pisto',
+                    ],
+                    'porchetta': [
+                        'porchetta', 'porsetta', 'ponseitta', 'allyigwe',
+                    ],
+                    'potato': [
+                        'potato', 'po ta to', 'poteeto', 'patatas',
+                    ],
+                    'pulled': [
+                        'pulled', 'pull', 'poll', 'polled',
+                    ],
+                    'pumpkin': [
+                        'pumpkin', 'plumpkin', 'kalabasa', 'pump keen',
+                    ],
+                    'rangoon': [
+                        'rangoon', 'rang goon', 'ragoon', 'rungoon',
+                    ],
+                    'red': [
+                        'red', 'reed', 'read', 'rid',
+                    ],
+                    'ribs': [
+                        'ribs', 'ribb', 'rib', 'reeb',
+                    ],
+                    'rice': [
+                        'rice', 'rise', 'ri ce', 'rice',
+                    ],
+                    'rocksalt': [
+                        'rocksalt', 'rock salt', 'salt rock', 'rocksalt',
+                    ],
+                    'sausage': [
+                        'sausage', 'susej', 'sauce age', 'soosage',
+                    ],
+                    'savoury': [
+                        'savoury', 'savory', 'savor ree', 'savor',
+                    ],
+                    'single': [
+                        'single', 'singel', 'sengle', 'sangle',
+                    ],
+                    'skewers': [
+                        'skewers', 'skewers', 'skewers', 'skewers',
+                    ],
+                    'smothered': [
+                        'smothered', 'smother', 'smothred', 'smothed',
+                    ],
+                    'sour': [
+                        'sour', 'sower', 'sourr', 'sor',
+                    ],
+                    'special': [
+                        'special', 'specal', 'spesial', 'spesel',
+                    ],
+                    'spinach': [
+                        'spinach', 'spinash', 'spenach', 'spenash',
+                    ],
+                    'strawberry': [
+                        'strawberry', 'strawbery', 'strawberri', 'strawbary',
+                    ],
+                    'sweet': [
+                        'sweet', 'sweat', 'swet', 'swett',
+                    ],
+                    'taco': [
+                        'taco', 'tako', 'tacco', 'takoo',
+                    ],
+                    'tapa':[
+                        'tapa', 'tappa', 'tappa', 'tapa',
+                    ],
+                    'taro': [
+                        'taro', 'taro', 'taro', 'taro',
+                    ],
+                    'teriyaki': [
+                        'teriyaki', 'teriyaki', 'teriyaki', 'teriyaki',
+                    ],
+                    'terragon' : [
+                        'terragon', 'terragon', 'terragon', 'terragon',
+                    ],
+                    'thai': [
+                        'thai', 'tai', 'thay', 'thae',
+                    ],
+                    'toffee': [
+                        'toffee', 'tofi', 'toffy', 'tofe',
+                    ],
+                    'ube': [
+                        'ube', 'oobe', 'oob', 'ube',
+                    ],
+                    'ultimate': [
+                        'ultimate', 'ultimatte', 'ultimat', 'ultemate',
+                    ],
+                    'velvet': [
+                        'velvet', 'velvit', 'velvet', 'velvet',
+                    ],
+                    'wintermelon': [
+                        'wintermelon', 'winter melon', 'wintermalon', 'winter melun',
+                    ],
+                    'bagnet': [
+                        'bagnet', 'bagnet', 'bagnet', 'bagnet',
+                    ],
+                    'barbeque': [
+                        'barbeque', 'barbecue', 'bar b que', 'bar b q',
+                    ],
+                    'butterscotch': [
+                        'butterscotch', 'butter scotch', 'buter scotch', 'buter scot',
+                    ],
+                    'cheesecake':[
+                        'cheesecake', 'cheese cake', 'cheesecak', 'cheesecak',
+                    ],
+                    'cheesy': [
+                        'cheesy', 'chizzy', 'chees', 'chisy',
+                    ],
+                    'crab': [
+                        'crab', 'krab', 'crabb', 'crap',
+                    ],
+                    'creamy': [
+                        'cream', 'crem', 'creme', 'crem',
+                    ],
+                    'double': [
+                        'double', 'dobol', 'duoble', 'do b le',
+                    ],
+                    'espresso': [
+                        'espresso', 'expresso', 'espress', 'express'
+                    ],
+                    'garlic': [
+                        'garlic', 'garlic', 'garlic', 'garlic',
+                    ],
+                    'mango': [
+                        'mango', 'mango', 'mango', 'mango',
+                    ],
+                    'paella': [
+                        'paella', 'paella', 'paella', 'paella',
+                    ],
+                    'platter': [
+                        'platter', 'plater', 'plater', 'platter',
+                    ],
+                    'plain': [
+                        'plain', 'playn', 'plaine', 'plein',
+                    ],
+                    'quesadillas': [
+                        'quesadillas', 'kesadillas', 'quesadila', 'quesadilas',
+                    ],
+                    'roasted': [
+                        'roasted', 'rosted', 'roastid', 'roasted',
+                    ],
+                    'sandwich': [
+                        'sandwich', 'sand wich', 'sandwiche', 'sandwitch',
+                    ],
+                    'shrimp': [
+                        'shrimp', 'shrimps', 'shrim', 'shrimps',
+                    ],
+                    'steak': [
+                        'steak', 'steak', 'steak', 'steak',
+                    ],
+                    'white': [
+                        'white', 'whyte', 'whit', 'whitte',
+                    ],
+                    'wrap': [
+                        'wrap', 'rap', 'wrapp', 'wrab',
+                    ],
+                    'americano': [
+                        'americano', 'american coffee', 'cafe americano', 'caffe americano',
+                    ],
+                    'butter': [
+                        'butter', 'buter', 'buttr', 'buttur',
+                    ],
+                    'fries': [
+                        'fries', 'fryes', 'friez', 'frees',
+                    ],
+                    'grilled': [
+                        'grilled', 'grild', 'gril led', 'grilled',
+                    ],
+                    'hazelnut': [
+                        'hazelnut', 'haselnut', 'hazel nut', 'hazelnutt',
+                    ],
+                    'seafood': [
+                        'seafood', 'seafod', 'seefood', 'sea food',
+                    ],
+                    'wings': [
+                        'wings', 'wing', 'winggs', 'wings',
+                    ],
+                    'beef': [
+                        'beef', 'beef', 'beef', 'beef',
+                    ],
+                    'chocolate': [
+                        'chocolate', 'choclate', 'chocolat', 'chockolate',
+                    ],
+                    'french': [
+                        'french', 'frenche', 'frenchh', 'french',
                     ],
                     'macchiato': [
                         'macchiato', 'machiato', 'macato'
                     ],
-                    'double espresso': [
-                        'dobol espresso', 'dobol', 'double expresso', 'double express', 'double', 'dubol', 'do bold espresso'
+                    'matcha': [
+                        'matcha', 'macha', 'matca', 'mat cha',
+                    ],
+                    'salad': [
+                        'salad', 'selad', 'salid', 'saladd',
+                    ],
+                    'salted': [
+                        'salted', 'saltid', 'saulted', 'salted',
+                    ],
+                    'sauce': [
+                        'sauce', 'sause', 'sos', 'sauz',
+                    ],
+                    'vanilla': [
+                        'vanilla', 'vanila', 'vanila', 'vanilla',
+                    ],
+                    'arabicas': [
+                        'arabicas', 'arabica', 'arabcis', 'arabikas',
+                    ],
+                    'mocha': [
+                        'mocha', 'moca', 'mocka'
+                    ],
+                    'adoras': [
+                        'adoras', 'adoras', 'adoras', 'adoras',
+                    ],
+                    'and': [
+                        'and', 'end', 'an', 'und',
+                    ],
+                    'caramel': [
+                        'caramel', 'caramell', 'carmel', 'caramle',
+                    ],
+                    'crispy': [
+                        'crispy', 'crisy', 'crisspy', 'crisspi',
+                    ],
+                    'caffe': [
+                        'caffe', 'cafe', 'caffee', 'caffé',
+                    ],
+                    'pasta': [
+                        'pasta', 'pasta', 'pasta', 'pasta',
+                    ],
+                    'pork': [
+                        'pork', 'pork', 'pork', 'pork',
+                    ],
+                    'milktea': [
+                        'milktea', 'milk tea', 'milkte', 'milktea',
+                    ],
+                    'with': [
+                        'with', 'wit', 'withe', 'with',
+                    ],
+                    'frappe': [
+                        'frappe', 'frap', 'frappé', 'frappe',
+                    ],
+                    'iced': [
+                        'iced', 'ised', 'ice d', 'iced',
+                    ],
+                    'latte': [
+                        'latte', 'late', 'latté'
+                    ],
+                    'chicken': [
+                        'chicken', 'chiken', 'chickin', 'chickenn',
                     ]
                 };
 
