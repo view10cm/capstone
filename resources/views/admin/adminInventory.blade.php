@@ -77,17 +77,17 @@
                                     style="width: 350px; height: 35px; border-radius: 10px; background-color: #f5f5f5;">
                             </div>
 
-                            <!-- Export Button -->
-                            <div class="relative">
-                                <button
-                                    class="flex items-center px-4 py-2 bg-orange-200 text-orange-800 rounded-md hover:bg-orange-300 transition-colors">
-                                    <span class="text-sm font-medium">Export</span>
-                                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </button>
-                            </div>
+<!-- Export Button as Link -->
+<div class="relative">
+    <a href="{{ route('admin.ingredients.export-pdf') }}"
+        class="flex items-center px-4 py-2 bg-orange-200 text-orange-800 rounded-md hover:bg-orange-300 transition-colors no-underline">
+        <span class="text-sm font-medium">Export</span>
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 9l-7 7-7-7"></path>
+        </svg>
+    </a>
+</div>
 
                             <!-- Add Ingredient Button -->
                             <button onclick="openModal()"

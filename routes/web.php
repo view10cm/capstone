@@ -297,9 +297,12 @@ Route::prefix('kitchen')->middleware(['auth'])->group(function () {
 
 // Admin Order History Routes
 Route::prefix('admin')->group(function () {
-    Route::get('/orders/history', [App\Http\Controllers\Admin\AdminOrderController::class, 'orderHistory'])
+    Route::get('/orders/history', [App\Http\Controllers\AdminOrderController::class, 'orderHistory'])
         ->name('admin.orderHistory');
 
-    Route::get('/orders/{orderId}/details', [App\Http\Controllers\Admin\AdminOrderController::class, 'getOrderDetails'])
+    Route::get('/orders/{orderId}/details', [App\Http\Controllers\AdminOrderController::class, 'getOrderDetails'])
         ->name('admin.orders.details');
+    // Export ingredients as PDF
+    Route::get('/ingredients/export-pdf', [IngredientsController::class, 'exportPdf'])
+        ->name('admin.ingredients.export-pdf');
 });
