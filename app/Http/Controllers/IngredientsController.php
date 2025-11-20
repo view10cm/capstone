@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Barryvdh\DomPDF\Facade\Pdf; // Correct import
 
 class IngredientsController extends Controller
 {
@@ -158,6 +159,66 @@ class IngredientsController extends Controller
                 'success' => false,
                 'message' => 'Error deleting ingredient: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Export ingredients as PDF
+     */
+    public function exportPdf(Request $request)
+    {
+        try {
+            // Get all ingredients for export
+            $ingredients = DB::table('ingredients')
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            // Format the data for PDF
+            $formattedIngredients = $ingredients->map(function ($ingredient) {
+                return [
+                    'item_id' => 'CA' . str_pad($ingredient->ingredient_id, 5, '0', STR_PAD_LEFT),
+                    'name' => $ingredient->ingredient_name,
+                    'category' => $ingredient->ingredient_category,
+                    'quantity' => $ingredient->ingredient_quantity,
+                    'availability' => $ingredient->ingredient_availability,
+                    'unit' => $this->getUnit($ingredient->ingredient_name)
+                ];
+            });
+
+            $data = [
+                'ingredients' => $formattedIngredients,
+                'exportDate' => now()->format('F j, Y'),
+                'totalItems' => $ingredients->count()
+            ];
+
+            // Generate PDF
+            $pdf = Pdf::loadView('admin.exports.ingredients-pdf', $data);
+
+            // Download PDF
+            return $pdf->download('ingredients-list-' . now()->format('Y-m-d') . '.pdf');
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error generating PDF: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Helper method to determine unit based on ingredient name
+     */
+    private function getUnit($ingredientName)
+    {
+        $name = strtolower($ingredientName);
+        if (str_contains($name, 'beef') || str_contains($name, 'oxtail')) {
+            return 'kg';
+        } elseif (str_contains($name, 'shot')) {
+            return 'shots';
+        } elseif (str_contains($name, 'syrup') || str_contains($name, 'pump')) {
+            return 'pumps';
+        } else {
+            return 'pcs';
         }
     }
 }

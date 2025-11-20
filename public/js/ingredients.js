@@ -266,3 +266,61 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function exportToPDF() {
+    const exportButton = document.getElementById('exportPdfButton');
+    
+    if (exportButton) {
+        const originalHTML = exportButton.innerHTML;
+        exportButton.innerHTML = '<span class="text-sm font-medium">Exporting...</span>';
+        exportButton.disabled = true;
+    }
+
+    // Make the request to export PDF
+    fetch('/admin/ingredients/export-pdf', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.blob();
+        }
+        throw new Error('Network response was not ok.');
+    })
+    .then(blob => {
+        // Create a download link and trigger download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'ingredients-list-' + new Date().toISOString().split('T')[0] + '.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        // Show success message (you can replace this with a toast notification)
+        alert('Ingredients exported successfully!');
+    })
+    .catch(error => {
+        console.error('Error exporting PDF:', error);
+        alert('Error exporting PDF. Please try again.');
+    })
+    .finally(() => {
+        // Restore button state
+        if (exportButton) {
+            exportButton.innerHTML = originalHTML;
+            exportButton.disabled = false;
+        }
+    });
+}
+
+// Add event listener when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    const exportButton = document.getElementById('exportPdfButton');
+    if (exportButton) {
+        exportButton.addEventListener('click', exportToPDF);
+    }
+});
